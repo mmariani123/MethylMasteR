@@ -242,7 +242,7 @@ champ = {
 epicopy = {
 
   methyl_master_epicopy(epi.target.dir=idat.files.dir,
-                        epi.output.dir=NULL,
+                        epi.output.dir=output.dir,
                         epi.ncores=n.cores,
                         epi.ref="median",
                         epi.normals="Sample_Group",

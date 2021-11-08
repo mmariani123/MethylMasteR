@@ -64,13 +64,14 @@ rlang::env_unlock(env = asNamespace('Epicopy'))
 rlang::env_binding_unlock(env = asNamespace('Epicopy'))
 assign('.coerce.pData', .coerce.pData2, envir = asNamespace('Epicopy'))
 assign('LRRtoCNA', LRRtoCNA2, envir = asNamespace('Epicopy'))
+assign('read.meth.array.sheet', read.meth.array.sheet.mm, envir = asNamespace('Epicopy'))
 rlang::env_binding_lock(env = asNamespace('Epicopy'))
 rlang::env_lock(asNamespace('Epicopy'))
 
 ##source(paste0(scripts.dir,file.sep,"salas_mm_epicopy_salas.R"))
 
-if(is.null(epi.target.dir)){
-  epi.target.dir <- output.dir
+if(is.null(epi.output.dir)){
+  epi.output.dir <- output.dir
 }
 
 epicopy_results <- Epicopy::epicopy(target_dir = epi.target.dir,

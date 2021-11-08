@@ -126,6 +126,125 @@ LRRtoCNA2 <- function(LRR,
   return(seg)
 }
 
+#' Modified read.metharray.sheet from minfi
+#'
+#'
+#' @param base
+#' @param pattern
+#' @param ignore.case
+#' @param recursive
+#' @param single.file
+#' @param single.file.path
+#' @param verbose
+#' @param ... Additional arguments
+#' @return formatted csv as df
+#' @export
+read.metharray.sheet.mm <- function(base,
+                                 pattern = "csv$",
+                                 ignore.case = TRUE,
+                                 recursive = TRUE,
+                                 single.file = TRUE,
+                                 single.file.path = NULL,
+                                 verbose = TRUE)
+{
+  readSheet <- function(file) {
+    dataheader <- grep("^\\[DATA\\]", readLines(file),
+                       ignore.case = TRUE)
+    if (length(dataheader) == 0)
+      dataheader <- 0
+    df <- read.csv(file, stringsAsFactor = FALSE, skip = dataheader)
+    nam <- grep(pattern = "Sentrix_Position", x = names(df),
+                ignore.case = TRUE, value = TRUE)
+    if (length(nam) == 1) {
+      df$Array <- as.character(df[, nam])
+      df[, nam] <- NULL
+    }
+    nam <- grep(pattern = "Array[\\._]ID", x = names(df),
+                ignore.case = TRUE, value = TRUE)
+    if (length(nam) == 1) {
+      df$Array <- as.character(df[, nam])
+      df[, nam] <- NULL
+    }
+    if (!"Array" %in% names(df)) {
+      warning(sprintf("Could not infer array name for file: %s",
+                      file))
+    }
+    nam <- grep("Sentrix_ID", names(df), ignore.case = TRUE,
+                value = TRUE)
+    if (length(nam) == 1) {
+      df$Slide <- as.character(df[, nam])
+      df[, nam] <- NULL
+    }
+    nam <- grep(pattern = "Slide[\\._]ID", x = names(df),
+                ignore.case = TRUE, value = TRUE)
+    if (length(nam) == 1) {
+      df$Slide <- as.character(df[, nam])
+      df[, nam] <- NULL
+    }
+    if (!"Slide" %in% names(df)) {
+      warning(sprintf("Could not infer slide name for file: %s",
+                      file))
+    }
+    else {
+      df[, "Slide"] <- as.character(df[, "Slide"])
+    }
+    nam <- grep(pattern = "Plate[\\._]ID", x = names(df),
+                ignore.case = TRUE, value = TRUE)
+    if (length(nam) == 1) {
+      df$Plate <- as.character(df[, nam])
+      df[, nam] <- NULL
+    }
+    for (nam in c("Pool_ID", "Sample_Plate",
+                  "Sample_Well")) {
+      if (nam %in% names(df)) {
+        df[[nam]] <- as.character(df[[nam]])
+      }
+    }
+    if (!is.null(df$Array)) {
+      patterns <- sprintf("%s_%s_Grn.idat", df$Slide,
+                          df$Array)
+      allfiles <- list.files(path = dirname(file), recursive = recursive,
+                             full.names = TRUE)
+      basenames <- sapply(X = patterns, FUN = function(xx) grep(xx,
+                                                                allfiles, value = TRUE))
+      names(basenames) <- NULL
+      basenames <- sub("_Grn\\.idat.*", "",
+                       basenames, ignore.case = TRUE)
+      df$Basename <- basenames
+    }
+    df
+  }
+  if(single.file==TRUE){
+    if(is.null (single.file.path) | !file.exists(single.file.path))
+      stop("'single.file.path' does not exist or is set to NULL")
+    csvfiles <- single.file.path
+  }else if (!all(file.exists(base)))
+      stop("'base' does not exists")
+    info <- file.info(base)
+    if (!all(info$isdir) && !all(!info$isdir)) {
+      stop("'base needs to be either directories or files")
+    }
+    if (all(info$isdir)) {
+      csvfiles <- list.files(path = base, recursive = recursive,
+                           pattern = pattern, ignore.case = ignore.case, full.names = TRUE)
+    if (verbose) {
+        message("[read.metharray.sheet] Found the following CSV files:")
+        print(csvfiles)
+    }
+  }else {
+      csvfiles <- list.files(base, full.names = TRUE)
+  }
+  dfs <- lapply(csvfiles, readSheet)
+  namesUnion <- Reduce(union, lapply(dfs, names))
+  df <- do.call(what = rbind, args = lapply(dfs, function(df) {
+    newnames <- setdiff(namesUnion, names(df))
+    newdf <- matrix(data = NA, ncol = length(newnames), nrow = nrow(df),
+                    dimnames = list(NULL, newnames))
+    cbind(df, as.data.frame(newdf))
+  }))
+  return(df)
+}
+
 #' Weighted-mean function
 #'
 #'
