@@ -1,42 +1,80 @@
 #!/usr/bin/env Rscript
 
-## Can test ChAMP with the test data: data(EPICSimData)
+#' Run ChAMP
+#'
+#' The full pipeline can be run at once with one command:
+#' Testing:
+#' data(EPICSimData)
+#' champ.test.directory <- system.file("extdata",
+#'                      package="ChAMPdata")
+#' myLoad.test <- champ.load(champ.test.directory,
+#'                     arraytype="450K")
+#' myLoad.test$pd$Sample_Name
+#' myLoad.test$pd$Sample_Group
+#' champ.results <- champ.process(directory=champ.test.directory)
+#' myLoad <- champ.load(idat.pooled.files.dir,
+#'                     arraytype="450K")
+#' myLoad$pd$Pool_ID
+#' myLoad$pd$Pool_ID
+#' myLoad$pd$Pool_ID
+#' myLoad$pd$Sample_Group
+#'
+#' Can test ChAMP with the test data: data(EPICSimData)
+#'
+#' @param idat.pooled.files.dir
+#' @param champ.array.type
+#' @param champ.batchname
+#' @param champ.batch.name
+#' @param champ.padj
+#' @param champ.ncores
+#' @param champ.control
+#' @param champ.contol.group
+#' @param champ.runimpute
+#' @param champ.runQC
+#' @param champ.runnorm
+#' @param champ.runSVD
+#' @param champ.runCombat
+#' @param champ.runDMP
+#' @param champ.runDMR
+#' @param champ.runBlock
+#' @param champ.runGSEA){
+#' @return #NULL
+#' @export
+methyl_master_champ <- function(idat.pooled.files.dir,
+                                champ.array.type,
+                                champ.batchnamec,
+                                champ.batch.name,
+                                champ.padj,
+                                champ.ncores,
+                                champ.control,
+                                champ.contol.group,
+                                champ.runimpute,
+                                champ.runQC,
+                                champ.runnorm,
+                                champ.runSVD,
+                                champ.runCombat,
+                                champ.runDMP,
+                                champ.runDMR,
+                                champ.runBlock,
+                                champ.runGSEA){
 
-##The full pipeline can be run at once with one command:
-
-##Testing:
-##data(EPICSimData)
-##champ.test.directory <- system.file("extdata", 
-##                      package="ChAMPdata")
-##myLoad.test <- champ.load(champ.test.directory,
-##                     arraytype="450K")
-##myLoad.test$pd$Sample_Name
-##myLoad.test$pd$Sample_Group
-##champ.results <- champ.process(directory=champ.test.directory)
-##myLoad <- champ.load(idat.pooled.files.dir,
-##                     arraytype="450K")
-##myLoad$pd$Pool_ID
-##myLoad$pd$Pool_ID
-##myLoad$pd$Pool_ID
-##myLoad$pd$Sample_Group
-
-champ_results <- ChAMP::champ.process(directory = idat.pooled.files.dir,
-                                      arraytype = champ.array.type,
-                                      ##batchname = c("Slide"),
-                                      batchname = champ.batch.name,
-                                      adjPVal = champ.padj,
-                                      cores = champ.ncores,
-                                      control = champ.control,
+champ_results <- ChAMP::champ.process(directory    = idat.pooled.files.dir,
+                                      arraytype    = champ.array.type,
+                                      champ.batchname  = c("Slide"),
+                                      batchname    = champ.batch.name,
+                                      adjPVal      = champ.padj,
+                                      cores        = champ.ncores,
+                                      control      = champ.control,
                                       controlGroup = champ.contol.group,
-                                      runimpute = champ.runimpute,
-                                      runQC     = champ.runQC,
-                                      runnorm   = champ.runnorm,
-                                      runSVD    = champ.runSVD,
-                                      runCombat = champ.runCombat,
-                                      runDMP    = champ.runDMP,
-                                      runDMR    = champ.runDMR,
-                                      runBlock  = champ.runBlock,
-                                      runGSEA   = champ.runGSEA)
+                                      runimpute    = champ.runimpute,
+                                      runQC        = champ.runQC,
+                                      runnorm      = champ.runnorm,
+                                      runSVD       = champ.runSVD,
+                                      runCombat    = champ.runCombat,
+                                      runDMP       = champ.runDMP,
+                                      runDMR       = champ.runDMR,
+                                      runBlock     = champ.runBlock,
+                                      runGSEA      = champ.runGSEA)
 
 ##save(champ_results,
 ##     file=paste0(work.dir,
@@ -50,17 +88,17 @@ champ_results <- ChAMP::champ.process(directory = idat.pooled.files.dir,
 ##                                    ) %>% read.csv(header=TRUE,
 ##                                                   stringsAsFactors = FALSE)
 ##colnames(champ.sample.sheet.df)
-##"ï..Sample_Name"
+##"?..Sample_Name"
 ##"Sample_Group"
 ##"Sample_Plate"
 ##"Pool_ID"
-##"Sample_Well"     
+##"Sample_Well"
 ##"Sentrix_Position"
 ##"Sentrix_ID"
 ##"Basename"
-##"Batch"   
+##"Batch"
 
-##champ.sample.sheet.df %>% dplyr::pull(`ï..Sample_Name`)
+##champ.sample.sheet.df %>% dplyr::pull(`?..Sample_Name`)
 ##champ.sample.sheet.df %>% dplyr::pull(Sample_Group)
 
 ## 6164655052_R05C02, ##N
@@ -90,8 +128,8 @@ champ_results <- ChAMP::champ.process(directory = idat.pooled.files.dir,
 ##                 "\\champ_kidney_results\\CHAMP_RESULT\\myCNA.rda"))
 ##length(myCNA$sampleResult) ##20
 ##names(myCNA$sampleResult) ## All ""
-##names(myCNA$sampleResult) <- champ.sample.sheet.df %>% 
-##                              dplyr::pull(`ï..Sample_Name`)
+##names(myCNA$sampleResult) <- champ.sample.sheet.df %>%
+##                              dplyr::pull(`?..Sample_Name`)
 ##names(myCNA$sampleResult) ##Looks good
 ##for(i in 1:length(myCNA$sampleResult)){
 ##  myCNA$sampleResult[[i]]$ID <- names(myCNA$sampleResult[i])
@@ -104,18 +142,18 @@ champ_results <- ChAMP::champ.process(directory = idat.pooled.files.dir,
 ##            "champ_example_result.RData"))
 ##results.data <- champ.results$champ.CNA$sampleResult
 ##rm(champ.results)
-##colnames(champ.resultschamp.CNA$sampleResult[[1]]) 
+##colnames(champ.resultschamp.CNA$sampleResult[[1]])
 
 ##load(file=paste0("G:\\My Drive\\dartmouth",
 ##                 "\\salas_lab_working\\cnv",
 ##                 "\\testing\\champ_results.RData"))
 ##length(champ_results$champ.CNA$sampleResult) ##20
 ##names(champ_results$champ.CNA$sampleResult) ## All ""
-##names(champ_results$champ.CNA$sampleResult) <- champ.sample.sheet.df %>% 
-##  dplyr::pull(`ï..Sample_Name`)
+##names(champ_results$champ.CNA$sampleResult) <- champ.sample.sheet.df %>%
+##  dplyr::pull(`?..Sample_Name`)
 ##names(champ_results$champ.CNA$sampleResult) ##Looks good
 for(i in 1:length(champ_results$champ.CNA$sampleResult)){
-  champ_results$champ.CNA$sampleResult[[i]]$ID <- 
+  champ_results$champ.CNA$sampleResult[[i]]$ID <-
     names(champ_results$champ.CNA$sampleResult[i])
   colnames(champ_results$champ.CNA$sampleResult[[i]])[1] <- "Sample_ID"
   ##colnames(myCNA$sampleResult[[i]])[1] ##All set
@@ -132,19 +170,19 @@ for(i in 1:length(unique(champ_results$Sample_ID))){
   print(i)
   sample.now <- unique(champ_results$Sample_ID)[i]
   if(sample.now %in% rownames(tumor)){
-    champ_results[champ_results$Sample_ID==sample.now,]$karyotype    <- 
+    champ_results[champ_results$Sample_ID==sample.now,]$karyotype    <-
       tumor[tumor$X==sample.now, "karyotype"]
-    champ_results[champ_results$Sample_ID==sample.now,]$sex_reported <- 
+    champ_results[champ_results$Sample_ID==sample.now,]$sex_reported <-
       tumor[tumor$X==sample.now, "gender_reported"]
-    champ_results[champ_results$Sample_ID==sample.now,]$sex_inferred  <- 
+    champ_results[champ_results$Sample_ID==sample.now,]$sex_inferred  <-
       tumor[tumor$X==sample.now, "sex_inferred"]
     champ_results[champ_results$Sample_ID==sample.now,]$treatment <- "tumor"
   }else if(sample.now %in% rownames(normal)){
-    champ_results[champ_results$Sample_ID==sample.now,]$karyotype    <- 
+    champ_results[champ_results$Sample_ID==sample.now,]$karyotype    <-
       normal[normal$X==sample.now, "karyotype"]
-    champ_results[champ_results$Sample_ID==sample.now,]$sex_reported <- 
+    champ_results[champ_results$Sample_ID==sample.now,]$sex_reported <-
       normal[normal$X==sample.now, "gender_reported"]
-    champ_results[champ_results$Sample_ID==sample.now,]$sex_inferred <- 
+    champ_results[champ_results$Sample_ID==sample.now,]$sex_inferred <-
       normal[normal$X==sample.now, "sex_inferred"]
     champ_results[champ_results$Sample_ID==sample.now,]$treatment <- "normal"
   }else{
@@ -155,5 +193,9 @@ for(i in 1:length(unique(champ_results$Sample_ID))){
   }
 }
 
-save(champ_results, file=paste0(work.dir, file.sep, "champ_results.RData"))
+save(champ_results, file=paste0(work.dir,
+                                file.sep,
+                                "champ_results.RData"))
 rm(champ_results)
+
+}

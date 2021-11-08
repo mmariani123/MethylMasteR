@@ -1,8 +1,6 @@
 #!/usr/bin/env Rscript
 
-# Extra ChAMP functions
-
-#' Load a Matrix
+#' # Extra ChAMP functions
 #'
 #' This function loads a file as a matrix. It assumes that the first column
 #' contains the rownames and the subsequent columns are the sample identifiers.

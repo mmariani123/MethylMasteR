@@ -1,37 +1,39 @@
 #!/usr/bin/env Rscript
 
-##Methyl Master Process Sesame 
+#' ##Methyl Master Process Sesame
+#'
+#' For (pre)processing SeSAMe data
+#'
+#' @param idat.files.dir
+#' @param file.sep
+#' @import sesame
+#' @export
+methyl_master_preprocess_sesame <- function(){
 
-#################### PROCESS SESAME #########################################
-#############################################################################
-#############################################################################
-#############################################################################
-#############################################################################
-
-setExperimentHubOption("CACHE", 
-                       idat.pooled.files.dir)
+setExperimentHubOption("CACHE",
+                       idat.files.dir)
 
 ExperimentHub()
 
-idat_prefixes <- searchIDATprefixes(idat.pooled.files.dir, 
+idat_prefixes <- searchIDATprefixes(idat.files.dir,
                                     recursive=TRUE)
 
 sesameDataCacheAll()
 
-sesame_betas <- openSesame(idat_prefixes, 
+sesame_betas <- openSesame(idat_prefixes,
                            mask = TRUE,
-                           sum.TypeI = TRUE, 
+                           sum.TypeI = TRUE,
                            platform = sesame.platform)
 
-sesame_sset <- openSesame(idat_prefixes, 
+sesame_sset <- openSesame(idat_prefixes,
                           mask = TRUE,
-                          sum.TypeI = TRUE, 
+                          sum.TypeI = TRUE,
                           platform = sesame.platform,
                           what="sigset")
 
 sesame_rgset <- sesame::SigSetsToRGChannelSet(sesame_sset)
 
-sesame_karyotype <- foreach(i = 1:length(names(sesame_sset))) %do% 
+sesame_karyotype <- foreach(i = 1:length(names(sesame_sset))) %do%
   {sesame::inferSexKaryotypes(sesame_sset[[i]])}
 
 names(sesame_karyotype) <- names(sesame_sset)
@@ -40,13 +42,13 @@ sesame_karyotype <- as.data.frame(unlist(sesame_karyotype))
 
 colnames(sesame_karyotype) <- "karyotype"
 
-sesame_seg <- foreach(i = 1:length(names(sesame_sset))) %do% 
-  {sesame::cnSegmentation(sesame_sset[[i]], 
-                          sesame_ssets_normal, 
+sesame_seg <- foreach(i = 1:length(names(sesame_sset))) %do%
+  {sesame::cnSegmentation(sesame_sset[[i]],
+                          sesame_ssets_normal,
                           refversion = sesame.ref.version)}
 names(sesame_seg) <- names(sesame_sset)
 
-sesame_qc <- foreach(i = 1:length(names(sesame_sset))) %do% 
+sesame_qc <- foreach(i = 1:length(names(sesame_sset))) %do%
   {sesame::sesameQC(sesame_sset[[i]])}
 
 names(sesame_qc) <- names(sesame_sset)
@@ -84,8 +86,8 @@ sesame_sset_normal         <- sesame_sset[rownames(normal)]
 length(sesame_sset_normal) ##10
 names(sesame_sset_normal)  <- rownames(normal)
 
-## subset sset into female and male for normal and tumor; 
-## used to subset into sex using gender_reported, 
+## subset sset into female and male for normal and tumor;
+## used to subset into sex using gender_reported,
 ## need to be sex_inferred instead !!
 
 meta_normal_female               <- normal[normal$sex_inferred == "FEMALE",]
@@ -117,22 +119,22 @@ rm(sesame_rgset)
 rm(sesame_seg)
 rm(sesame_qc)
 
-save(sesame_sset_tumor, 
+save(sesame_sset_tumor,
      file=paste0(work.dir,file.sep,"sesame_sset_tumor.RData"))
-save(sesame_sset_normal,           
+save(sesame_sset_normal,
      file=paste0(work.dir,file.sep,"sesame_sset_normal.RData"))
 save(sesame_sset_normal_female,
      file=paste0(work.dir,file.sep,"sesame_sset_normal_female.RData"))
 save(sesame_sset_normal_male  ,
      file=paste0(work.dir,file.sep,"sesame_sset_normal_male.RData"))
-save(sesame_sset_tumor_female,  
+save(sesame_sset_tumor_female,
      file=paste0(work.dir,file.sep,"sesame_sset_tumor_female.RData"))
-save(sesame_sset_tumor_male ,   
+save(sesame_sset_tumor_male ,
      file=paste0(work.dir,file.sep,"sesame_sset_tumor_male.RData"))
 
-save(sesame_rgset_normal, 
+save(sesame_rgset_normal,
      file=paste0(work.dir,file.sep,"sesame_rgset_normal.RData"))
-save(sesame_rgset_tumor,        
+save(sesame_rgset_tumor,
      file=paste0(work.dir,file.sep,"sesame_rgset_tumor.RData"))
 save(sesame_rgset_normal_female,
      file=paste0(work.dir,file.sep,"sesame_rgset_normal_female.RData"))
@@ -140,7 +142,7 @@ save(sesame_rgset_normal_male  ,
      file=paste0(work.dir,file.sep,"sesame_rgset_normal_male.RData"))
 save(sesame_rgset_tumor_female,
      file=paste0(work.dir,file.sep,"sesame_rgset_tumor_female.RData"))
-save(sesame_rgset_tumor_male , 
+save(sesame_rgset_tumor_male ,
      file=paste0(work.dir,file.sep,"sesame_rgset_tumor_male.RData"))
 
 rm(sesame_sset_tumor)
@@ -168,11 +170,11 @@ ExperimentHub()
 cord_idat_prefixes <- searchIDATprefixes(cord.files.path,
                                          recursive=TRUE)
 
-sesameDataCacheAll()  
+sesameDataCacheAll()
 
-sesame_sset_cord <- openSesame(cord_idat_prefixes, 
+sesame_sset_cord <- openSesame(cord_idat_prefixes,
                                mask = TRUE,
-                               sum.TypeI = TRUE, 
+                               sum.TypeI = TRUE,
                                platform = sesame.cord.platform,
                                what="sigset")
 
@@ -180,7 +182,7 @@ sesame_sset_cord <- openSesame(cord_idat_prefixes,
 
 karyotype_cord <- NA
 
-karyotype_cord <- foreach(i = 1:length(names(sesame_sset_cord))) %do% 
+karyotype_cord <- foreach(i = 1:length(names(sesame_sset_cord))) %do%
   {sesame::inferSexKaryotypes(sesame_sset_cord[[i]])}
 
 sesame_female_cord_id <- character(length=0)
@@ -192,10 +194,10 @@ sesame_male_cord_id   <- character(length=0)
 for(i in 1:length(karyotype_cord)){
   print(karyotype_cord[i])
   if(as.character(karyotype_cord[i]) == "XaXi"){
-    sesame_female_cord_id <- append(sesame_female_cord_id, 
+    sesame_female_cord_id <- append(sesame_female_cord_id,
                                     names(sesame_sset_cord)[i])
   }else{
-    sesame_male_cord_id <- append(sesame_male_cord_id, 
+    sesame_male_cord_id <- append(sesame_male_cord_id,
                                   names(sesame_sset_cord)[i])
   }
 }
@@ -227,23 +229,23 @@ names(sesame_sset_cord_male) <- sesame_male_cord_id
 sesame_rgset_cord_female <- SigSetsToRGChannelSet(sesame_sset_cord_female)
 sesame_rgset_cord_male   <- SigSetsToRGChannelSet(sesame_sset_cord_male)
 
-save(sesame_sset_cord, 
+save(sesame_sset_cord,
      file=paste0(work.dir,
                  file.sep,
                  "sesame_sset_cord.RData"))
-save(sesame_sset_cord_female, 
+save(sesame_sset_cord_female,
      file=paste0(work.dir,
                  file.sep,
                  "sesame_sset_cord_female.RData"))
-save(sesame_sset_cord_male, 
+save(sesame_sset_cord_male,
      file=paste0(work.dir,
                  file.sep,
                  "sesame_sset_cord_male.RData"))
-save(sesame_rgset_cord_female, 
+save(sesame_rgset_cord_female,
      file=paste0(work.dir,
                  file.sep,
                  "sesame_rgset_cord_female.RData"))
-save(sesame_rgset_cord_male, 
+save(sesame_rgset_cord_male,
      file=paste0(work.dir,
                  file.sep,
                  "sesame_rgset_cord_male.RData"))
@@ -254,3 +256,4 @@ rm(sesame_sset_cord_male)
 rm(sesame_rgset_cord_female)
 rm(sesame_rgset_cord_male)
 
+}

@@ -37,7 +37,7 @@ methyl_master <- function(os.type              = "linux",
                           visualize            = FALSE,
                           visualize.individual = FALSE,
                           weighted.mean        = "normal",
-                          routine              = "sesame",
+                          routine              = "test",
                           sex                  = "gender_reported",
                           main.dir             = getwd()){
 
@@ -288,10 +288,7 @@ sesame = {
 
 k450 = {
 
-  source(Paste0(scripts.dir,
-                file.sep,
-                "methyl_master_k450.R")
-  )
+  methyl_master_k450()
 
 }, ##End K450
 
@@ -303,10 +300,7 @@ k450 = {
 
 champ = {
 
-  source(Paste0(scripts.dir,
-                file.sep,
-                "methyl_master_champ.R")
-  )
+  methyl_master_champ()
 
 }, ##End ChAMP
 
@@ -318,10 +312,7 @@ champ = {
 
 epicopy = {
 
-  source(Paste0(scripts.dir,
-                file.sep,
-                "methyl_master_epicopy.R")
-  )
+  methyl_master_epicopy()
 
 } ##End Epicopy
 
