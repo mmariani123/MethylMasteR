@@ -60,7 +60,7 @@ methyl_master_champ <- function(idat.pooled.files.dir,
 
 champ_results <- ChAMP::champ.process(directory    = idat.pooled.files.dir,
                                       arraytype    = champ.array.type,
-                                      champ.batchname  = c("Slide"),
+                                      champ.batchname  = champ.batch.name,
                                       batchname    = champ.batch.name,
                                       adjPVal      = champ.padj,
                                       cores        = champ.ncores,

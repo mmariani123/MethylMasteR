@@ -1,6 +1,7 @@
 #!/usr/bin/env Rscript
 
-#' MethylMasteR Epicopy() version
+#' @title MethylMasteR Epicopy() version
+#' @description MethylMasteR Epicopy() version
 #'
 #' Lock updated epicopy functions in the environment:
 #' load(paste0(work.dir,
@@ -38,9 +39,25 @@
 #' @param epi.filter.probes
 #' @param epi.retained.probes
 #' @param epi.keepfnobj
-#' @param epi.fn.output)
+#' @param epi.fn.output
+#' @import Epicopy
 #' @export
-mehtyl_master_epicopy <- function(){
+methyl_master_epicopy <- function(epi.target.dir=idat.files.dir,
+                                  epi.output.dir=NULL,
+                                  epi.ncores = 1,
+                                  epi.ref="median", #How to calculate LRR
+                                  less.stringent.ra=FALSE,
+                                  epi.normals="Sample_Group",
+                                  epi.samp.names=NULL,
+                                  epi.qn=FALSE,
+                                  epi.mode.bw=0.1,
+                                  epi.mode.method="naive",
+                                  epi.normal.cnv=TRUE,
+                                  epi.mean.center=TRUE,
+                                  epi.filter.probes=FALSE,
+                                  epi.retained.probes=NULL,
+                                  epi.keepfnobj=TRUE,
+                                  epi.fn.output=NULL){
 
 #lock in modified epicopy functions to original namespace:
 rlang::env_unlock(env = asNamespace('Epicopy'))
@@ -52,10 +69,15 @@ rlang::env_lock(asNamespace('Epicopy'))
 
 ##source(paste0(scripts.dir,file.sep,"salas_mm_epicopy_salas.R"))
 
-epicopy_results <- epicopy(target_dir     = epi.target.dir,
+if(is.null(epi.target.dir)){
+  epi.target.dir <- output.dir
+}
+
+epicopy_results <- Epicopy::epicopy(target_dir = epi.target.dir,
                            ##sesame_rgset_tumor,
                            ##input_loc,
                            output_dir     = epi.output.dir,
+                           ncores         = epi.ncores,
                            Ref            = epi.ref,
                            Normals        = epi.normals,
                            ##sampNames    = "Sample_Name",

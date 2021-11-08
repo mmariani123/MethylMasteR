@@ -15,7 +15,7 @@
 #' @param infile Path to the input file
 #' @param os.type
 #' @param sample.sheet.path
-#' @param idat.folder.name
+#' @param idat.files.dir
 #' @param r.lib.path
 #' @param proj
 #' @param visualize
@@ -29,17 +29,21 @@
 #' @import profvis
 #' @return #NULL
 #' @export
-methyl_master <- function(os.type              = "linux",
+methyl_master <- function(main.dir             = getwd(),
+                          output.dir           = getwd(),
+                          n.cores              = 1,
+                          os.type              = "linux",
                           sample.sheet.path    = "Sample_Sheet.csv",
-                          idat.folder.name     = "blca_idat_download",
+                          idat.files.dir       = getwd(),
                           r.lib.path           = .libPaths()[1],
                           proj                 = "TCGA-BLCA",
                           visualize            = FALSE,
                           visualize.individual = FALSE,
                           weighted.mean        = "normal",
                           routine              = "test",
-                          sex                  = "gender_reported",
-                          main.dir             = getwd()){
+                          reference            = NULL,
+                          split.by             = NULL,
+                          ...){
 
 #################### Load global variables ####################################
 
@@ -52,54 +56,6 @@ if(os.type=="windows"){
 }
 
 file.spacer="_"
-
-files.dir <- paste0(main.dir,
-                   file.sep,
-                   "files")
-
-data.dir <- paste0(main.dir,
-                file.sep,
-                "data")
-
-if(routine=="test"){
-
-#################### LOAD PACKAGES ############################################
-
-source(paste0(files.dir,
-              file.sep,
-              "methyl_master_load_packages.R"))
-
-  methyl_master_load_packages(routine)
-
-}else{
-
-source(paste0(files.dir,
-                file.sep,
-                "methyl_master_load_packages.R"))
-
-  methyl_master_load_packages(routine)
-
-######################## LOAD FUNCTIONS #######################################
-
-source(paste0(files.dir,
-              file.sep,
-              "methyl_master_helper_functions.R"))
-
-source(paste0(files.dir,
-			  file.sep,
-              "methyl_master_champ_extra_functions.R"))
-
-source(paste0(files.dir,
-              file.sep,
-              "methyl_master_findSegments2.R"))
-
-source(paste0(files.dir,
-              file.sep,
-              "methyl_master_population_ranges.R"))
-
-source(paste0(files.dir,
-              file.sep,
-              "methyl_master_CopyNumber450kCancer.R"))
 
 ######################## LOAD OBJECTS ########################################
 
@@ -116,8 +72,6 @@ source(paste0(files.dir,
 sample.sheet.csv <- paste0(sample.sheet.path) %>%
                       read.csv(header = TRUE,
                                stringsAsFactors = FALSE)
-
-}
 
 ########################### SETUP ############################################
 
@@ -145,28 +99,15 @@ if(routine=="test"){
                               file.sep,
                               sesame.cord.dir)
   }
-  idat.files.dir <- paste0(data.dir,
-                           file.sep,
-                           idat.folder.name)
 }else if(routine=="k450"){
   ref <- k450.ref
   sub.workflow <- k450.workflow
-  idat.files.dir <- paste0(data.dir,
-                           file.sep,
-                           idat.folder.name)
 }else if(routine=="champ"){
-  ref <- champ.control.group
+  ref <- "epicopy_ref"
   sub.workflow <- "complete"
-  idat.files.dir <- paste0(data.dir,
-                           file.sep,
-                           idat.folder.name)
 }else if(routine=="epicopy"){
-  ref <- epi.ref
+  ref <- "epicopy_ref"
   sub.workflow <- "complete"
-  idat.files.dir <- paste0(data.dir,
-                           file.sep,
-                           idat.folder.name)
-  epi.target.dir <- idat.pooled.files.dir
 }else{
   stop("Error: please select a valid <routine>")
 }
@@ -190,8 +131,19 @@ if(!dir.exists(work.dir)){
   dir.create(work.dir)
 }
 
+if(!dir.exists(output.dir)){
+  dir.create(output.dir)
+}else{
+  print("<output.dir> exists, overwriting")
+  message("<output.dir> exists, overwriting")
+  unlink(output.dir,
+         recursive=TRUE,
+         force=TRUE)
+  dir.create(output.dir)
+}
+
 if(visualize.individual==TRUE){
-  individual.plots.dir=paste0(work.dir,
+  individual.plots.dir=paste0(output.dir,
                               file.sep,
                               "individual_plots")
   if(!dir.exists(individual.plots.dir)){
@@ -205,8 +157,6 @@ if(visualize.individual==TRUE){
     dir.create(individual.plots.dir)
   }
 }
-
-setwd(work.dir)
 
 ######################## Run Pipeline ##############################
 ####################################################################
@@ -235,21 +185,6 @@ test = {
 
 },
 
-####################### DOWNLOAD ############################################
-#############################################################################
-#############################################################################
-#############################################################################
-#############################################################################
-
-download = {
-
-  source(Paste0(scripts.dir,
-                file.sep,
-                "methyl_master_download.R")
-  )
-
-},
-
 ########################## Proces SeSAMe #############################
 ######################################################################
 ######################################################################
@@ -258,10 +193,7 @@ download = {
 
 process_sesame = {
 
-  source(Paste0(scripts.dir,
-                file.sep,
-                "methyl_master_process_sesame.R")
-         )
+  methyl_master_preprocess_sesame()
 
 },
 
@@ -273,10 +205,7 @@ process_sesame = {
 
 sesame = {
 
-  source(Paste0(scripts.dir,
-                file.sep,
-                "methyl_master_sesame.R")
-  )
+  methyl_master_sesame()
 
 },
 
@@ -312,7 +241,21 @@ champ = {
 
 epicopy = {
 
-  methyl_master_epicopy()
+  methyl_master_epicopy(epi.target.dir=idat.files.dir,
+                        epi.output.dir=NULL,
+                        epi.ncores=n.cores,
+                        epi.ref="median",
+                        epi.normals="Sample_Group",
+                        epi.samp.names=NULL,
+                        epi.qn=FALSE,
+                        epi.mode.bw=0.1,
+                        epi.mode.method="naive",
+                        epi.normal.cnv=TRUE,
+                        epi.mean.center=TRUE,
+                        epi.filter.probes=FALSE,
+                        epi.retained.probes=NULL,
+                        epi.keepfnobj=TRUE,
+                        epi.fn.output=NULL)
 
 } ##End Epicopy
 
@@ -342,7 +285,7 @@ writeLines(c("\nTotal time:\n",
              "\nProfmem max output (bytes): \n",
              {profmem.out$bytes[!is.na(profmem.out$bytes)] %>%
                  max()}),
-           paste0(work.dir,
+           paste0(output.dir,
                   file.sep,
                   "time_mem.",
                   routine,
@@ -386,7 +329,7 @@ if(visualize==TRUE){
 ##################### Write Session Info #####################################
 
 writeLines(capture.output(sessionInfo()),
-           paste0(work.dir,
+           paste0(output.dir,
                   file.sep,
                   "sessionInfo.",
                   routine,
