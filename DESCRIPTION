@@ -1,0 +1,80 @@
+Package: MethylMasteR
+Title: What the Package Does (One Line, Title Case)
+Version: 0.0.0.9000
+Authors@R: 
+    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: What the package does (one paragraph).
+License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
+    license
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.2
+Imports:
+  data.table (>= 1.9.4),
+  magrittr
+  profvis
+  profmem
+  dplyr
+  magrittr
+  data.table
+  ggplot2
+  sesameData
+  stats
+  ChAMP
+  Epicopy
+  limma
+  igraph
+  org.Hs.eg.db
+  marray
+  shape
+  CNVRanger
+  profmem
+  profvis
+  htmlwidgets
+  ungeviz
+  dplyr
+  magrittr
+  data.table
+  ggplot2
+  minfi
+  epicopy
+  profmem
+  profvis
+  htmlwidgets
+  ungeviz
+  foreach
+  ggplot2
+  magrittr
+  plyr
+  dplyr
+  foreach
+  data.table
+  TCGAbiolinks
+  ExperimentHub
+  sesame
+  sesameData
+  minfi
+  GEOquery
+  DNAcopy
+  CNVRanger
+  cnAnalysis450k
+  CNAclinic
+  IlluminaHumanMethylation450kanno.ilmn12.hg19
+  FlowSorted.CordBloodCombined.450k
+  ENmix
+  stats
+  ChAMP
+  Epicopy
+  limma
+  igraph
+  org.Hs.eg.db
+  marray
+  shape
+  profmem
+  profvis 
+  htmlwidgets
+  ungeviz
+Depends: 
+    R (>= 2.10)
