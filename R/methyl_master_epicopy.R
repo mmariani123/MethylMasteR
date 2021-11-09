@@ -41,12 +41,16 @@
 #' @param epi.keepfnobj
 #' @param epi.fn.output
 #' @import Epicopy
+#' @import utils
 #' @export
 methyl_master_epicopy <- function(epi.target.dir=idat.files.dir,
                                   epi.output.dir=NULL,
-                                  epi.ncores = 1,
+                                  epi.single.file=TRUE,
+                                  epi.single.file.path=NULL,
+                                  epi.comparisons=NULL,
+                                  epi.ncores=1,
                                   epi.ref="median", #How to calculate LRR
-                                  less.stringent.ra=FALSE,
+                                  epi.less.stringent.ra=FALSE,
                                   epi.normals="Sample_Group",
                                   epi.samp.names=NULL,
                                   epi.qn=FALSE,
@@ -62,11 +66,23 @@ methyl_master_epicopy <- function(epi.target.dir=idat.files.dir,
 #lock in modified epicopy functions to original namespace:
 rlang::env_unlock(env = asNamespace('Epicopy'))
 rlang::env_binding_unlock(env = asNamespace('Epicopy'))
-assign('.coerce.pData', .coerce.pData2, envir = asNamespace('Epicopy'))
-assign('LRRtoCNA', LRRtoCNA2, envir = asNamespace('Epicopy'))
-assign('read.meth.array.sheet', read.meth.array.sheet.mm, envir = asNamespace('Epicopy'))
+assign('.coerce.pData', .coerce.pData.mm, envir = asNamespace('Epicopy'))
+##assign('LRRtoCNA', LRRtoCNA.mm, envir = asNamespace('Epicopy'))
+##assign('getLRR', getLRR.mm, envir = asNamespace('Epicopy'))
+assign('epicopy', epicopy.mm, envir = asNamespace('Epicopy'))
+##utils::assignInNamespace('.funnorm', .funnorm.mm,
+##                         ns = asNamespace('Epicopy'))
 rlang::env_binding_lock(env = asNamespace('Epicopy'))
 rlang::env_lock(asNamespace('Epicopy'))
+
+rlang::env_unlock(env = asNamespace('minfi'))
+rlang::env_binding_unlock(env = asNamespace('minfi'))
+utils::assignInNamespace("read.metharray", read.metharray.mm,
+                         ns= asNamespace("minfi"))
+utils::assignInNamespace('read.metharray.sheet', read.metharray.sheet.mm,
+                         ns = asNamespace('minfi'))
+rlang::env_binding_lock(env = asNamespace('minfi'))
+rlang::env_lock(asNamespace('minfi'))
 
 ##source(paste0(scripts.dir,file.sep,"salas_mm_epicopy_salas.R"))
 
@@ -78,6 +94,9 @@ epicopy_results <- Epicopy::epicopy(target_dir = epi.target.dir,
                            ##sesame_rgset_tumor,
                            ##input_loc,
                            output_dir     = epi.output.dir,
+                           single.file    = epi.single.file,
+                           single.file.path = epi.single.file.path,
+                           comparisons    = epi.comparisons,
                            ncores         = epi.ncores,
                            Ref            = epi.ref,
                            Normals        = epi.normals,

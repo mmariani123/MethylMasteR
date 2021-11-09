@@ -43,6 +43,7 @@ methyl_master <- function(main.dir             = getwd(),
                           routine              = "test",
                           reference            = NULL,
                           split.by             = NULL,
+                          comparisons          = NULL,
                           ...){
 
 #################### Load global variables ####################################
@@ -243,6 +244,9 @@ epicopy = {
 
   methyl_master_epicopy(epi.target.dir=idat.files.dir,
                         epi.output.dir=output.dir,
+                        epi.single.file=TRUE,
+                        epi.single.file.path=sample.sheet.path,
+                        epi.comparisons=comparisons,
                         epi.ncores=n.cores,
                         epi.ref="median",
                         epi.normals="Sample_Group",
