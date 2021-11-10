@@ -8,34 +8,38 @@
 #' "test"            ##Run a quick test
 #' "process_sesame", ##Preprocess the TCGA and cord data in sesame format
 #' "sesame",         ##Run Sesame  CNV calling (get segments)
-#' "k450" ,          ##Run 450K    CNV calling (get segments)
+#' "hm450" ,         ##Run 450K    CNV calling (get segments)
 #' "champ" ,         ##Run ChAMP   CNV calling (get segments)
 #' "epicopy" ,       ##Run EpiCopy CNV calling (get segments)
-#'
-#' @param infile Path to the input file
-#' @param os.type
+#' "compare"         ##Run algorithm comparison functionality
+#' @param input.dir
+#' @param output.dir
 #' @param sample.sheet.path
-#' @param idat.files.dir
 #' @param r.lib.path
+#' @param n.cores
+#' @param os.type
 #' @param proj
 #' @param visualize
 #' @param visualize.individual
 #' @param weighted.mean
 #' @param routine
-#' @param sex
-#' @param main.dir
+#' @param reference
+#' @param split.by
+#' @param comparisons
+#' @param overlap.density
+#' @param epi.run.gistic
+#' @param ...
 #' @importFrom magrittr %>%
 #' @import profmem
 #' @import profvis
 #' @return #NULL
 #' @export
-methyl_master <- function(main.dir             = getwd(),
-                          output.dir           = getwd(),
+methyl_master <- function(input.dir            = input.dir,
+                          output.dir           = output.dir,
+                          sample.sheet.path    = sample.sheet.path,
+                          r.lib.path           = .libPaths()[1],
                           n.cores              = 1,
                           os.type              = "linux",
-                          sample.sheet.path    = "Sample_Sheet.csv",
-                          idat.files.dir       = getwd(),
-                          r.lib.path           = .libPaths()[1],
                           proj                 = "TCGA-BLCA",
                           visualize            = FALSE,
                           visualize.individual = FALSE,
@@ -44,6 +48,8 @@ methyl_master <- function(main.dir             = getwd(),
                           reference            = NULL,
                           split.by             = NULL,
                           comparisons          = NULL,
+                          overlap.density      = 0.1,
+                          epi.run.gistic       = FALSE,
                           ...){
 
 #################### Load global variables ####################################
@@ -73,64 +79,6 @@ file.spacer="_"
 sample.sheet.csv <- paste0(sample.sheet.path) %>%
                       read.csv(header = TRUE,
                                stringsAsFactors = FALSE)
-
-########################### SETUP ############################################
-
-if(routine=="test"){
-  ref <- "testing"
-  sub.workflow <- "tested"
-}else if(routine=="download"){
-  ref <- "downloading"
-  sub.workflow <- "downloaded"
-}else if(routine=="process_sesame"){
-  ref <- "processing_sesame"
-  sub.workflow <- "processed_sesame"
-  cord.files.path <- paste0(data.dir,
-                            file.sep,
-                            sesame.cord.dir)
-}else if(routine=="sesame"){
-  ref <- sesame.ref
-  sub.workflow <- "complete"
-  if(sesame.ref=="norm"){
-    ##Get sesame normal samples:
-    sesameData::sesameDataCache(sesame.data.cache)
-    sesame_ssets_normal <- sesameData::sesameDataGet(sesame.data.normal)
-  }else if(sesame.ref=="cord"){
-    cord.files.path <- paste0(data.dir,
-                              file.sep,
-                              sesame.cord.dir)
-  }
-}else if(routine=="k450"){
-  ref <- k450.ref
-  sub.workflow <- k450.workflow
-}else if(routine=="champ"){
-  ref <- "epicopy_ref"
-  sub.workflow <- "complete"
-}else if(routine=="epicopy"){
-  ref <- "epicopy_ref"
-  sub.workflow <- "complete"
-}else{
-  stop("Error: please select a valid <routine>")
-}
-
-work.dir <- paste0(main.dir,
-                   file.sep,
-                   routine,
-                   file.spacer,
-                   ref,
-                   file.spacer,
-                   sub.workflow)
-
-if(!dir.exists(work.dir)){
-  dir.create(work.dir)
-}else{
-  print("<work.dir> exists, overwriting")
-  message("<work.dir> exists, overwriting")
-  unlink(work.dir,
-         recursive=TRUE,
-         force=TRUE)
-  dir.create(work.dir)
-}
 
 if(!dir.exists(output.dir)){
   dir.create(output.dir)
@@ -186,18 +134,6 @@ test = {
 
 },
 
-########################## Proces SeSAMe #############################
-######################################################################
-######################################################################
-######################################################################
-######################################################################
-
-process_sesame = {
-
-  methyl_master_preprocess_sesame()
-
-},
-
 ################## SeSAMe CNSegmentation #############################
 ######################################################################
 ######################################################################
@@ -216,9 +152,18 @@ sesame = {
 #############################################################################
 #############################################################################
 
-k450 = {
+hm450 = {
 
-  methyl_master_k450()
+  methyl_master_k450(k450.input.file.dir     = input.dir,
+                     k450.output.file.dir    = output.dir,
+                     k450.sample.sheet.path  = sample.sheet.path,
+                     k450.comparison         = comparisons,
+                     k450.split.by           = split.by,
+                     k450.reference          = reference,
+                     k450.sesame.data.cache  = "EPIC",
+                     k450.sesame.data.normal = 'EPIC.5.normal',
+                     k450.sesame.ref.version = "hg38",
+                     ...)
 
 }, ##End K450
 
@@ -230,7 +175,24 @@ k450 = {
 
 champ = {
 
-  methyl_master_champ()
+  methyl_master_champ(champ.directory=input.file.dir,
+                      champ.array.type="450K",
+                      champ.batch.name=c("batch"),
+                      champ.padj=0.05,
+                      champ.ncores=n.cores,
+                      champ.control=TRUE,
+                      champ.control.group="normal", ##champ.contol.group="champCtls"
+                      champ.runimpute=TRUE,
+                      champ.runQC=TRUE,
+                      champ.runnorm=TRUE,
+                      champ.runSVD=TRUE,
+                      champ.runCombat=TRUE,
+                      champ.runDMP=TRUE,
+                      champ.runDMR=TRUE,
+                      champ.runBlock=TRUE,
+                      champ.runGSEA=TRUE,
+                      ...
+                      )
 
 }, ##End ChAMP
 
@@ -242,10 +204,11 @@ champ = {
 
 epicopy = {
 
-  methyl_master_epicopy(epi.target.dir=idat.files.dir,
+  methyl_master_epicopy(epi.target.dir=input.file.dir,
                         epi.output.dir=output.dir,
                         epi.single.file=TRUE,
                         epi.single.file.path=sample.sheet.path,
+                        epi.run.gistic=epi.run.gistic,
                         epi.comparisons=comparisons,
                         epi.ncores=n.cores,
                         epi.ref="median",
@@ -323,10 +286,7 @@ writeLines(c("\nTotal time:\n",
 
 if(visualize==TRUE){
 
-  source(Paste0(scripts.dir,
-                file.sep,
-                "methyl_master_visualize.R")
-  )
+  source("R/methyl_master_visualize.R")
 
 }
 

@@ -1,15 +1,8 @@
 #!/usr/bin/env Rscript
 
 #' ##Methyl Master visualization and other output
-#'
-#' Different types of output heatmaps and csv files with
-#' overlaps tables etc.
-#'
-#' @param idat.files.dir
-#' @param file.sep
-#' @import sesame
-#' @export
-methyl_master_visualize <- function(routine){
+
+if(exists("routine")){
 
 switch(routine,
 
@@ -331,11 +324,12 @@ switch(routine,
 
        epicopy = {
 
-         load(paste0(work.dir,
+         load(paste0(output.dir,
                      file.sep,
                      "epicopy_results.rda"))
 
          seg <- epicopy_results$output
+         colnames(seg)[1] <- "Sample_ID"
          ##rm(epicopy_results)
          ##colnames(seg)
          ##"Sample_ID"
@@ -427,7 +421,7 @@ cnvrs <- salas_mm_population_ranges(grl,
                                     ##density=0.1,
                                     ##We can also like the density
                                     ##Jenn likes .01
-                                    density=.1,
+                                    density=overlap.density,
                                     est.recur=TRUE)
 ##cnvrs$type %>% unique()##
 cnvrs.filt <- subset(cnvrs, pvalue < 0.05)
@@ -485,38 +479,7 @@ ggsave(pheatmap.out,
        width=12,
        height=8)
 
-##Also from epicopy:
-##cvnsmatrix <- cvnsmatrix[order(rownames(cvnsmatrix)),]
-##cvnsmatrix[1:5,1:5]
-##write.csv(cvnsmatrix, file=paste0(work.dir,
-##                                  file.sep,
-##                                  "cvnsmatrix_epicopy.csv"))
-##cvnsmatrix2 <- cvnsmatrix
-##cvnsmatrix2[is.na(cvnsmatrix2)] <- 2
-##cvnsmatrix2 <- round(cvnsmatrix2,0)
-##identical(rownames(pheno), colnames(cvnsmatrix))
-##write.csv(pheno, file=paste0(work.dir,
-##                             "\\",
-##                             "pheno_sesame.CSV"))
-##pheatmap::pheatmap(cvns.matrix,
-##                   cluster_rows = F,
-##                   cluster_cols = F,
-##                   show_colnames = F)
-##pheatmap::pheatmap(cvnsmatrix2,
-##                   show_colnames = F)
-
-########################## Heatmaps #########################################
-
-##this is ~0.33 feber et al calc. and used with tcga
-##dont forget the glioblastoma paper and parameters:
-
-##Below adds "status field" to seg frame for ggplot heatmap
-
-##Seg state calculation:
-##frame.in$state <- round(2^frame.in$seg.mean * 2)
-##frame.in$state[frame.in$state > 4] <- 4
-##frame.in$method <- ""
-##frame.in$Sample_ID <- sample.in
+######################### HEATMAPS ######################################
 
 seg$status <- ifelse(seg$state>2,
                      "gain",

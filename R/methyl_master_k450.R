@@ -1,61 +1,128 @@
 #!/usr/bin/env Rscript
 
-#' My 450k
-#'
-#' My version of 450k analyses
-#'
-#' @param work.dir
-#' @param file.sep
+#' @title My 450k
+#' @description My version of 450k analyses
+#' @param hm450.input.dir
+#' @param hm450.output.dir
+#' @param hm450.sample.sheet
+#' @param hm450.reference
+#' @param hm450.file.sep
+#' @param hm450.comparison
+#' @param hm450.split.by
+#' @param hm450.sesame.data.cache
+#' @param hm450.sesame.data.normal
+#' @param hm450.sesame.ref.version
+#' @param ...
+#' @import Biobase
+#' @import from sesameData sesamesesameDataGet
+#' @import from sesameData sesamesesameDataCache
+#' @import from sesame SigSetsToRGChannel
+#' @import from sesame openSesame
+#' @return Nothing
 #' @export
-methyl_master_k450 <- function(){
+methyl_master_hm450 <- function(hm450.idat.files.dir=NULL,
+                               hm450.sample.sheet.path=NULL,
+                               hm450.comparison=c("tumor","normal"),
+                               hm450.split.by=NULL,
+                               hm450.reference="internal",
+                               hm450.sesame.data.cache="EPIC",
+                               hm450.sesame.data.normal="EPIC.5.normal",
+                               hm450.sesame.ref.version="hg38",
+                               ...
+                               ){
+  if(hm450.reference=="internal"){
+    sesameData::sesameDataCache(hm450.sesame.data.cache)
+    sesame_ssets_ref <- sesameData::sesameDataGet(hm450.sesame.data.normal)
+  }else{
+    sample.sheet.df <- read.csv(hm450.sample.sheet.path,
+                                header=TRUE,
+                                stringsAsFactors = FALSE)
 
-load(paste0(work.dir,file.sep,"sesame_rgset_normal_female.RData"))
-load(paste0(work.dir,file.sep,"sesame_rgset_normal_male.RData"))
-load(paste0(work.dir,file.sep,"sesame_rgset_tumor_female.RData"))
-load(paste0(work.dir,file.sep,"sesame_rgset_tumor_male.RData"))
-load(paste0(work.dir,file.sep,"sesame_rgset_cord_female.RData"))
-load(paste0(work.dir,file.sep,"sesame_rgset_cord_male.RData"))
+    subset.sample.sheet.df <- sample.sheet.df[sample.sheet.df %in% comparison,]
+    subset.sample.sheet.df.normal <-
+      sample.sheet.df[sample.sheet.df$Sample_Group %in% comparisons[2],]
+    setExperimentHubOption("CACHE", idat.files.dir)
+    ExperimentHub()
+    idat_prefixes <- searchIDATprefixes(idat.files.dir, recursive=TRUE)
+    idat_prefixes.normal <- idat_prefixes[idat_prefixes %in%
+                      subset.sample.sheet.df.normal$Sample_Name]
+    idat_prefixes.treatment <- idat_prefixes[!idat_prefixes %in%
+                            subset.sample.sheet.df.normal$Sample_Name]
+    sesameDataCacheAll()
+    sesame_ssets_ref <- openSesame(idat_prefixes.normal,
+                                      mask = TRUE,
+                                      sum.TypeI = TRUE,
+                                      platform = sesame.platform,
+                                      what="sigset")
+    sesame_ssets_treatment <- openSesame(idat_prefixes.treatment,
+                                   mask = TRUE,
+                                   sum.TypeI = TRUE,
+                                   platform = sesame.platform,
+                                   what="sigset")
+  }
 
-k450_cn_methylset_normal_female <-
+  if(!is.null(split.by)){
+    split.names <- unique(subset.sample.sheet.df[[split.by]])
+      sesame_ssets_treatment.1 <- sesame_ssets_treatment[sesame_ssets_treatment ]
+      sesame_ssets_treatment.2 <-
+      sesame_ssets_control.1   <-
+      sesame_ssets_control.2   <-
+    idat_prefixes.treatment
+  }
+  setExperimentHubOption("CACHE", idat.files.dir)
+
+  ExperimentHub()
+  idat_prefixes <- searchIDATprefixes(idat.files.dir,recursive=TRUE)
+  sesameDataCacheAll()
+
+  sesame_sset <- sesame::openSesame(idat_prefixes,
+                            mask = TRUE,
+                            sum.TypeI = TRUE,
+                            platform = sesame.platform,
+                            what="sigset")
+
+  sesame_rgset <- sesame::SigSetsToRGChannelSet(sesame_sset)
+
+hm450_cn_methylset_normal_female <-
   minfi::getCN(minfi::preprocessRaw(sesame_rgset_normal_female))
 
-k450_cn_methylset_normal_male <-
+hm450_cn_methylset_normal_male <-
   minfi::getCN(minfi::preprocessRaw(sesame_rgset_normal_male))
 
-k450_cn_methylset_tumor_female <-
+hm450_cn_methylset_tumor_female <-
   minfi::getCN(minfi::preprocessRaw(sesame_rgset_tumor_female))
 
-k450_cn_methylset_tumor_male <-
+hm450_cn_methylset_tumor_male <-
   minfi::getCN(minfi::preprocessRaw(sesame_rgset_tumor_male))
 
-k450_cn_methylset_cord_female <-
+hm450_cn_methylset_cord_female <-
   minfi::getCN(minfi::preprocessRaw(sesame_rgset_cord_female))
 
-k450_cn_methylset_cord_male <-
+hm450_cn_methylset_cord_male <-
   minfi::getCN(minfi::preprocessRaw(sesame_rgset_cord_male))
 
-save(k450_cn_methylset_normal_female,
-     file=paste0(work.dir,file.sep,"k450_cn_methylset_normal_female.RData"))
+save(hm450_cn_methylset_normal_female,
+     file=paste0(work.dir,file.sep,"hm450_cn_methylset_normal_female.RData"))
 
-save(k450_cn_methylset_normal_male,
-     file=paste0(work.dir,file.sep,"k450_cn_methylset_normal_male.RData"))
+save(hm450_cn_methylset_normal_male,
+     file=paste0(work.dir,file.sep,"hm450_cn_methylset_normal_male.RData"))
 
-save(k450_cn_methylset_tumor_female,
-     file=paste0(work.dir,file.sep,"k450_cn_methylset_tumor_female.RData"))
+save(hm450_cn_methylset_tumor_female,
+     file=paste0(work.dir,file.sep,"hm450_cn_methylset_tumor_female.RData"))
 
-save(k450_cn_methylset_tumor_male,
-     file=paste0(work.dir,file.sep,"k450_cn_methylset_tumor_male.RData"))
+save(hm450_cn_methylset_tumor_male,
+     file=paste0(work.dir,file.sep,"hm450_cn_methylset_tumor_male.RData"))
 
-save(k450_cn_methylset_cord_female,
-     file=paste0(work.dir,file.sep,"k450_cn_methylset_cord_female.RData"))
+save(hm450_cn_methylset_cord_female,
+     file=paste0(work.dir,file.sep,"hm450_cn_methylset_cord_female.RData"))
 
-save(k450_cn_methylset_cord_male,
-     file=paste0(work.dir,file.sep,"k450_cn_methylset_cord_male.RData"))
+save(hm450_cn_methylset_cord_male,
+     file=paste0(work.dir,file.sep,"hm450_cn_methylset_cord_male.RData"))
 
 ## Choose a workflow, options are:
 ## A, B (Z-transform), or C (conumee)
 
-switch(k450.workflow,
+switch(hm450.workflow,
 
        A = {
 
@@ -64,35 +131,35 @@ switch(k450.workflow,
          ## the normals
 
          proc_tumor_female_A  <-
-           k450_cn_methylset_tumor_female[,
+           hm450_cn_methylset_tumor_female[,
            1:length(colnames(
            sesame_rgset_tumor_female))]
 
          proc_tumor_male_A    <-
-           k450_cn_methylset_tumor_male[,
+           hm450_cn_methylset_tumor_male[,
            1:length(colnames(
            sesame_rgset_tumor_male))]
 
          proc_normal_female_A <-
-           k450_cn_methylset_normal_female[,
+           hm450_cn_methylset_normal_female[,
            1:length(colnames(
            sesame_rgset_normal_female))] ##4 Cols
          med_normal_female_A  <- apply(proc_normal_female_A, 1, "median")
 
          proc_normal_male_A   <-
-           k450_cn_methylset_normal_male[,
+           hm450_cn_methylset_normal_male[,
            1:length(colnames(
            sesame_rgset_normal_male))]
          med_normal_male_A    <- apply(proc_normal_male_A, 1, "median")
 
          proc_cord_female_A   <-
-           k450_cn_methylset_cord_female[,
+           hm450_cn_methylset_cord_female[,
            1:length(colnames(
            sesame_rgset_cord_female))]
          med_cord_female_A    <- apply(proc_cord_female_A, 1, "median")
 
          proc_cord_male_A     <-
-           k450_cn_methylset_cord_male[,
+           hm450_cn_methylset_cord_male[,
            1:length(colnames(
            sesame_rgset_cord_male))]
          med_cord_male_A      <- apply(proc_cord_male_A, 1, "median")
@@ -222,7 +289,7 @@ switch(k450.workflow,
 
          ## With z-Transformation, illumina
          proc_normal_female_B  <-
-           k450_cn_methylset_normal_female[,
+           hm450_cn_methylset_normal_female[,
            1:length(colnames(
            sesame_rgset_normal_female))]
          proc_normal_female_B[is.infinite(proc_normal_female_B)] <- NA
@@ -230,7 +297,7 @@ switch(k450.workflow,
          med_normal_female_B <- apply(proc_normal_female_B, 1, "median")
 
          proc_normal_male_B <-
-           k450_cn_methylset_normal_male[,
+           hm450_cn_methylset_normal_male[,
            1:length(colnames(
            sesame_rgset_normal_male))]
          proc_normal_male_B[is.infinite(proc_normal_male_B)] <- NA
@@ -238,7 +305,7 @@ switch(k450.workflow,
          med_normal_male_B <- apply(proc_normal_male_B, 1, "median")
 
          proc_tumor_female_B  <-
-           k450_cn_methylset_tumor_female[,
+           hm450_cn_methylset_tumor_female[,
            1:length(colnames(
            sesame_rgset_tumor_female))]
          proc_tumor_female_B[is.infinite(proc_tumor_female_B)] <- NA
@@ -246,7 +313,7 @@ switch(k450.workflow,
          med_tumor_female_B <- apply(proc_tumor_female_B, 1, "median")
 
          proc_tumor_male_B  <-
-           k450_cn_methylset_tumor_male[,
+           hm450_cn_methylset_tumor_male[,
            1:length(colnames(
            sesame_rgset_tumor_male))]
          proc_tumor_male_B[is.infinite(proc_tumor_male_B)] <- NA
@@ -254,7 +321,7 @@ switch(k450.workflow,
          med_tumor_male_B <- apply(proc_tumor_male_B, 1, "median")
 
          proc_cord_female_B <-
-           k450_cn_methylset_cord_female[,
+           hm450_cn_methylset_cord_female[,
            1:length(colnames(
            sesame_rgset_cord_female))]
          proc_cord_female_B[is.infinite(proc_cord_female_B)] <- NA
@@ -262,7 +329,7 @@ switch(k450.workflow,
          med_cord_female_B <- apply(proc_cord_female_B, 1, "median")
 
          proc_cord_male_B <-
-           k450_cn_methylset_cord_male[,
+           hm450_cn_methylset_cord_male[,
            1:length(colnames(
            sesame_rgset_cord_male))]
          proc_cord_male_B[is.infinite(proc_cord_male_B)] <- NA
@@ -395,32 +462,32 @@ switch(k450.workflow,
          ## Conumee-path, Illumina
 
          proc_normal_female_C <-
-           k450_cn_methylset_normal_female[,
+           hm450_cn_methylset_normal_female[,
            1:length(colnames(
            sesame_rgset_normal_female))]
 
          proc_normal_male_C   <-
-           k450_cn_methylset_normal_male[,
+           hm450_cn_methylset_normal_male[,
            1:length(colnames(
            sesame_rgset_normal_male))]
 
          proc_tumor_female_C <-
-           k450_cn_methylset_tumor_female[,
+           hm450_cn_methylset_tumor_female[,
            1:length(colnames(
            sesame_rgset_tumor_female))]
 
          proc_tumor_male_C <-
-           k450_cn_methylset_tumor_male[,
+           hm450_cn_methylset_tumor_male[,
            1:length(colnames(
            sesame_rgset_tumor_male))]
 
          proc_cord_female_C  <-
-           k450_cn_methylset_cord_female[,
+           hm450_cn_methylset_cord_female[,
            1:length(colnames(
            sesame_rgset_cord_female))]
 
          proc_cord_male_C    <-
-           k450_cn_methylset_cord_male[,
+           hm450_cn_methylset_cord_male[,
            1:length(colnames(
            sesame_rgset_cord_male))]
 
@@ -614,11 +681,11 @@ rm(sesame_rgset_tumor_male)
 rm(sesame_rgset_cord_female)
 rm(sesame_rgset_cord_male)
 
-rm(k450_cn_methylset_normal_female)
-rm(k450_cn_methylset_normal_male)
-rm(k450_cn_methylset_tumor_female)
-rm(k450_cn_methylset_tumor_male)
-rm(k450_cn_methylset_cord_female)
-rm(k450_cn_methylset_cord_male)
+rm(hm450_cn_methylset_normal_female)
+rm(hm450_cn_methylset_normal_male)
+rm(hm450_cn_methylset_tumor_female)
+rm(hm450_cn_methylset_tumor_male)
+rm(hm450_cn_methylset_cord_female)
+rm(hm450_cn_methylset_cord_male)
 
 }

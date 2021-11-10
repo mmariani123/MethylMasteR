@@ -40,15 +40,17 @@
 #' @param epi.retained.probes
 #' @param epi.keepfnobj
 #' @param epi.fn.output
+#' @param ...
 #' @import Epicopy
 #' @import utils
 #' @export
-methyl_master_epicopy <- function(epi.target.dir=idat.files.dir,
+methyl_master_epicopy <- function(epi.target.dir=NULL,
                                   epi.output.dir=NULL,
                                   epi.single.file=TRUE,
                                   epi.single.file.path=NULL,
                                   epi.comparisons=NULL,
-                                  epi.ncores=1,
+                                  epi.run.gistic=FALSE,
+                                  epi.ncores=n.cores,
                                   epi.ref="median", #How to calculate LRR
                                   epi.less.stringent.ra=FALSE,
                                   epi.normals="Sample_Group",
@@ -60,8 +62,9 @@ methyl_master_epicopy <- function(epi.target.dir=idat.files.dir,
                                   epi.mean.center=TRUE,
                                   epi.filter.probes=FALSE,
                                   epi.retained.probes=NULL,
-                                  epi.keepfnobj=TRUE,
-                                  epi.fn.output=NULL){
+                                  epi.keepfnobj=FALSE,
+                                  epi.fn.output=NULL,
+                                  ...){
 
 #lock in modified epicopy functions to original namespace:
 rlang::env_unlock(env = asNamespace('Epicopy'))
@@ -87,7 +90,7 @@ rlang::env_lock(asNamespace('minfi'))
 ##source(paste0(scripts.dir,file.sep,"salas_mm_epicopy_salas.R"))
 
 if(is.null(epi.output.dir)){
-  epi.output.dir <- output.dir
+  epi.output.dir <- "."
 }
 
 epicopy_results <- Epicopy::epicopy(target_dir = epi.target.dir,
@@ -110,19 +113,12 @@ epicopy_results <- Epicopy::epicopy(target_dir = epi.target.dir,
                            filterProbes   = epi.filter.probes,
                            retainedProbes = epi.retained.probes,
                            keep_fnobj     = epi.keepfnobj,
-                           fn_output      = epi.fn.output)
+                           fn_output      = epi.fn.output,
+                           ...
+                           )
 
-##epicopy_results$output$Sample_ID %>% unique() %in% normal$X
-##epicopy_results$output$Sample_ID %>% unique() %in% tumor$X
-##Need to remove the "X" from the beginning of the sample names
-##epicopy_results_fix <- epicopy_results
-##epicopy_results_fix$output$Sample_ID <-
-##gsub("^X","",epicopy_results$output$Sample_ID,perl = TRUE)
-##epicopy_results_fix$output$Sample_ID %>% unique() %in% normal$X
-##epicopy_results_fix$output$Sample_ID %>% unique() %in% tumor$X
-
-epicopy_results$output$Sample_ID <-
-  gsub("^X","",epicopy_results$output$Sample_ID,perl = TRUE)
+epicopy_results$output$ID <-
+  gsub("^X","",epicopy_results$output$ID,perl = TRUE)
 
 ##intersect(rownames(tumor), rownames(normal))
 ##intersect(tumor$X, normal$X)
@@ -131,58 +127,32 @@ epicopy_results$output$Sample_ID <-
 ##                   file.sep,
 ##                   "epicopy_example_results.RData"))
 
-## Assign sex information:
-##colnames(epicopy_results$output)
-epicopy_results$output$karyotype    <- ""
-epicopy_results$output$sex_reported <- ""
-epicopy_results$output$sex_inferred <- ""
-epicopy_results$output$treatment    <- ""
-for(i in 1:length(unique(epicopy_results$output$Sample_ID))){
-  ##print(i)
-  sample.now <- unique(epicopy_results$output$Sample_ID)[i]
-  if(sample.now %in% rownames(tumor)){
-    epicopy_results$output[epicopy_results$output$Sample_ID==sample.now,]$karyotype    <-
-      tumor[tumor$X==sample.now, "karyotype"]
-    epicopy_results$output[epicopy_results$output$Sample_ID==sample.now,]$sex_reported <-
-      tumor[tumor$X==sample.now, "gender_reported"]
-    epicopy_results$output[epicopy_results$output$Sample_ID==sample.now,]$sex_inferred  <-
-      tumor[tumor$X==sample.now, "sex_inferred"]
-    epicopy_results$output[epicopy_results$output$Sample_ID==sample.now,]$treatment <- "tumor"
-  }else if(sample.now %in% rownames(normal)){
-    epicopy_results$output[epicopy_results$output$Sample_ID==sample.now,]$karyotype    <-
-      normal[normal$X==sample.now, "karyotype"]
-    epicopy_results$output[epicopy_results$output$Sample_ID==sample.now,]$sex_reported <-
-      normal[normal$X==sample.now, "gender_reported"]
-    epicopy_results$output[epicopy_results$output$Sample_ID==sample.now,]$sex_inferred <-
-      normal[normal$X==sample.now, "sex_inferred"]
-    epicopy_results$output[epicopy_results$output$Sample_ID==sample.now,]$treatment <- "normal"
-  }else{
-    stop(paste0("Error: epicopy processing:",
-                "samples names must belong ",
-                "to either tumor or normal ",
-                "treatments"))
-  }
-}
-
 save(epicopy_results,
-     file=paste0(work.dir,
-                 file.sep,
+     file=paste0(epi.output.dir,
+                 .Platform$file.sep,
                  "epicopy_results.rda")
 )
 
 write.csv(epicopy_results$output,
-          file=paste0(work.dir,
-                      file.sep,
+          file=paste0(epi.output.dir,
+                      .Platform$file.sep,
                       "epicopy_results.csv"),
           row.names = FALSE,
           col.names = TRUE,
           quote = FALSE)
 
-if(run.gistic==TRUE){
-  export_gistic(epicopy_results,
+gistic.output.dir <-
+paste0(epi.output.dir,
+       .Platform$file.sep,
+       "gistic_results")
+message("Creating <gistic.output.dir> and running export_gistic() ...")
+dir.create(gistic.output.dir)
+
+if(epi.run.gistic==TRUE){
+  Epicopy::export_gistic(epicopy_results,
+                output_dir = gistic.output.dir,
                 filterbycount = TRUE,
-                min_probes = 50,
-                output_dir = work.dir)
+                min_probes = 50)
 }
 
 ##Segmentation file written.

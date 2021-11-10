@@ -152,6 +152,8 @@ LRRtoCNA.mm <- function(LRR,
 #' @param mode.method
 #' @param normal.cnv
 #' @param mean.center
+#' @param filter.autosomal.probes
+#' @param autosomal
 #' @param filterProbes
 #' @param ...
 #' @import stats
@@ -161,13 +163,16 @@ LRRtoCNA.mm <- function(LRR,
 getLRR.mm <- function(rgSet = rgset,
                       Normals = Normals,
                       sampNames = sampNames,
-                      QN = QN,
-                      Ref = Ref,
-                      mode.bw = mode.bw,
-                      mode.method = mode.method,
-                      normal.cnv = normal.cnv,
-                      mean.center = mean.center,
-                      filterProbes = filterProbes,
+                      QN = FALSE,
+                      Ref = "median",
+                      mode.bw = 0.1,
+                      mode.method = "naive",
+                      normal.cnv = TRUE,
+                      mean.center = TRUE,
+                      filter.autosomal.probes = FALSE,
+                      autosomal = NULL,
+                      filterProbes = FALSE,
+                      keep_fnobj = FALSE,
                      ...
                      )
 debug: {
@@ -196,14 +201,18 @@ debug: {
   }
   if (inherits(Normals, "RGChannelSet")) {
     if (nrow(rgSet) != nrow(Normals)){
-      ##  stop("Features in normal and tumor set do not match.")
-      multi.platform <- TRUE
-      combined.colnames <- c(colnames(rgset),colnames(Normals))
-      norm.rgset <- Normals
-      Normals <- combined.colnames  %in% colnames(Normals)
+      ##if(all.equal(colnames(rgSet),colnames(Normals))==TRUE){
+      ##  stop("Error: treatment and normal samples are the same samples!")
+      ##}
+      stop("Features in normal and tumor set do not match.")
+      ##multi.platform <- TRUE
+      ##combined.colnames <- c(colnames(rgSet),colnames(Normals))
+      #norm.rgSet <- Normals
+      ##Normals <- combined.colnames  %in% colnames(Normals)
     }else{
       rgset <- BiocGenerics::combine(rgSet, Normals)
       Normals <- colnames(rgset) %in% colnames(Normals)
+      multi.platform <- FALSE
     }
   }
   if (is.null(Normals)) {
@@ -272,26 +281,27 @@ debug: {
   if(multi.platform==TRUE){
 
     if (is.null(sampNames)) {
-      colnames(rgset) <- pData(rgset)$Sample_Name
-      colnames(norm.rgset) <- pData(norm.rgset)$Sample_Name
+      colnames(rgSet) <- pData(rgSet)$Sample_Name
+      colnames(norm.rgSet) <- pData(norm.rgSet)$Sample_Name
     }
     else {
-      if (ncol(rgset) == length(sampNames))
+      if (ncol(rgSet) == length(sampNames))
         stop("sampNames is not equal to number of samples in rgset.\n")
-      colnames(rgset) <- sampNames
+      colnames(rgSet) <- sampNames
     }
     cat("Performing functional normalization.\n")
-    fn.set <- .funnorm.mm(rgSet=rgset)
+    fn.set <- .funnorm.mm(rgSet=rgSet)
     fn.intensity <- minfi::getUnmeth(fn.set) + minfi::getMeth(fn.set)
     fn.intensity[fn.intensity <= 0] <- 0.01
     fn.intensity <- log2(fn.intensity)
 
-    fn.set.norm <- .funnorm.mm(rgSet=norm.rgset)
+    fn.set.norm <- .funnorm.mm(rgSet=norm.rgSet)
     fn.intensity.norm <- minfi::getUnmeth(fn.set.norm) +
       minfi::getMeth(fn.set.norm)
     fn.intensity.norm[fn.intensity.norm <= 0] <- 0.01
     fn.intensity.norm <- log2(fn.intensity.norm)
-    normal.fn <- fn.intensity.norm[, Normals]
+    normal.fn <- fn.intensity.norm
+
     if (keep_fnobj) {
       cat("Saving funnorm objects regular and normals to specified directory.")
       if (is.null(fn_output))
@@ -316,12 +326,19 @@ debug: {
       normal.t2.qn <- normalize.quantiles(normal.t2)
       dimnames(normal.t2.qn) <- dimnames(normal.t2)
       normal.fn <- rbind(normal.t1g.qn, normal.t1r.qn, normal.t2.qn)
-      if (!setequal(autosomal, rownames(normal.fn)))
-        stop("Normalization returns discordant number of probes.")
     }
-    cat("Filtering for autosomal probes.\n")
-    normal.fn <- normal.fn[autosomal, ]
-    tumor.fn <- fn.intensity[autosomal, !Normals]
+    if(filter.autosomal.probes==TRUE){
+      if(is.null(autosomal)){
+        stop("Error: need to set <autosomal> parameter")
+      }
+      if (!setequal(autosomal, rownames(normal.fn))){
+        stop("Normalization returns discordant number of probes.")
+      }
+      cat("Filtering for autosomal probes.\n")
+      normal.fn <- normal.fn[autosomal, ]
+      tumor.fn <- fn.intensity[autosomal, !Normals]
+    }
+
     if (filterProbes) {
       if (is.null(retainedProbes)) {
         cat("Filtering for TCGA probeset.")
@@ -404,9 +421,16 @@ debug: {
       if (!setequal(autosomal, rownames(normal.fn)))
         stop("Normalization returns discordant number of probes.")
     }
-    cat("Filtering for autosomal probes.\n")
-    normal.fn <- normal.fn[autosomal, ]
-    tumor.fn <- fn.intensity[autosomal, !Normals]
+    if(filter.autosomal.probes==TRUE){
+      if(is.null(autosomal)){
+        stop("Error: you must select <autosomal> probes")
+      }
+      cat("Filtering for autosomal probes.\n")
+      normal.fn <- normal.fn[autosomal, ]
+      tumor.fn <- fn.intensity[autosomal, !Normals]
+    }else{
+      tumor.fn <- fn.intensity[, !Normals]
+    }
     if (filterProbes) {
       if (is.null(retainedProbes)) {
         cat("Filtering for TCGA probeset.")
@@ -742,7 +766,14 @@ read.metharray.sheet.mm <- function(base,
 #' @param filterbycount
 #' @param min_probes
 #' @param verbose
+#' @param keep_fnobj
+#' @param fn_output
 #' @param ...
+#' @import parallel
+#' @import foreach
+#' @import iterators
+#' @import doParallel
+#' @import minfi
 #' @return return a CNV frame
 #' @export
 epicopy.mm <- function(target_dir,
@@ -768,6 +799,8 @@ epicopy.mm <- function(target_dir,
                     filterbycount = TRUE,
                     min_probes = 50,
                     verbose = TRUE,
+                    keep_fnobj = FALSE,
+                    fn_output = NULL,
                     ...)
 {
   if (is.null(output_dir)) {
@@ -804,25 +837,28 @@ epicopy.mm <- function(target_dir,
       normal.cnv <- FALSE
   }
 
-  rgset <- list()
   platforms <- unique(target_sheet$Platform)
   if(length(platforms)>1){
-    rgsets <- list()
-    foreach(i=1:length(platforms)) %do% {
-      sub.target.sheet <- target_sheet[target_sheet$Platform==platforms[i],]
-      rgset <-
-        read.metharray.exp(targets = sub.target.sheet,
+  rgsets <- list()
+  foreach(i=1:length(comparisons),.combine=rbind, .packages=c("foreach",
+                                                              "minfi")) %do% {
+    sub.target.sheet <- target_sheet[target_sheet$Sample_Group==comparisons[i],]
+    rgset <-
+      read.metharray.exp(targets = sub.target.sheet,
                            verbose = verbose)
-      rgsets[[i]] <- rgset
-      if(sub.target.sheet$Sample_Group=="normal"){
-        names(rgsets[[i]]) <- "normal"
-      }else{
-        names(rgsets[[i]]) <- sub.target.sheet$Sample_Group
-      }
+    rgsets[i] <- rgset
+  }
+    ##"IlluminaHumanMethylation450k
+    ##"IlluminaHumanMethylationEPIC
+    rgset <- minfi::combineArrays(rgsets[[1]],
+                                  rgsets[[2]],
+                            outType = ifelse(platforms[1]=="EPIC",
+                                      "IlluminaHumanMethylationEPIC",
+                                      "IlluminaHumanMethylation450k"),
+                                  verbose=TRUE)
 
-    }
-    lrr <- getLRR.mm(rgSet = rgset[names(rgset)!="normal"],
-                     Normals = rgset[names(rgset)=="normal"],
+    lrr <- getLRR.mm(rgSet = rgset[,rgset$Sample_Group %in% comparisons[1]],
+                     Normals = rgset[,rgset$Sample_Group %in% comparisons[2]],
                      sampNames = sampNames,
                      QN = QN,
                      Ref = Ref,
@@ -833,20 +869,17 @@ epicopy.mm <- function(target_dir,
                      filterProbes = filterProbes,
                      ...
     )
+
     cna <- LRRtoCNA.mm(lrr,
                        ncores = ncores,
                        seg.undo.splits = seg.undo.splits,
-                       seg.undo.SD = seg.undo.SD
+                       seg.undo.SD = seg.undo.SD,
+          platform = target_sheet[
+            target_sheet$Sample_Group==comparisons[1],"Platform"][1]
     )
-    if (!is.null(output_dir)) {
-      if (output_dir == FALSE) {
-        return(cna)
-      }
-    }
-    export_gistic(input = cna, output_dir = output_dir, filterbycount = filterbycount,
-                  min_probes = min_probes, segfile_name = project_name,
-                  markerfile_name = project_name)
+
     return(cna)
+
   }else{
 
   rgset <- read.metharray.exp(targets = target_sheet,
@@ -863,19 +896,14 @@ epicopy.mm <- function(target_dir,
                 filterProbes = filterProbes,
                 ...
                 )
+
   cna <- LRRtoCNA.mm(lrr,
                      ncores = ncores,
                      seg.undo.splits = seg.undo.splits,
                      seg.undo.SD = seg.undo.SD
                      )
-  if (!is.null(output_dir)) {
-    if (output_dir == FALSE) {
-      return(cna)
-    }
-  }
-  export_gistic(input = cna, output_dir = output_dir, filterbycount = filterbycount,
-                min_probes = min_probes, segfile_name = project_name,
-                markerfile_name = project_name)
+
   return(cna)
+
   }
 }

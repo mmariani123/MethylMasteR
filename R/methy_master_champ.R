@@ -21,9 +21,8 @@
 #'
 #' Can test ChAMP with the test data: data(EPICSimData)
 #'
-#' @param idat.pooled.files.dir
+#' @param champ.directory
 #' @param champ.array.type
-#' @param champ.batchname
 #' @param champ.batch.name
 #' @param champ.padj
 #' @param champ.ncores
@@ -37,30 +36,31 @@
 #' @param champ.runDMP
 #' @param champ.runDMR
 #' @param champ.runBlock
-#' @param champ.runGSEA){
+#' @param champ.runGSEA
+#' @param ...
 #' @return #NULL
 #' @export
-methyl_master_champ <- function(idat.pooled.files.dir,
-                                champ.array.type,
-                                champ.batchnamec,
-                                champ.batch.name,
-                                champ.padj,
-                                champ.ncores,
-                                champ.control,
-                                champ.contol.group,
-                                champ.runimpute,
-                                champ.runQC,
-                                champ.runnorm,
-                                champ.runSVD,
-                                champ.runCombat,
-                                champ.runDMP,
-                                champ.runDMR,
-                                champ.runBlock,
-                                champ.runGSEA){
+methyl_master_champ <- function(champ.directory,
+                                champ.array.type="450K",
+                                champ.batch.name=c("batch"),
+                                champ.padj=0.05,
+                                champ.ncores=n.cores,
+                                champ.control=TRUE,
+                                champ.control.group="normal", ##champ.contol.group="champCtls"
+                                champ.runimpute=TRUE,
+                                champ.runQC=TRUE,
+                                champ.runnorm=TRUE,
+                                champ.runSVD=TRUE,
+                                champ.runCombat=TRUE,
+                                champ.runDMP=TRUE,
+                                champ.runDMR=TRUE,
+                                champ.runBlock=TRUE,
+                                champ.runGSEA=TRUE,
+                                ...
+                                ){
 
 champ_results <- ChAMP::champ.process(directory    = idat.pooled.files.dir,
                                       arraytype    = champ.array.type,
-                                      champ.batchname  = champ.batch.name,
                                       batchname    = champ.batch.name,
                                       adjPVal      = champ.padj,
                                       cores        = champ.ncores,
@@ -74,7 +74,9 @@ champ_results <- ChAMP::champ.process(directory    = idat.pooled.files.dir,
                                       runDMP       = champ.runDMP,
                                       runDMR       = champ.runDMR,
                                       runBlock     = champ.runBlock,
-                                      runGSEA      = champ.runGSEA)
+                                      runGSEA      = champ.runGSEA,
+                                      ...
+                                      )
 
 ##save(champ_results,
 ##     file=paste0(work.dir,
