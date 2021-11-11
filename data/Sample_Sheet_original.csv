@@ -1,0 +1,61 @@
+Sample_Name,Sample_Group,Sample_Plate,Pool_ID,Sample_Well,Sentrix_Position,Sentrix_ID,Basename,Batch,karyotype,gender_reported,sex_inferred
+6164655052_R05C02,normal,NA,NA,NA,R05C02,6164655052,C:\Users\Mike\Desktop\dartmouth\salas_lab\cnv\blca_idat_files_pooled\6164655052_R05C02,1,XaY,male,MALE
+6164655053_R05C02,normal,NA,NA,NA,R05C02,6164655053,C:\Users\Mike\Desktop\dartmouth\salas_lab\cnv\blca_idat_files_pooled\6164655053_R05C02,1,XaY,male,MALE
+7796806075_R04C01,normal,NA,NA,NA,R04C01,7796806075,C:\Users\Mike\Desktop\dartmouth\salas_lab\cnv\blca_idat_files_pooled\7796806075_R04C01,1,XaXi,female,FEMALE
+7796806101_R06C01,normal,NA,NA,NA,R06C01,7796806101,C:\Users\Mike\Desktop\dartmouth\salas_lab\cnv\blca_idat_files_pooled\7796806101_R06C01,1,XaY,male,MALE
+7796806096_R01C02,normal,NA,NA,NA,R01C02,7796806096,C:\Users\Mike\Desktop\dartmouth\salas_lab\cnv\blca_idat_files_pooled\7796806096_R01C02,1,XaXi,female,FEMALE
+6285650044_R06C02,normal,NA,NA,NA,R06C02,6285650044,C:\Users\Mike\Desktop\dartmouth\salas_lab\cnv\blca_idat_files_pooled\6285650044_R06C02,2,XaY,male,MALE
+7796806095_R04C01,normal,NA,NA,NA,R04C01,7796806095,C:\Users\Mike\Desktop\dartmouth\salas_lab\cnv\blca_idat_files_pooled\7796806095_R04C01,2,XaY,male,MALE
+6264496107_R03C02,normal,NA,NA,NA,R03C02,6264496107,C:\Users\Mike\Desktop\dartmouth\salas_lab\cnv\blca_idat_files_pooled\6264496107_R03C02,2,XaXi,female,FEMALE
+8795194084_R01C01,normal,NA,NA,NA,R01C01,8795194084,C:\Users\Mike\Desktop\dartmouth\salas_lab\cnv\blca_idat_files_pooled\8795194084_R01C01,2,XaY,male,MALE
+7796806101_R04C01,normal,NA,NA,NA,R04C01,7796806101,C:\Users\Mike\Desktop\dartmouth\salas_lab\cnv\blca_idat_files_pooled\7796806101_R04C01,2,XaXi,female,FEMALE
+7786915032_R01C01,tumor,NA,NA,NA,R01C01,7786915032,C:\Users\Mike\Desktop\dartmouth\salas_lab\cnv\blca_idat_files_pooled\7786915032_R01C01,1,XaY,male,MALE
+7796806101_R03C02,tumor,NA,NA,NA,R03C02,7796806101,C:\Users\Mike\Desktop\dartmouth\salas_lab\cnv\blca_idat_files_pooled\7796806101_R03C02,1,XaY,male,MALE
+9422491111_R06C02,tumor,NA,NA,NA,R06C02,9422491111,C:\Users\Mike\Desktop\dartmouth\salas_lab\cnv\blca_idat_files_pooled\9422491111_R06C02,1,XaXi,female,FEMALE
+7786915031_R06C01,tumor,NA,NA,NA,R06C01,7786915031,C:\Users\Mike\Desktop\dartmouth\salas_lab\cnv\blca_idat_files_pooled\7786915031_R06C01,1,XaY,male,MALE
+9806233125_R01C01,tumor,NA,NA,NA,R01C01,9806233125,C:\Users\Mike\Desktop\dartmouth\salas_lab\cnv\blca_idat_files_pooled\9806233125_R01C01,1,XaY,male,MALE
+3999510104_R03C01,tumor,NA,NA,NA,R03C01,3999510104,C:\Users\Mike\Desktop\dartmouth\salas_lab\cnv\blca_idat_files_pooled\3999510104_R03C01,2,XaXi,female,FEMALE
+3999510104_R04C02,tumor,NA,NA,NA,R04C02,3999510104,C:\Users\Mike\Desktop\dartmouth\salas_lab\cnv\blca_idat_files_pooled\3999510104_R04C02,2,XaXi,female,FEMALE
+8795194085_R04C01,tumor,NA,NA,NA,R04C01,8795194085,C:\Users\Mike\Desktop\dartmouth\salas_lab\cnv\blca_idat_files_pooled\8795194085_R04C01,2,XaY,male,MALE
+9630789147_R02C01,tumor,NA,NA,NA,R02C01,9630789147,C:\Users\Mike\Desktop\dartmouth\salas_lab\cnv\blca_idat_files_pooled\9630789147_R02C01,2,Xa,male,MALE
+8795194084_R03C02,tumor,NA,NA,NA,R03C02,8795194084,C:\Users\Mike\Desktop\dartmouth\salas_lab\cnv\blca_idat_files_pooled\8795194084_R03C02,2,XaY,male,MALE
+,,,,,,,G:\My Drive\dartmouth\salas_lab_working\cnv\blca_idat_files_testing\3999510104_R03C01_Grn.idat,,,,
+,,,,,,,G:\My Drive\dartmouth\salas_lab_working\cnv\blca_idat_files_testing\3999510104_R03C01_Red.idat,,,,
+,,,,,,,G:\My Drive\dartmouth\salas_lab_working\cnv\blca_idat_files_testing\3999510104_R04C02_Grn.idat,,,,
+,,,,,,,G:\My Drive\dartmouth\salas_lab_working\cnv\blca_idat_files_testing\3999510104_R04C02_Red.idat,,,,
+,,,,,,,G:\My Drive\dartmouth\salas_lab_working\cnv\blca_idat_files_testing\6164655052_R05C02_Grn.idat,,,,
+,,,,,,,G:\My Drive\dartmouth\salas_lab_working\cnv\blca_idat_files_testing\6164655052_R05C02_Red.idat,,,,
+,,,,,,,G:\My Drive\dartmouth\salas_lab_working\cnv\blca_idat_files_testing\6164655053_R05C02_Grn.idat,,,,
+,,,,,,,G:\My Drive\dartmouth\salas_lab_working\cnv\blca_idat_files_testing\6164655053_R05C02_Red.idat,,,,
+,,,,,,,G:\My Drive\dartmouth\salas_lab_working\cnv\blca_idat_files_testing\6264496107_R03C02_Grn.idat,,,,
+,,,,,,,G:\My Drive\dartmouth\salas_lab_working\cnv\blca_idat_files_testing\6264496107_R03C02_Red.idat,,,,
+,,,,,,,G:\My Drive\dartmouth\salas_lab_working\cnv\blca_idat_files_testing\6285650044_R06C02_Grn.idat,,,,
+,,,,,,,G:\My Drive\dartmouth\salas_lab_working\cnv\blca_idat_files_testing\6285650044_R06C02_Red.idat,,,,
+,,,,,,,G:\My Drive\dartmouth\salas_lab_working\cnv\blca_idat_files_testing\7786915031_R06C01_Grn.idat,,,,
+,,,,,,,G:\My Drive\dartmouth\salas_lab_working\cnv\blca_idat_files_testing\7786915031_R06C01_Red.idat,,,,
+,,,,,,,G:\My Drive\dartmouth\salas_lab_working\cnv\blca_idat_files_testing\7786915032_R01C01_Grn.idat,,,,
+,,,,,,,G:\My Drive\dartmouth\salas_lab_working\cnv\blca_idat_files_testing\7786915032_R01C01_Red.idat,,,,
+,,,,,,,G:\My Drive\dartmouth\salas_lab_working\cnv\blca_idat_files_testing\7796806075_R04C01_Grn.idat,,,,
+,,,,,,,G:\My Drive\dartmouth\salas_lab_working\cnv\blca_idat_files_testing\7796806075_R04C01_Red.idat,,,,
+,,,,,,,G:\My Drive\dartmouth\salas_lab_working\cnv\blca_idat_files_testing\7796806095_R04C01_Grn.idat,,,,
+,,,,,,,G:\My Drive\dartmouth\salas_lab_working\cnv\blca_idat_files_testing\7796806095_R04C01_Red.idat,,,,
+,,,,,,,G:\My Drive\dartmouth\salas_lab_working\cnv\blca_idat_files_testing\7796806096_R01C02_Grn.idat,,,,
+,,,,,,,G:\My Drive\dartmouth\salas_lab_working\cnv\blca_idat_files_testing\7796806096_R01C02_Red.idat,,,,
+,,,,,,,G:\My Drive\dartmouth\salas_lab_working\cnv\blca_idat_files_testing\7796806101_R03C02_Grn.idat,,,,
+,,,,,,,G:\My Drive\dartmouth\salas_lab_working\cnv\blca_idat_files_testing\7796806101_R03C02_Red.idat,,,,
+,,,,,,,G:\My Drive\dartmouth\salas_lab_working\cnv\blca_idat_files_testing\7796806101_R04C01_Grn.idat,,,,
+,,,,,,,G:\My Drive\dartmouth\salas_lab_working\cnv\blca_idat_files_testing\7796806101_R04C01_Red.idat,,,,
+,,,,,,,G:\My Drive\dartmouth\salas_lab_working\cnv\blca_idat_files_testing\7796806101_R06C01_Grn.idat,,,,
+,,,,,,,G:\My Drive\dartmouth\salas_lab_working\cnv\blca_idat_files_testing\7796806101_R06C01_Red.idat,,,,
+,,,,,,,G:\My Drive\dartmouth\salas_lab_working\cnv\blca_idat_files_testing\8795194084_R01C01_Grn.idat,,,,
+,,,,,,,G:\My Drive\dartmouth\salas_lab_working\cnv\blca_idat_files_testing\8795194084_R01C01_Red.idat,,,,
+,,,,,,,G:\My Drive\dartmouth\salas_lab_working\cnv\blca_idat_files_testing\8795194084_R03C02_Grn.idat,,,,
+,,,,,,,G:\My Drive\dartmouth\salas_lab_working\cnv\blca_idat_files_testing\8795194084_R03C02_Red.idat,,,,
+,,,,,,,G:\My Drive\dartmouth\salas_lab_working\cnv\blca_idat_files_testing\8795194085_R04C01_Grn.idat,,,,
+,,,,,,,G:\My Drive\dartmouth\salas_lab_working\cnv\blca_idat_files_testing\8795194085_R04C01_Red.idat,,,,
+,,,,,,,G:\My Drive\dartmouth\salas_lab_working\cnv\blca_idat_files_testing\9422491111_R06C02_Grn.idat,,,,
+,,,,,,,G:\My Drive\dartmouth\salas_lab_working\cnv\blca_idat_files_testing\9422491111_R06C02_Red.idat,,,,
+,,,,,,,G:\My Drive\dartmouth\salas_lab_working\cnv\blca_idat_files_testing\9630789147_R02C01_Grn.idat,,,,
+,,,,,,,G:\My Drive\dartmouth\salas_lab_working\cnv\blca_idat_files_testing\9630789147_R02C01_Red.idat,,,,
+,,,,,,,G:\My Drive\dartmouth\salas_lab_working\cnv\blca_idat_files_testing\9806233125_R01C01_Grn.idat,,,,
+,,,,,,,G:\My Drive\dartmouth\salas_lab_working\cnv\blca_idat_files_testing\9806233125_R01C01_Red.idat,,,,
