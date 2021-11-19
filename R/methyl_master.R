@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 
-#' Main functions:
-#'
+#' @title methyl_master
+#' @description Main function:
 #' MultiMethylv1.0 : CNV calling from methylation data
 #' Michael Mariani PhD Dartmouth College 2021
 #' Possible routines:
@@ -15,6 +15,7 @@
 #' @param input.dir
 #' @param output.dir
 #' @param sample.sheet.path
+#' @param file.sep
 #' @param r.lib.path
 #' @param n.cores
 #' @param os.type
@@ -25,7 +26,7 @@
 #' @param routine
 #' @param reference
 #' @param split.by
-#' @param comparisons
+#' @param comparison
 #' @param overlap.density
 #' @param epi.run.gistic
 #' @param ...
@@ -34,9 +35,10 @@
 #' @import profvis
 #' @return #NULL
 #' @export
-methyl_master <- function(input.dir            = input.dir,
-                          output.dir           = output.dir,
-                          sample.sheet.path    = sample.sheet.path,
+methyl_master <- function(input.dir            = NULL,
+                          output.dir           = NULL,
+                          sample.sheet.path    = NULL,
+                          file.sep             = NULL,
                           r.lib.path           = .libPaths()[1],
                           n.cores              = 1,
                           os.type              = "linux",
@@ -47,10 +49,11 @@ methyl_master <- function(input.dir            = input.dir,
                           routine              = "test",
                           reference            = NULL,
                           split.by             = NULL,
-                          comparisons          = NULL,
+                          comparison           = NULL,
                           overlap.density      = 0.1,
                           epi.run.gistic       = FALSE,
-                          ...){
+                          ...
+                          ){
 
 #################### Load global variables ####################################
 
@@ -142,7 +145,18 @@ test = {
 
 sesame = {
 
-  methyl_master_sesame()
+  seg <- methyl_master_sesame(sesame.idat.files.dir = input.dir,
+                       sesame.output.dir            = output.dir,
+                       sesame.sample.sheet.path     = sample.sheet.path,
+                       sesame.comparison            = comparison,
+                       sesame.file.sep              = file.sep,
+                       sesame.data.cache            = "EPIC",
+                       sesame.data.normal           = "EPIC.5.normal",
+                       sesame.ref.version           = "hg38",
+                       sesame.reference             = reference,##"Sample_Group"
+                       sesame.split.by              = split.by,
+                       ...
+                       )
 
 },
 
@@ -154,7 +168,7 @@ sesame = {
 
 hm450 = {
 
-  methyl_master_k450(k450.input.file.dir     = input.dir,
+  seg <- methyl_master_k450(k450.input.file.dir     = input.dir,
                      k450.output.file.dir    = output.dir,
                      k450.sample.sheet.path  = sample.sheet.path,
                      k450.comparison         = comparisons,
@@ -175,7 +189,7 @@ hm450 = {
 
 champ = {
 
-  methyl_master_champ(champ.directory=input.file.dir,
+  seg <- methyl_master_champ(champ.directory=input.file.dir,
                       champ.array.type="450K",
                       champ.batch.name=c("batch"),
                       champ.padj=0.05,
@@ -204,7 +218,7 @@ champ = {
 
 epicopy = {
 
-  methyl_master_epicopy(epi.target.dir=input.file.dir,
+  seg <- methyl_master_epicopy(epi.target.dir=input.file.dir,
                         epi.output.dir=output.dir,
                         epi.single.file=TRUE,
                         epi.single.file.path=sample.sheet.path,
