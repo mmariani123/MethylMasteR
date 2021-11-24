@@ -169,15 +169,15 @@ sesame = {
 hm450 = {
 
   seg <- methyl_master_k450(k450.input.file.dir     = input.dir,
-                     k450.output.file.dir    = output.dir,
-                     k450.sample.sheet.path  = sample.sheet.path,
-                     k450.comparison         = comparisons,
-                     k450.split.by           = split.by,
-                     k450.reference          = reference,
-                     k450.sesame.data.cache  = "EPIC",
-                     k450.sesame.data.normal = 'EPIC.5.normal',
-                     k450.sesame.ref.version = "hg38",
-                     ...)
+                            k450.output.file.dir    = output.dir,
+                            k450.sample.sheet.path  = sample.sheet.path,
+                            k450.comparison         = comparisons,
+                            k450.split.by           = split.by,
+                            k450.reference          = reference,
+                            k450.sesame.data.cache  = "EPIC",
+                            k450.sesame.data.normal = 'EPIC.5.normal',
+                            k450.sesame.ref.version = "hg38",
+                            ...)
 
 }, ##End K450
 
@@ -190,23 +190,24 @@ hm450 = {
 champ = {
 
   seg <- methyl_master_champ(champ.directory=input.file.dir,
-                      champ.array.type="450K",
-                      champ.batch.name=c("batch"),
-                      champ.padj=0.05,
-                      champ.ncores=n.cores,
-                      champ.control=TRUE,
-                      champ.control.group="normal", ##champ.contol.group="champCtls"
-                      champ.runimpute=TRUE,
-                      champ.runQC=TRUE,
-                      champ.runnorm=TRUE,
-                      champ.runSVD=TRUE,
-                      champ.runCombat=TRUE,
-                      champ.runDMP=TRUE,
-                      champ.runDMR=TRUE,
-                      champ.runBlock=TRUE,
-                      champ.runGSEA=TRUE,
-                      ...
-                      )
+                             champ.array.type="450K",
+                             champ.batch.name=c("batch"),
+                             champ.padj=0.05,
+                             champ.ncores=n.cores,
+                             champ.control=TRUE,
+                             champ.control.group="normal",
+                             ##champ.contol.group="champCtls"
+                             champ.runimpute=TRUE,
+                             champ.runQC=TRUE,
+                             champ.runnorm=TRUE,
+                             champ.runSVD=TRUE,
+                             champ.runCombat=TRUE,
+                             champ.runDMP=TRUE,
+                             champ.runDMR=TRUE,
+                             champ.runBlock=TRUE,
+                             champ.runGSEA=TRUE,
+                             ...
+                             )
 
 }, ##End ChAMP
 
@@ -219,24 +220,24 @@ champ = {
 epicopy = {
 
   seg <- methyl_master_epicopy(epi.target.dir=input.file.dir,
-                        epi.output.dir=output.dir,
-                        epi.single.file=TRUE,
-                        epi.single.file.path=sample.sheet.path,
-                        epi.run.gistic=epi.run.gistic,
-                        epi.comparisons=comparisons,
-                        epi.ncores=n.cores,
-                        epi.ref="median",
-                        epi.normals="Sample_Group",
-                        epi.samp.names=NULL,
-                        epi.qn=FALSE,
-                        epi.mode.bw=0.1,
-                        epi.mode.method="naive",
-                        epi.normal.cnv=TRUE,
-                        epi.mean.center=TRUE,
-                        epi.filter.probes=FALSE,
-                        epi.retained.probes=NULL,
-                        epi.keepfnobj=TRUE,
-                        epi.fn.output=NULL)
+                               epi.output.dir=output.dir,
+                               epi.single.file=TRUE,
+                               epi.single.file.path=sample.sheet.path,
+                               epi.run.gistic=epi.run.gistic,
+                               epi.comparisons=comparisons,
+                               epi.ncores=n.cores,
+                               epi.ref="median",
+                               epi.normals="Sample_Group",
+                               epi.samp.names=NULL,
+                               epi.qn=FALSE,
+                               epi.mode.bw=0.1,
+                               epi.mode.method="naive",
+                               epi.normal.cnv=TRUE,
+                               epi.mean.center=TRUE,
+                               epi.filter.probes=FALSE,
+                               epi.retained.probes=NULL,
+                               epi.keepfnobj=TRUE,
+                               epi.fn.output=NULL)
 
 } ##End Epicopy
 

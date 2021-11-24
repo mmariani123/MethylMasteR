@@ -25,6 +25,8 @@
 #' @import sesame
 #' @import sesameData
 #' @import ExperimentHub
+#' @import future
+#' @import profvis
 #' @return A seg object for downstream analysis
 #' @export
 
@@ -66,7 +68,7 @@ if(sesame.reference=="internal"){
                             platform = sesame.platform,
                             what="sigset")
 
-    sesame_seg <- foreach(i = 1:length(names(sesame_sset))) %do% {
+    sesame_seg %<-% foreach(i = 1:length(names(sesame_sset))) %do% {
       sesame::cnSegmentation(sesame_sset[[i]],
                             sesame_ssets_normal,
                             refversion = sesame.ref.version)
@@ -139,27 +141,34 @@ if(sesame.reference=="internal"){
         sesame.sample.sheet.df$Sample_Group==sesame.comparison[2],"Sample_Name"]
 
       treatment.paths <-     sesame.sample.sheet.df[
-      sesame.sample.sheet.df$Sample_Group==sesame.comparison[2], "Basename"]
+      sesame.sample.sheet.df$Sample_Group==sesame.comparison[1], "Basename"]
 
     control.paths   <-     sesame.sample.sheet.df[
       sesame.sample.sheet.df$Sample_Group==sesame.comparison[2], "Basename"]
 
-    treatment.platform <-     sesame.sample.sheet.df[
-      sesame.sample.sheet.df$Sample_Group==sesame.comparison[2], "Platform"]
+    treatment.platform <-     unique(sesame.sample.sheet.df[
+      sesame.sample.sheet.df$Sample_Group==sesame.comparison[1], "Platform"])
 
-    control.platform   <-     sesame.sample.sheet.df[
-      sesame.sample.sheet.df$Sample_Group==sesame.comparison[2], "Platform"]
+    control.platform   <-     unique(sesame.sample.sheet.df[
+      sesame.sample.sheet.df$Sample_Group==sesame.comparison[2], "Platform"])
 
-    setExperimentHubOption("CACHE",
+    ExperimentHub::setExperimentHubOption("CACHE",
                          sesame.idat.files.dir)
 
     ExperimentHub::ExperimentHub()
 
-    idat_prefixes <- sesame::searchIDATprefixes(idat.files.dir,
+    idat_prefixes <- sesame::searchIDATprefixes(sesame.idat.files.dir,
                                               recursive=TRUE)
 
-    idat_prefixes.treatment <- idat_prefixes[idat_prefixes %in% treatment.paths]
-    idat_prefixes.control   <- idat_prefixes[idat_prefixes %in% control.paths]
+    idat_prefixes.treatment <-
+      idat_prefixes[gsub(".*/.*_","",idat_prefixes) %in%
+                      gsub(paste0(".*",sesame.file.sep,".*_"),
+                           "",treatment.paths)]
+
+    idat_prefixes.control   <-
+      idat_prefixes[gsub(".*/.*_","",idat_prefixes) %in%
+                      gsub(paste0(".*",sesame.file.sep,".*_"),
+                           "",control.paths)]
 
     sesameData::sesameDataCacheAll()
 
@@ -180,7 +189,7 @@ if(sesame.reference=="internal"){
                              sesame_sset.control,
                              refversion = sesame.ref.version)
     }
-    names(sesame_seg) <- names(sesame_sset)
+    names(sesame_seg) <- names(sesame_sset.treatment)
 
     seg <- list(sesame_seg)
 
@@ -278,33 +287,44 @@ if(sesame.reference=="internal"){
 
     sesameData::sesameDataCacheAll()
 
+    ##future::plan("multisession")
+
+    ##sesame_sset.treatment.1 %<-%
     sesame_sset.treatment.1 <- sesame::openSesame(idat_prefixes.treatment.1,
                                       mask = TRUE,
                                       sum.TypeI = TRUE,
                                       platform = treatment.platform.1,
                                       what="sigset")
 
+    ##sesame_sset.control.1 %<-%
     sesame_sset.control.1 <- sesame::openSesame(idat_prefixes.control.1,
                                         mask = TRUE,
                                         sum.TypeI = TRUE,
                                         platform = control.platform.1,
                                         what="sigset")
 
-    sesame_sset.treatment.2 <-
+    ##sesame_sset.treatment.2 %<-%
+      sesame_sset.treatment.2 <-
       sesame::openSesame(idat_prefixes.treatment.2,
       mask = TRUE,
       sum.TypeI = TRUE,
       platform = treatment.platform.2,
       what="sigset")
 
-    sesame_sset.control.2 <-
+    ##sesame_sset.control.2 %<-%
+      sesame_sset.control.2 <-
       sesame::openSesame(idat_prefixes.control.2,
       mask = TRUE,
       sum.TypeI = TRUE,
       platform = control.platform.2,
       what="sigset")
 
-    sesame_seg.treatment.1 <-
+    ##while(!all(resolved(x))){
+    ##  profvis::pause(5)
+    ##}
+
+    ##sesame_seg.treatment.1 %<-%
+      sesame_seg.treatment.1 <-
       foreach(i = 1:length(names(sesame_sset.treatment.1))) %do% {
       sesame::cnSegmentation(sesame_sset.treatment.1[[i]],
                              sesame_sset.control.1,
@@ -312,9 +332,10 @@ if(sesame.reference=="internal"){
     }
     names(sesame_seg.treatment.1) <- names(sesame_sset.treatment.1)
 
+    ##sesame_seg.treatment.2 %<-%
     sesame_seg.treatment.2 <-
       foreach(i = 1:length(names(sesame_sset.treatment.2))) %do% {
-      sesame::cnSegmentation(sesame_sset.treatment.2,
+      sesame::cnSegmentation(sesame_sset.treatment.2[[i]],
                              sesame_sset.control.2,
                              refversion = sesame.ref.version)
     }
