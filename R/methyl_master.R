@@ -29,6 +29,7 @@
 #' @param comparison
 #' @param overlap.density
 #' @param epi.run.gistic
+#' @param compare.name
 #' @param ...
 #' @importFrom magrittr %>%
 #' @import profmem
@@ -52,6 +53,7 @@ methyl_master <- function(input.dir            = NULL,
                           comparison           = NULL,
                           overlap.density      = 0.1,
                           epi.run.gistic       = FALSE,
+                          compare.name         = NULL
                           ...
                           ){
 
@@ -115,6 +117,8 @@ if(visualize.individual==TRUE){
 ####################################################################
 ####################################################################
 ####################################################################
+
+if(routine!="compare"){
 
 ##profvis.out <- profvis({
 
@@ -239,7 +243,7 @@ epicopy = {
                                epi.keepfnobj=TRUE,
                                epi.fn.output=NULL)
 
-} ##End Epicopy
+}, ##End Epicopy
 
 ) ##End switch routine
 
@@ -316,6 +320,14 @@ writeLines(capture.output(sessionInfo()),
                   gsub("-|\\s|:",".",Sys.time(), perl = TRUE),
                   ".txt")
 )
+
+}else{
+  
+  methyl_master_compare(compare.input.dir = NULL,
+                        compare.output.dir = NULL,
+                        compare.output.name = NULL)
+  
+}
 
 ##################### End pipeline ###########################################
 ##############################################################################
