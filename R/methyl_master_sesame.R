@@ -19,7 +19,8 @@
 #' @param sesame.ref.version
 #' @param sesame.reference
 #' @param sesame.split.by
-#' @param...
+#' @param sesame.save.seg
+#' @param ...
 #' @import data.table
 #' @import dplyr
 #' @import sesame
@@ -41,6 +42,7 @@ methyl_master_sesame <- function(sesame.idat.files.dir       = NULL,
                                  sesame.ref.version          = "hg38",
                                  sesame.reference            = "internal",
                                  sesame.split.by             = NULL,
+                                 sesame.save.seg             = FALSE,
                                  ...
                       ){
 
@@ -53,7 +55,16 @@ if(sesame.reference=="internal"){
 
   if(is.null(sesame.split.by)){
 
+    ##----------------------------------------------------------
+    ##| SEnsible Step-wise Analysis of DNA MEthylation (SeSAMe)
+    ##| --------------------------------------------------------
+    ##| Please cache the annotation data for your array platform
+    ##| (e.g. EPIC) by calling "sesameDataCache("EPIC")"
+    ##| or "sesameDataCacheAll()". This needs to be done only
+    ##| once per SeSAMe installation.
+
     ##Get sesame normal samples:
+    ##Loads all refs as <sesame.data.cache> defaults to "EPIC"?
     sesameData::sesameDataCache(sesame.data.cache)
     sesame_ssets_normal <- sesameData::sesameDataGet(sesame.data.normal)
     ExperimentHub::setExperimentHubOption("CACHE", idat.files.dir)
@@ -62,13 +73,28 @@ if(sesame.reference=="internal"){
                                                         recursive=TRUE)
     sesameData::sesameDataCacheAll()
 
+    treatment.names <-    sesame.sample.sheet.df[
+      sesame.sample.sheet.df$Sample_Group %in%
+        sesame.comparison[1],"Sample_Name"]
+
+    treatment_idat_prefixes <-  treatment_idat_prefixes[gsub(paste0(".*",
+                                     .Platform$file.sep),
+                                     "",
+                                     treatment_idat_prefixes) %in%
+                                     treatment.names]
+
+    treatment.platform <- unique(sesame.sample.sheet.df[
+                                 sesame.sample.sheet.df$Sample_Name %in%
+                                 treatment.names, "Platform"])
+
     sesame_sset <- sesame::openSesame(treatment_idat_prefixes,
                             mask = TRUE,
                             sum.TypeI = TRUE,
-                            platform = sesame.platform,
+                            platform = treatment.platform,
                             what="sigset")
 
-    sesame_seg %<-% foreach(i = 1:length(names(sesame_sset))) %do% {
+    ##sesame_seg %<-% foreach(i = 1:length(names(sesame_sset))) %do% {
+    sesame_seg <- foreach(i = 1:length(names(sesame_sset))) %do% {
       sesame::cnSegmentation(sesame_sset[[i]],
                             sesame_ssets_normal,
                             refversion = sesame.ref.version)
@@ -79,7 +105,8 @@ if(sesame.reference=="internal"){
 
   }else{
 
-    stop("Error: Epic.5.Normal samples are all male!")
+    stop(paste0("Error: Epic.5.Normal internal reference samples are all male",
+                "\ncan't split by sex!"))
     ##Get sesame normal samples:
 
     split.by.cat <- unique(sesame.sample.sheet.df[[sesame.split.by]])
@@ -257,12 +284,12 @@ if(sesame.reference=="internal"){
         sesame.sample.sheet.df$Sample_Group==sesame.comparison[2] &
         sesame.sample.sheet.df[[sesame.split.by]]==split.by.cat[2],"Platform"])
 
-    setExperimentHubOption("CACHE",
+    ExperimentHub::setExperimentHubOption("CACHE",
                            sesame.idat.files.dir)
 
     ExperimentHub::ExperimentHub()
 
-    idat_prefixes <- sesame::searchIDATprefixes(idat.files.dir,
+    idat_prefixes <- sesame::searchIDATprefixes(sesame.idat.files.dir,
                                                 recursive=TRUE)
 
     idat_prefixes.treatment.1 <-
@@ -341,17 +368,258 @@ if(sesame.reference=="internal"){
     }
     names(sesame_seg.treatment.2) <- names(sesame_sset.treatment.2)
 
-    seg <- list(sesame_seg.treatment.1,sesame_seg.treatment.1)
+    seg <- list(sesame_seg.treatment.1, sesame_seg.treatment.2)
 
   } ##End split.by
 
 } ##End reference
 
-return(seg)
+if(sesame.save.seg==TRUE){
+  save(seg, file =  paste0(sesame.output.dir, .Platform$file.sep, "seg.RData"))
+}
+
+######################## FORMATTING #########################################
+#############################################################################
+#############################################################################
+#############################################################################
+#############################################################################
+
+if(reference=="internal"){
+
+  if(is.null(split.by)){
+
+    sesame.seg <- seg[[1]]
+
+    sesame_seg_treatment.df <- binding_frames_mm(
+      sesame.seg)
+
+    sesame_seg_treatment.df <- sesame_seg_treatement.df[
+      sesame_seg_treatment.df$pval <= 0.05,]
+
+    colnames(sesame_seg_treatment.df)[1] <- "Sample_ID"
+    seg <- sesame_seg_treatment.df [,c(1,2,3,4,5,6,10)]
+    seg$state <- round(2^seg$seg.mean * 2)
+    seg$state[seg$state > 4] <- 4
+    seg$method <- "sesame"
+    row.names(seg) <- NULL
+    seg <- na.omit(seg)
+    seg$chrom <-
+      unlist(strsplit(seg$chrom,split="chr"))[c(FALSE,TRUE)]
+
+    seg.out <- list(seg.1)
+    names(seg.out) <- "internal"
+
+    ##For sesame we want to omit the "chr"
+    ##from chrom for intial plotting
+    ##then add back in downstream for ggplot
+
+  }else{
+
+    sesame.seg.treatment <- sesame.seg[names(sesame.seg) %in%
+    sample.sheet.csv[sample.sheet.csv$Sample_Group %in% comparison[1],
+    "Sample_Name"]]
+
+    split.by.1 <- unique(sample.sheet.csv[[split.by]])[1]
+    split.by.2 <- unique(sample.sheet.csv[[split.by]])[2]
+
+    sesame_seg_treatment.1 <- sesame.seg.treatment[
+      names(sesame.seg.treatment) %in%
+        sample.sheet.csv[sample.sheet.csv$gender_reported %in% split.by.1,
+                         "Sample_Name"]]
+
+    sesame_seg_treatment.2 <- sesame.seg[names(sesame.seg) %in%
+      sample.sheet.csv[sample.sheet.csv$gender_reported %in% split.by.2,
+        "Sample_Name"]]
+
+    sesame_seg_treatment.1.df <- binding_frames_mm(
+      sesame_seg_treatement.1)
+
+    sesame_seg_treatment.1.df <- sesame_seg_treatement.1.df[
+      sesame_seg_treatment.1.df$pval <= 0.05,]
+
+    sesame_seg_treatment.2.df <- binding_frames_mm(
+      sesame_seg_treatment.2)
+
+    sesame_seg_treatment.2.df <- sesame_seg_treatement.2.df[
+      sesame_seg_treatment.2.df$pval <= 0.05,]
+
+    colnames(sesame_seg_treatment.1.df)[1] <- "Sample_ID"
+    seg.1 <- sesame_seg_treatment.1.df [,c(1,2,3,4,5,6,10)]
+    colnames(sesame_seg_treatment.2.df)[1] <- "Sample_ID"
+    seg.2 <- sesame_seg_treatment.2.df [,c(1,2,3,4,5,6,10)]
+    seg$state <- round(2^seg$seg.mean * 2)
+    seg$state[seg$state > 4] <- 4
+    seg$method <- "sesame"
+    row.names(seg) <- NULL
+    seg <- na.omit(seg)
+    seg$chrom <-
+      unlist(strsplit(seg$chrom,split="chr"))[c(FALSE,TRUE)]
+
+    seg.out <- list(seg.1,
+                    seg.2)
+
+    names(seg.out) <- c("internal.1", "internal.2")
+
+    ##For sesame we want to omit the "chr"
+    ##from chrom for intial plotting
+    ##then add back in downstream for ggplot
+
+  }
+
+}else{
+
+  if(is.null(split.by)){
+    sesame.seg.treatment <- sesame.seg[names(sesame.seg) %in%
+      sample.sheet.csv[sample.sheet.csv$Sample_Group %in% comparison[1],
+        "Sample_Name"]]
+
+    sesame.seg.control <- sesame.seg[names(sesame.seg) %in%
+      sample.sheet.csv[sample.sheet.csv$Sample_Group %in% comparison[2],
+        "Sample_Name"]]
+
+    sesame_seg_treatment.df <- binding_frames_mm(
+      sesame_seg_treatement)
+
+    sesame_seg_treatment.df <- sesame_seg_treatment.df[
+      sesame_seg_treatment.df$pval <= 0.05,]
+
+    sesame_seg_control.df <- binding_frames_mm(
+      sesame_seg_control)
+
+    sesame_seg_control.df <- sesame_seg_control.df[
+      sesame_seg_control.df$pval <= 0.05,]
+
+    colnames(sesame_seg_treatment.df)[1] <- "Sample_ID"
+    seg.treatment <- sesame_seg_treatment.df [,c(1,2,3,4,5,6,10)]
+    seg.treatment$state <- round(2^seg$seg.mean * 2)
+    seg.treatment$state[seg$state > 4] <- 4
+    seg.treatment$method <- "sesame"
+    row.names(seg.treatment) <- NULL
+    seg.treatment <- na.omit(seg.treatment)
+    seg.treatment$chrom <-
+      unlist(strsplit(seg.treatment$chrom,split="chr"))[c(FALSE,TRUE)]
+
+    colnames(sesame_seg_control.df)[1] <- "Sample_ID"
+    seg.control <- sesame_seg_control.df [,c(1,2,3,4,5,6,10)]
+    seg.control$state <- round(2^seg$seg.mean * 2)
+    seg.control$state[seg$state > 4] <- 4
+    seg.control$method <- "sesame"
+    row.names(seg.control) <- NULL
+    seg.control <- na.omit(seg.control)
+    seg.control$chrom <-
+      unlist(strsplit(seg.control$chrom,split="chr"))[c(FALSE,TRUE)]
+
+    seg.out <- list(seg.treatment,
+                    seg.control)
+
+    names(seg.out) <- c(comparison[1], comparison[2])
+
+    ##For sesame we want to omit the "chr"
+    ##from chrom for intial plotting
+    ##then add back in downstream for ggplot
+
+  }else{
+
+    if(is.null(split.by)){
+
+      sesame.seg.treatment <- sesame.seg[names(sesame.seg) %in%
+        sample.sheet.csv[sample.sheet.csv$Sample_Group %in% comparison[1],
+          "Sample_Name"]]
+
+      sesame.seg.control <- sesame.seg[names(sesame.seg) %in%
+        sample.sheet.csv[sample.sheet.csv$Sample_Group %in% comparison[2],
+          "Sample_Name"]]
+
+      sesame_seg_treatment.df <- binding_frames_mm(
+        sesame_seg_treatement)
+
+      sesame_seg_treatment.df <- sesame_seg_treatment.df[
+        sesame_seg_treatment.df$pval <= 0.05,]
+
+      sesame_seg_control.df <- binding_frames_mm(
+        sesame_seg_control)
+
+      sesame_seg_control.df <- sesame_seg_control.df[
+        sesame_seg_control.df$pval <= 0.05,]
+
+      split.categories <- unique(sesame_seg_treatment.df[[split.by]])
+
+      sesame_seg_treatment.df.1 <- sesame_seg_treatment.df[
+        sesame_seg_treatment.df[[split.by]] %in% split.categories[1],]
+
+      sesame_seg_treatment.df.2 <- sesame_seg_treatment.df[
+        sesame_seg_treatment.df[[split.by]] %in% split.categories[2],]
+
+      sesame_seg_control.df.1 <- sesame_seg_treatment.df[
+        sesame_seg_treatment.df[[split.by]] %in% split.categories[1],]
+
+      sesame_seg_control.df.2 <- sesame_seg_treatment.df[
+        sesame_seg_treatment.df[[split.by]] %in% split.categories[2],]
+
+      colnames(sesame_seg_treatment.df.1)[1] <- "Sample_ID"
+      seg.treatment.1 <- sesame_seg_treatment.df.1[,c(1,2,3,4,5,6,10)]
+      seg.treatment.1$state <- round(2^seg$seg.mean * 2)
+      seg.treatment.1$state[seg$state > 4] <- 4
+      seg.treatment.1$method <- "sesame"
+      row.names(seg.treatment.1) <- NULL
+      seg.treatment.1 <- na.omit(seg.treatment.1)
+      seg.treatment.1$chrom <-
+        unlist(strsplit(seg.treatment.1$chrom,split="chr"))[c(FALSE,TRUE)]
+
+      colnames(sesame_seg_treatment.df.2)[1] <- "Sample_ID"
+      seg.treatment.2 <- sesame_seg_treatment.df.2[,c(1,2,3,4,5,6,10)]
+      seg.treatment.2$state <- round(2^seg$seg.mean * 2)
+      seg.treatment.2$state[seg$state > 4] <- 4
+      seg.treatment.2$method <- "sesame"
+      row.names(seg.treatment.2) <- NULL
+      seg.treatment.2 <- na.omit(seg.treatment.2)
+      seg.treatment.2$chrom <-
+        unlist(strsplit(seg.treatment.2$chrom,split="chr"))[c(FALSE,TRUE)]
+
+      colnames(sesame_seg_control.df.1)[1] <- "Sample_ID"
+      seg.control.1 <- sesame_seg_control.df.1[,c(1,2,3,4,5,6,10)]
+      seg.control.1$state <- round(2^seg.1$seg.mean * 2)
+      seg.control.1$state[seg.1$state > 4] <- 4
+      seg.control.1$method <- "sesame"
+      row.names(seg.control.1) <- NULL
+      seg.control.1 <- na.omit(seg.control.1)
+      seg.control.1$chrom <-
+        unlist(strsplit(seg.control.1$chrom,split="chr"))[c(FALSE,TRUE)]
+
+      colnames(sesame_seg_control.df.2)[1] <- "Sample_ID"
+      seg.control.2 <- sesame_seg_control.df.2[,c(1,2,3,4,5,6,10)]
+      seg.control.2$state <- round(2^seg.2$seg.mean * 2)
+      seg.control.2$state[seg.2$state > 4] <- 4
+      seg.control.2$method <- "sesame"
+      row.names(seg.control.2) <- NULL
+      seg.control.2 <- na.omit(seg.control.2)
+      seg.control.2$chrom <-
+        unlist(strsplit(seg.control.2$chrom,split="chr"))[c(FALSE,TRUE)]
+
+      ##For sesame we want to omit the "chr"
+      ##from chrom for intial plotting
+      ##then add back in downstream for ggplot
+      seg.out <- list(seg.treatment.1,
+                      seg.treatment.2,
+                      seg.control.1,
+                      seg.control.2)
+
+      names(seg.out) <- c(paste0(comparison[1],"_1"),
+                          paste0(comparison[1],"_2"),
+                          paste0(comparison[2],"_1"),
+                          paste0(comparison[2],"_2"))
+
+    }
+
+  }
+
+} ##End formating
+
+return(seg.out)
 
 } ##End methyl_master_sesame
 
-###################### Poosble additional functionality ######################
+###################### Possible additional functionality ######################
 
 ##if(sesame.calc.betas==TRUE){
 ##  sesame_betas <- sesame::openSesame(idat_prefixes,

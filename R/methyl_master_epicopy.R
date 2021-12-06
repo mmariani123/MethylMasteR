@@ -158,4 +158,63 @@ if(epi.run.gistic==TRUE){
 ##Segmentation file written.
 ##Marker file written.
 
+load(paste0(output.dir,
+            file.sep,
+            "epicopy_results.rda"))
+
+seg <- epicopy_results$output
+colnames(seg)[1] <- "Sample_ID"
+##rm(epicopy_results)
+##colnames(seg)
+##"Sample_ID"
+##"chrom"
+##"loc.start"
+##"loc.end"
+##"num.mark"
+##"seg.mean"
+seg$state <- round(2^seg$seg.mean * 2)
+seg$state[seg$state > 4] <- 4
+seg$method <- "epicopy"
+row.names(seg) <- NULL
+seg <- na.omit(seg)
+
+##seg2 <- epi_seg$output
+##seg3 <- seg2[abs(seg2$seg.mean) >= 0.3 &
+##               !seg2$chrom %in% c("chrX", "chrY") &
+##               seg2$num.mark > 4,]
+##seg3$state<- round(2^seg3$seg.mean * 2)
+##seg3$state[seg3$state > 4] <- 4
+##table(seg3$state)
+##0  1  2  3  4
+##1 18 11 41  2
+##seg3$Sample_ID <- seg3$ID
+##seg3$method <- "epicopy"
+##colnames(seg)
+##seg <- seg3[, c("Sample_ID",
+##                "chrom",
+##                "loc.start",
+##                "loc.end",
+##                "num.mark",
+##                "seg.mean",
+##                "state",
+##                "method")]
+
+table(seg$state)
+##0    1    2    3    4
+##72 2954 7118 1803  325
+
+colnames(seg)
+##"Sample_ID"
+##"chrom"
+##"loc.start"
+##"loc.end"
+##"num.mark"
+##"seg.mean"
+##"state"
+##"method"
+
+##seg %>% dplyr::pull(Sample_ID) %>% unique()
+
+return(seg.out)
+
 }

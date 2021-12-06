@@ -28,8 +28,12 @@
 #' @param split.by
 #' @param comparison
 #' @param overlap.density
+#' @param sesame.data.cache
+#' @param sesame.data.normal
+#' @param sesame.ref.version
 #' @param epi.run.gistic
 #' @param compare.name
+#' @param save.seg
 #' @param ...
 #' @importFrom magrittr %>%
 #' @import profmem
@@ -52,8 +56,12 @@ methyl_master <- function(input.dir            = NULL,
                           split.by             = NULL,
                           comparison           = NULL,
                           overlap.density      = 0.1,
+                          sesame.data.cache    = "EPIC",
+                          sesame.data.normal   = 'EPIC.5.normal',
+                          sesame.ref.version   = "hg38",
                           epi.run.gistic       = FALSE,
-                          compare.name         = NULL
+                          compare.name         = NULL,
+                          save.seg             = FALSE,
                           ...
                           ){
 
@@ -159,6 +167,7 @@ sesame = {
                        sesame.ref.version           = "hg38",
                        sesame.reference             = reference,##"Sample_Group"
                        sesame.split.by              = split.by,
+                       sesame.save.seg              = save.seg,
                        ...
                        )
 
@@ -172,16 +181,16 @@ sesame = {
 
 hm450 = {
 
-  seg <- methyl_master_k450(k450.input.file.dir     = input.dir,
-                            k450.output.file.dir    = output.dir,
-                            k450.sample.sheet.path  = sample.sheet.path,
-                            k450.comparison         = comparisons,
-                            k450.split.by           = split.by,
-                            k450.reference          = reference,
-                            k450.sesame.data.cache  = "EPIC",
-                            k450.sesame.data.normal = 'EPIC.5.normal',
-                            k450.sesame.ref.version = "hg38",
-                            ...)
+  seg <- methyl_master_hm450(hm450.input.file.dir     = input.dir,
+                             hm450.output.file.dir    = output.dir,
+                             hm450.sample.sheet.path  = sample.sheet.path,
+                             hm450.comparison         = comparisons,
+                             hm450.split.by           = split.by,
+                             hm450.reference          = reference,
+                             hm450.sesame.data.cache  = "EPIC",
+                             hm450.sesame.data.normal = 'EPIC.5.normal',
+                             hm450.sesame.ref.version = "hg38",
+                             ...)
 
 }, ##End K450
 
@@ -303,11 +312,52 @@ writeLines(c("\nTotal time:\n",
 ##############################################################################
 ##############################################################################
 
-if(visualize==TRUE){
+## 0: homozygous deletion (2-copy loss)
+## 1: heterozygous deletion (1-copy loss)
+## 2: normal diploid state
+## 3: 1-copy gain
+## 4: amplification (>= 2-copy gain)
 
-  source("R/methyl_master_visualize.R")
+##Overall the pipeline results structure is
+##a dataframe with the following fields:
+##"Sample_ID"
+##"chrom"
+##"loc.start"
+##"loc.end"
+##"num.mark"
+##"seg.mean"
+##"state"
+##"method"
 
-}
+################# OVERLAPS AND VISUALIZE ####################################
+#############################################################################
+#############################################################################
+#############################################################################
+#############################################################################
+
+##samples.list <- as.list(c(paste0("normal_",seq(1,10)),
+##                            paste0("tumor_",seq(1,10))))
+
+##seg$chrom <- as.numeric(seg$chrom)
+##seg <- na.omit(seg)
+##changing the chrom to number and removing NAs from X and Y doesn't seem
+##to fix the population ranges problem.
+
+#################### VISUALISE INDIVIDUAL ######################################
+
+lapply(seg.out,
+       olaps_and_visualize,
+       ov.split.field = TRUE,
+       ov.keep.extra.columns = TRUE,
+       ov.overlap.density = overlap.density,
+       ov.estimate.recursion = estimate.recursion,
+       ov.simplify.reduce = simplify.reduce)
+
+if(visualize.individual==TRUE){
+
+  lapply(seg.out, plot.individual)
+
+}##End visualize individual
 
 ##################### Write Session Info #####################################
 
@@ -322,11 +372,11 @@ writeLines(capture.output(sessionInfo()),
 )
 
 }else{
-  
+
   methyl_master_compare(compare.input.dir = NULL,
                         compare.output.dir = NULL,
                         compare.output.name = NULL)
-  
+
 }
 
 ##################### End pipeline ###########################################

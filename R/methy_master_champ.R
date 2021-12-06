@@ -200,4 +200,27 @@ save(champ_results, file=paste0(work.dir,
                                 "champ_results.RData"))
 rm(champ_results)
 
+load(file=paste0(output.dir, file.sep, "champ_seg.RData"))
+seg <- champ_seg
+rm(champ_seg)
+##colnames(seg)
+##"Sample_ID"
+##"chrom"
+##"loc.start"
+##"loc.end"
+##"num.mark"
+##"seg.mean"
+seg$state <- round(2^seg$seg.mean * 2)
+seg$state[seg$state > 4] <- 4
+seg$method <- "champ"
+row.names(seg) <- NULL
+seg <- na.omit(seg)
+##For k450 we want to omit the "chr" from chrom for intial plotting
+##then add back in downstream for ggplot
+
+seg$chrom <-
+  as.integer(unlist(strsplit(seg$chrom,split="chr"))[c(FALSE,TRUE)])
+
+return(seg.out)
+
 }

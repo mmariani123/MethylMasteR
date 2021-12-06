@@ -2,6 +2,11 @@
 
 #' ##Methyl Master visualization and other output
 
+load("C:\\Users\\Mike\\Desktop\\cnv_testing\\sesame_cord\\seg.RData")
+routine <- "sesame"
+output.dir <- "C:\\Users\\Mike\\Desktop\\cnv_testing\\sesame_cord"
+file.sep <- .Platform$file.sep
+
 if(exists("routine")){
 
 switch(routine,
@@ -27,22 +32,22 @@ switch(routine,
 
        sesame = {
 
-         load(paste0(work.dir,
+         load(paste0(output.dir,
                      file.sep,
                      "sesame_seg_normal_tumor_female.RData"))
-         load(paste0(work.dir,
+         load(paste0(output.dir,
                      file.sep,
                      "sesame_seg_normal_tumor_male.RData"))
-         load(paste0(work.dir,
+         load(paste0(output.dir,
                      file.sep,
                      "sesame_seg_paired_female.RData"))
-         load(paste0(work.dir,
+         load(paste0(output.dir,
                      file.sep,
                      "sesame_seg_paired_male.RData"))
-         load(paste0(work.dir,
+         load(paste0(output.dir,
                      file.sep,
                      "sesame_seg_cord_female.RData"))
-         load(paste0(work.dir,
+         load(paste0(output.dir,
                      file.sep,
                      "sesame_seg_cord_male.RData"))
 
@@ -95,10 +100,10 @@ switch(routine,
          if(k450.workflow=="A"){
 
            ##sub routine A
-           load(paste0(work.dir,file.sep,"candidates_data_normal_female_A.RData"))
-           load(paste0(work.dir,file.sep,"candidates_data_normal_male_A.RData"))
-           load(paste0(work.dir,file.sep,"candidates_data_cord_female_A.RData"))
-           load(paste0(work.dir,file.sep,"candidates_data_cord_male_A.RData"))
+           load(paste0(output.dir,file.sep,"candidates_data_normal_female_A.RData"))
+           load(paste0(output.dir,file.sep,"candidates_data_normal_male_A.RData"))
+           load(paste0(output.dir,file.sep,"candidates_data_cord_female_A.RData"))
+           load(paste0(output.dir,file.sep,"candidates_data_cord_male_A.RData"))
 
            candidates_data_normal_female_A_sig <-
              candidates_data_normal_female_A[
@@ -149,10 +154,10 @@ switch(routine,
 
          }else if(k450.workflow==B){
 
-           load(paste0(work.dir,file.sep,"candidates_data_normal_female_B.RData"))
-           load(paste0(work.dir,file.sep,"candidates_data_normal_male_B.RData"))
-           load(paste0(work.dir,file.sep,"candidates_data_cord_female_B.RData"))
-           load(paste0(work.dir,file.sep,"candidates_data_cord_male_B.RData"))
+           load(paste0(output.dir,file.sep,"candidates_data_normal_female_B.RData"))
+           load(paste0(output.dir,file.sep,"candidates_data_normal_male_B.RData"))
+           load(paste0(output.dir,file.sep,"candidates_data_cord_female_B.RData"))
+           load(paste0(output.dir,file.sep,"candidates_data_cord_male_B.RData"))
 
            candidates_data_normal_female_B_sig <-
              candidates_data_normal_female_B[
@@ -201,10 +206,10 @@ switch(routine,
 
          }else if(k450.workflow=="C"){
 
-           load(paste0(work.dir,file.sep,"candidates_data_normal_female_C.RData"))
-           load(paste0(work.dir,file.sep,"candidates_data_normal_male_C.RData"))
-           load(paste0(work.dir,file.sep,"candidates_data_cord_female_C.RData"))
-           load(paste0(work.dir,file.sep,"candidates_data_cord_male_C.RData"))
+           load(paste0(output.dir,file.sep,"candidates_data_normal_female_C.RData"))
+           load(paste0(output.dir,file.sep,"candidates_data_normal_male_C.RData"))
+           load(paste0(output.dir,file.sep,"candidates_data_cord_female_C.RData"))
+           load(paste0(output.dir,file.sep,"candidates_data_cord_male_C.RData"))
 
            candidates_data_normal_female_C_sig <-
              candidates_data_normal_female_C$data[
@@ -297,7 +302,7 @@ switch(routine,
 
        champ = {
 
-         load(file=paste0(work.dir, file.sep, "champ_seg.RData"))
+         load(file=paste0(output.dir, file.sep, "champ_seg.RData"))
          seg <- champ_seg
          rm(champ_seg)
          ##colnames(seg)
@@ -448,7 +453,7 @@ cvns.matrix[is.na(cvns.matrix)] <- 2
 cvns.matrix <- round(cvns.matrix, 0)
 
 write.table(cvns.matrix,
-            file = paste0(work.dir,
+            file = paste0(output.dir,
                           file.sep,
                           routine,
                           "_",
@@ -467,7 +472,7 @@ pheatmap.out <- pheatmap::pheatmap(cvns.matrix,
                                    show_colnames = T)
 
 ggsave(pheatmap.out,
-       file = paste0(work.dir,
+       file = paste0(output.dir,
                      file.sep,
                      routine,
                      "_",
@@ -562,7 +567,7 @@ seg.heatmap <- ggplot(seg,
                              "blue"))
 
 ggsave(seg.heatmap,
-       filename = paste0(work.dir,
+       filename = paste0(output.dir,
                          file.sep,
                          routine,
                          "_",

@@ -688,4 +688,270 @@ rm(hm450_cn_methylset_tumor_male)
 rm(hm450_cn_methylset_cord_female)
 rm(hm450_cn_methylset_cord_male)
 
+if(k450.workflow=="A"){
+
+  ##sub routine A
+  load(paste0(output.dir,
+              file.sep,
+              "candidates_data_normal_female_A.RData"))
+  load(paste0(output.dir,
+              file.sep,
+              "candidates_data_normal_male_A.RData"))
+  load(paste0(output.dir,
+              file.sep,
+              "candidates_data_cord_female_A.RData"))
+  load(paste0(output.dir,
+              file.sep,
+              "candidates_data_cord_male_A.RData"))
+
+  candidates_data_normal_female_A_sig <-
+    candidates_data_normal_female_A[
+      candidates_data_normal_female_A$p.val <= 0.05,]
+  candidates_data_normal_male_A_sig   <-
+    candidates_data_normal_male_A[
+      candidates_data_normal_male_A$p.val <= 0.05,]
+  candidates_data_cord_female_A_sig   <-
+    candidates_data_cord_female_A[
+      candidates_data_cord_female_A$p.val <= 0.05,]
+  candidates_data_cord_male_A_sig   <-
+    candidates_data_cord_male_A[
+      candidates_data_cord_male_A$p.val <= 0.05,]
+
+  candidates_data_normal_female_A_sig$num.mark <- NA
+  candidates_data_normal_female_A_sig$bstat    <- NA
+  candidates_data_normal_female_A_sig$treatment <- "tumor"
+  candidates_data_normal_male_A_sig$num.mark <- NA
+  candidates_data_normal_male_A_sig$bstat    <- NA
+  candidates_data_normal_male_A_sig$treatment <- "tumor"
+  candidates_data_cord_female_A_sig$num.mark <- NA
+  candidates_data_cord_female_A_sig$bstat    <- NA
+  candidates_data_cord_female_A_sig$treatment <- "tumor"
+  candidates_data_cord_male_A_sig$num.mark <- NA
+  candidates_data_cord_male_A_sig$bstat    <- NA
+  candidates_data_cord_male_A_sig$treatment <- "tumor"
+
+  preferred.columns <- c(7,1,2,3,12,13,8,5,4,9,10,11,14)
+
+  candidates_data_normal_female_A_sig <-
+    candidates_data_normal_female_A_sig[, preferred.columns]
+  candidates_data_normal_male_A_sig <-
+    candidates_data_normal_male_A_sig[, preferred.columns]
+  candidates_data_cord_female_A_sig <-
+    candidates_data_cord_female_A_sig[, preferred.columns]
+  candidates_data_cord_male_A_sig <-
+    candidates_data_cord_male_A_sig[, preferred.columns]
+
+  candidates_data_normal_A_sig_colnames <- c("ID",
+                                             "chrom",
+                                             "loc.start",
+                                             "loc.end",
+                                             "num.mark",
+                                             "bstat",
+                                             "pval",
+                                             "seg.mean",
+                                             "seg.median",
+                                             "karyotype",
+                                             "sex_reported",
+                                             "sex_inferred",
+                                             "treatment")
+
+  colnames(candidates_data_normal_female_A_sig) <-
+    candidates_data_normal_A_sig_colnames
+  colnames(candidates_data_normal_male_A_sig) <-
+    candidates_data_normal_A_sig_colnames
+  colnames(candidates_data_cord_female_A_sig) <-
+    candidates_data_normal_A_sig_colnames
+  colnames(candidates_data_cord_male_A_sig) <-
+    candidates_data_normal_A_sig_colnames
+
+  seg <- do.call(rbind,
+                 list(candidates_data_normal_female_A_sig,
+                      candidates_data_normal_male_A_sig,
+                      candidates_data_cord_female_A_sig,
+                      candidates_data_cord_male_A_sig)
+  )
+
+}else if(k450.workflow==B){
+
+  load(paste0(output.dir,
+              file.sep,
+              "candidates_data_normal_female_B.RData"))
+  load(paste0(output.dir,
+              file.sep,
+              "candidates_data_normal_male_B.RData"))
+  load(paste0(output.dir,
+              file.sep,
+              "candidates_data_cord_female_B.RData"))
+  load(paste0(output.dir,
+              file.sep,
+              "candidates_data_cord_male_B.RData"))
+
+  candidates_data_normal_female_B_sig <-
+    candidates_data_normal_female_B[
+      candidates_data_normal_female_B$p.val <= 0.05,]
+  candidates_data_normal_male_B_sig  <-
+    candidates_data_normal_male_B[
+      candidates_data_normal_male_B$p.val <= 0.05,]
+  candidates_data_cord_female_B_sig  <-
+    candidates_data_cord_female_B[
+      candidates_data_cord_female_B$p.val <= 0.05,]
+  candidates_data_cord_male_B_sig  <-
+    candidates_data_cord_male_B[
+      candidates_data_cord_male_B$p.val <= 0.05,]
+
+  candidates_data_normal_female_B_sig$num.mark <- NA
+  candidates_data_normal_female_B_sig$bstat    <- NA
+  candidates_data_normal_female_B_sig$treatment <- "tumor"
+  candidates_data_normal_male_B_sig$num.mark <- NA
+  candidates_data_normal_male_B_sig$bstat    <- NA
+  candidates_data_normal_male_B_sig$treatment <- "tumor"
+  candidates_data_cord_female_B_sig$num.mark <- NA
+  candidates_data_cord_female_B_sig$bstat    <- NA
+  candidates_data_cord_female_B_sig$treatment <- "tumor"
+  candidates_data_cord_male_B_sig$num.mark <- NA
+  candidates_data_cord_male_B_sig$bstat    <- NA
+  candidates_data_cord_male_B_sig$treatment <- "tumor"
+
+  candidates_data_normal_female_B_sig <-
+    candidates_data_normal_female_B_sig[, preferred.columns]
+  candidates_data_normal_male_B_sig <-
+    candidates_data_normal_male_B_sig[, preferred.columns]
+  candidates_data_cord_female_B_sig <-
+    candidates_data_cord_female_B_sig[, preferred.columns]
+  candidates_data_cord_male_B_sig <-
+    candidates_data_cord_male_B_sig[, preferred.columns]
+
+  candidates_data_normal_B_sig_colnames <- c("ID",
+                                             "chrom",
+                                             "loc.start",
+                                             "loc.end",
+                                             "num.mark",
+                                             "bstat",
+                                             "pval",
+                                             "seg.mean",
+                                             "seg.median",
+                                             "karyotype",
+                                             "sex_reported",
+                                             "sex_inferred",
+                                             "treatment")
+
+  colnames(candidates_data_normal_female_B_sig) <-
+    candidates_data_normal_B_sig_colnames
+  colnames(candidates_data_normal_male_B_sig) <-
+    candidates_data_normal_B_sig_colnames
+  colnames(candidates_data_cord_female_B_sig) <-
+    candidates_data_normal_B_sig_colnames
+  colnames(candidates_data_cord_male_B_sig) <-
+    candidates_data_normal_B_sig_colnames
+
+  seg <- do.call(rbind,
+                 list(candidates_data_normal_female_B_sig,
+                      candidates_data_normal_male_B_sig,
+                      candidates_data_cord_female_B_sig,
+                      candidates_data_cord_male_B_sig))
+
+}else if(k450.workflow=="C"){
+
+  load(paste0(output.dir,
+              file.sep,
+              "candidates_data_normal_female_C.RData"))
+  load(paste0(output.dir,
+              file.sep,
+              "candidates_data_normal_male_C.RData"))
+  load(paste0(output.dir,
+              file.sep,
+              "candidates_data_cord_female_C.RData"))
+  load(paste0(output.dir,
+              file.sep,
+              "candidates_data_cord_male_C.RData"))
+
+  candidates_data_normal_female_C_sig <-
+    candidates_data_normal_female_C$data[
+      candidates_data_normal_female_C$data$pval <= 0.05,]
+  candidates_data_normal_male_C_sig    <-
+    candidates_data_normal_male_C$data[
+      candidates_data_normal_male_C$data$pval <= 0.05,]
+  candidates_data_cord_female_C_sig    <-
+    candidates_data_cord_female_C$data[
+      candidates_data_cord_female_C$data$pval <= 0.05,]
+  candidates_data_cord_male_C_sig    <-
+    candidates_data_cord_male_C$data[
+      candidates_data_cord_male_C$data$pval <= 0.05,]
+
+  candidates_data_normal_female_C_sig$treatment <- "tumor"
+  candidates_data_normal_male_C_sig$treatment <- "tumor"
+  candidates_data_cord_female_C_sig$treatment <- "tumor"
+  candidates_data_cord_male_C_sig$treatment <- "tumor"
+
+  seg <- do.call(rbind,
+                 list(candidates_data_normal_female_C_sig,
+                      candidates_data_normal_male_C_sig,
+                      candidates_data_cord_female_C_sig,
+                      candidates_data_cord_male_C_sig))
+
+}else{
+
+  stop(paste0("Error: need to select a ",
+              "proper sub workflow for 450k",
+              " <k450.workflow>"))
+
+}
+
+##Note differences in 450k standard and conumee:
+##colnames(candidates_data_cord_male_B_sig)
+##"chr"
+##"startCG"
+##"endCG"
+##"median"
+##"mean"
+##"sd"
+##"smp"
+##"p.val"
+##"karyotype"
+##"sex_reported"
+##"sex_inferred"
+##"num.mark"
+##"bstat"
+
+##candidates_data_cord_male_C_sig
+##"ID"
+##"chrom"
+##"loc.start"
+##"loc.end"
+##"num.mark"
+##"bstat"
+##"pval"
+##"seg.mean"
+##"seg.median"
+##"karyotype"
+##"sex_reported"
+##"sex_inferred"
+
+##Desired names:
+##colnames(seg)
+##"ID"
+##"chrom"
+##"loc.start"
+##"loc.end"
+##"num.mark"
+##"bstat"
+##"pval"
+##"seg.mean"
+##"seg.median"
+##karyotype
+##sex_reported
+##sex_inferred
+##treatment
+
+colnames(seg)[1] <- "Sample_ID"
+seg <- seg[,c(1,2,3,4,5,8,10,11,12,13)]
+seg$state <- round(2^seg$seg.mean * 2)
+seg$state[seg$state > 4] <- 4
+seg$method <- "k450"
+seg$sub.method <- sub.workflow
+row.names(seg) <- NULL
+seg <- na.omit(seg) ##Workflow C ends up with some NA rows
+
+return(seg.out)
+
 }
