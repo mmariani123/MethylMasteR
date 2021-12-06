@@ -37,6 +37,7 @@
 #' @param champ.runDMR
 #' @param champ.runBlock
 #' @param champ.runGSEA
+#' @param champ.save.seg
 #' @param ...
 #' @return #NULL
 #' @export
@@ -56,6 +57,7 @@ methyl_master_champ <- function(champ.directory,
                                 champ.runDMR=TRUE,
                                 champ.runBlock=TRUE,
                                 champ.runGSEA=TRUE,
+                                champ.save.seg=FALSE,
                                 ...
                                 ){
 

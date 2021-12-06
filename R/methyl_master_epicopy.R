@@ -40,6 +40,7 @@
 #' @param epi.retained.probes
 #' @param epi.keepfnobj
 #' @param epi.fn.output
+#' @param epi.save.seg
 #' @param ...
 #' @import Epicopy
 #' @import utils
@@ -64,6 +65,7 @@ methyl_master_epicopy <- function(epi.target.dir=NULL,
                                   epi.retained.probes=NULL,
                                   epi.keepfnobj=FALSE,
                                   epi.fn.output=NULL,
+                                  epi.save.seg=FALSE,
                                   ...){
 
 #lock in modified epicopy functions to original namespace:

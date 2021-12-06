@@ -73,8 +73,8 @@ if(sesame.reference=="internal"){
                                                         recursive=TRUE)
     sesameData::sesameDataCacheAll()
 
-    treatment.names <-    sesame.sample.sheet.df[
-      sesame.sample.sheet.df$Sample_Group %in%
+    treatment.names <-    sesame.sesame.sample.sheet.df[
+      sesame.sesame.sample.sheet.df$Sample_Group %in%
         sesame.comparison[1],"Sample_Name"]
 
     treatment_idat_prefixes <-  treatment_idat_prefixes[gsub(paste0(".*",
@@ -83,8 +83,8 @@ if(sesame.reference=="internal"){
                                      treatment_idat_prefixes) %in%
                                      treatment.names]
 
-    treatment.platform <- unique(sesame.sample.sheet.df[
-                                 sesame.sample.sheet.df$Sample_Name %in%
+    treatment.platform <- unique(sesame.sesame.sample.sheet.df[
+                                 sesame.sesame.sample.sheet.df$Sample_Name %in%
                                  treatment.names, "Platform"])
 
     sesame_sset <- sesame::openSesame(treatment_idat_prefixes,
@@ -109,7 +109,7 @@ if(sesame.reference=="internal"){
                 "\ncan't split by sex!"))
     ##Get sesame normal samples:
 
-    split.by.cat <- unique(sesame.sample.sheet.df[[sesame.split.by]])
+    split.by.cat <- unique(sesame.sesame.sample.sheet.df[[sesame.split.by]])
 
     sesameData::sesameDataCache(sesame.data.cache)
     sesame_ssets_normal <- sesameData::sesameDataGet(sesame.data.normal)
@@ -161,23 +161,29 @@ if(sesame.reference=="internal"){
 
     treatment.samples <-
       sesame.sample.sheet.df[
-        sesame.sample.sheet.df$Sample_Group==sesame.comparison[1],"Sample_Name"]
+        sesame.sample.sheet.df$Sample_Group==sesame.comparison[1],
+        "Sample_Name"]
 
     control.samples <-
         sesame.sample.sheet.df[
-        sesame.sample.sheet.df$Sample_Group==sesame.comparison[2],"Sample_Name"]
+        sesame.sample.sheet.df$Sample_Group==sesame.comparison[2],
+        "Sample_Name"]
 
-      treatment.paths <-     sesame.sample.sheet.df[
-      sesame.sample.sheet.df$Sample_Group==sesame.comparison[1], "Basename"]
+      treatment.paths <- sesame.sample.sheet.df[
+      sesame.sample.sheet.df$Sample_Group==sesame.comparison[1],
+      "Basename"]
 
-    control.paths   <-     sesame.sample.sheet.df[
-      sesame.sample.sheet.df$Sample_Group==sesame.comparison[2], "Basename"]
+    control.paths   <-  sesame.sample.sheet.df[
+      sesame.sample.sheet.df$Sample_Group==sesame.comparison[2],
+      "Basename"]
 
     treatment.platform <-     unique(sesame.sample.sheet.df[
-      sesame.sample.sheet.df$Sample_Group==sesame.comparison[1], "Platform"])
+      sesame.sample.sheet.df$Sample_Group==sesame.comparison[1],
+      "Platform"])
 
     control.platform   <-     unique(sesame.sample.sheet.df[
-      sesame.sample.sheet.df$Sample_Group==sesame.comparison[2], "Platform"])
+      sesame.sample.sheet.df$Sample_Group==sesame.comparison[2],
+      "Platform"])
 
     ExperimentHub::setExperimentHubOption("CACHE",
                          sesame.idat.files.dir)
@@ -188,13 +194,13 @@ if(sesame.reference=="internal"){
                                               recursive=TRUE)
 
     idat_prefixes.treatment <-
-      idat_prefixes[gsub(".*/.*_","",idat_prefixes) %in%
-                      gsub(paste0(".*",sesame.file.sep,".*_"),
+      idat_prefixes[gsub(".*/","",idat_prefixes) %in%
+                      gsub(paste0(".*",sesame.file.sep),
                            "",treatment.paths)]
 
     idat_prefixes.control   <-
-      idat_prefixes[gsub(".*/.*_","",idat_prefixes) %in%
-                      gsub(paste0(".*",sesame.file.sep,".*_"),
+      idat_prefixes[gsub(".*/","",idat_prefixes) %in%
+                      gsub(paste0(".*",sesame.file.sep),
                            "",control.paths)]
 
     sesameData::sesameDataCacheAll()
@@ -384,16 +390,16 @@ if(sesame.save.seg==TRUE){
 #############################################################################
 #############################################################################
 
-if(reference=="internal"){
+sesame.seg <- seg[[1]]
 
-  if(is.null(split.by)){
+if(sesame.reference=="internal"){
 
-    sesame.seg <- seg[[1]]
+  if(is.null(sesame.split.by)){
 
     sesame_seg_treatment.df <- binding_frames_mm(
       sesame.seg)
 
-    sesame_seg_treatment.df <- sesame_seg_treatement.df[
+    sesame_seg_treatment.df <- sesame_seg_treatment.df[
       sesame_seg_treatment.df$pval <= 0.05,]
 
     colnames(sesame_seg_treatment.df)[1] <- "Sample_ID"
@@ -416,31 +422,31 @@ if(reference=="internal"){
   }else{
 
     sesame.seg.treatment <- sesame.seg[names(sesame.seg) %in%
-    sample.sheet.csv[sample.sheet.csv$Sample_Group %in% comparison[1],
-    "Sample_Name"]]
+    sesame.sample.sheet.df[sesame.sample.sheet.df$Sample_Group %in%
+                             sesame.comparison[1], "Sample_Name"]]
 
-    split.by.1 <- unique(sample.sheet.csv[[split.by]])[1]
-    split.by.2 <- unique(sample.sheet.csv[[split.by]])[2]
+    split.by.1 <- unique(sesame.sample.sheet.df[[sesame.split.by]])[1]
+    split.by.2 <- unique(sesame.sample.sheet.df[[sesame.split.by]])[2]
 
     sesame_seg_treatment.1 <- sesame.seg.treatment[
       names(sesame.seg.treatment) %in%
-        sample.sheet.csv[sample.sheet.csv$gender_reported %in% split.by.1,
+        sesame.sample.sheet.df[sesame.sample.sheet.df$gender_reported %in% split.by.1,
                          "Sample_Name"]]
 
     sesame_seg_treatment.2 <- sesame.seg[names(sesame.seg) %in%
-      sample.sheet.csv[sample.sheet.csv$gender_reported %in% split.by.2,
+      sesame.sample.sheet.df[sesame.sample.sheet.df$gender_reported %in% split.by.2,
         "Sample_Name"]]
 
     sesame_seg_treatment.1.df <- binding_frames_mm(
-      sesame_seg_treatement.1)
+      sesame_seg_treatment.1)
 
-    sesame_seg_treatment.1.df <- sesame_seg_treatement.1.df[
+    sesame_seg_treatment.1.df <- sesame_seg_treatment.1.df[
       sesame_seg_treatment.1.df$pval <= 0.05,]
 
     sesame_seg_treatment.2.df <- binding_frames_mm(
       sesame_seg_treatment.2)
 
-    sesame_seg_treatment.2.df <- sesame_seg_treatement.2.df[
+    sesame_seg_treatment.2.df <- sesame_seg_treatment.2.df[
       sesame_seg_treatment.2.df$pval <= 0.05,]
 
     colnames(sesame_seg_treatment.1.df)[1] <- "Sample_ID"
@@ -458,7 +464,7 @@ if(reference=="internal"){
     seg.out <- list(seg.1,
                     seg.2)
 
-    names(seg.out) <- c("internal.1", "internal.2")
+    names(seg.out) <- c("internal_1", "internal_2")
 
     ##For sesame we want to omit the "chr"
     ##from chrom for intial plotting
@@ -468,17 +474,17 @@ if(reference=="internal"){
 
 }else{
 
-  if(is.null(split.by)){
-    sesame.seg.treatment <- sesame.seg[names(sesame.seg) %in%
-      sample.sheet.csv[sample.sheet.csv$Sample_Group %in% comparison[1],
-        "Sample_Name"]]
+  if(is.null(sesame.split.by)){
+    sesame_seg_treatment <- sesame.seg[names(sesame.seg) %in%
+      sesame.sample.sheet.df[sesame.sample.sheet.df$Sample_Group %in%
+                               sesame.comparison[1], "Sample_Name"]]
 
-    sesame.seg.control <- sesame.seg[names(sesame.seg) %in%
-      sample.sheet.csv[sample.sheet.csv$Sample_Group %in% comparison[2],
-        "Sample_Name"]]
+    sesame_seg_control <- sesame.seg[names(sesame.seg) %in%
+      sesame.sample.sheet.df[sesame.sample.sheet.df$Sample_Group %in%
+                               sesame.comparison[2], "Sample_Name"]]
 
     sesame_seg_treatment.df <- binding_frames_mm(
-      sesame_seg_treatement)
+      sesame_seg_treatment)
 
     sesame_seg_treatment.df <- sesame_seg_treatment.df[
       sesame_seg_treatment.df$pval <= 0.05,]
@@ -512,7 +518,7 @@ if(reference=="internal"){
     seg.out <- list(seg.treatment,
                     seg.control)
 
-    names(seg.out) <- c(comparison[1], comparison[2])
+    names(seg.out) <- c(sesame.comparison[1], sesame.comparison[2])
 
     ##For sesame we want to omit the "chr"
     ##from chrom for intial plotting
@@ -520,18 +526,20 @@ if(reference=="internal"){
 
   }else{
 
-    if(is.null(split.by)){
+    if(is.null(sesame.split.by)){
 
       sesame.seg.treatment <- sesame.seg[names(sesame.seg) %in%
-        sample.sheet.csv[sample.sheet.csv$Sample_Group %in% comparison[1],
+        sesame.sample.sheet.df[sesame.sample.sheet.df$Sample_Group %in%
+                                 sesame.comparison[1],
           "Sample_Name"]]
 
       sesame.seg.control <- sesame.seg[names(sesame.seg) %in%
-        sample.sheet.csv[sample.sheet.csv$Sample_Group %in% comparison[2],
+        sesame.sample.sheet.df[sesame.sample.sheet.df$Sample_Group %in%
+                                 sesame.comparison[2],
           "Sample_Name"]]
 
       sesame_seg_treatment.df <- binding_frames_mm(
-        sesame_seg_treatement)
+        sesame_seg_treatment)
 
       sesame_seg_treatment.df <- sesame_seg_treatment.df[
         sesame_seg_treatment.df$pval <= 0.05,]
@@ -542,24 +550,75 @@ if(reference=="internal"){
       sesame_seg_control.df <- sesame_seg_control.df[
         sesame_seg_control.df$pval <= 0.05,]
 
-      split.categories <- unique(sesame_seg_treatment.df[[split.by]])
+      colnames(sesame_seg_treatment.df)[1] <- "Sample_ID"
+      seg.treatment <- sesame_seg_treatment.df[,c(1,2,3,4,5,6,10)]
+      seg.treatment$state <- round(2^seg.treatment$seg.mean * 2)
+      seg.treatment$state[seg.treatment$state > 4] <- 4
+      seg.treatment$method <- "sesame"
+      row.names(seg.treatment) <- NULL
+      seg.treatment <- na.omit(seg.treatment)
+      seg.treatment$chrom <-
+        unlist(strsplit(seg.treatment$chrom,split="chr"))[c(FALSE,TRUE)]
+
+      colnames(sesame_seg_control.df)[1] <- "Sample_ID"
+      seg.control <- sesame_seg_control.df[,c(1,2,3,4,5,6,10)]
+      seg.control$state <- round(2^seg.control$seg.mean * 2)
+      seg.control$state[seg.control$state > 4] <- 4
+      seg.control$method <- "sesame"
+      row.names(seg.control) <- NULL
+      seg.control <- na.omit(seg.control)
+      seg.control$chrom <-
+        unlist(strsplit(seg.control$chrom,split="chr"))[c(FALSE,TRUE)]
+
+      ##For sesame we want to omit the "chr"
+      ##from chrom for intial plotting
+      ##then add back in downstream for ggplot
+
+      seg.out <- list(seg.treatment,
+                      seg.control)
+
+      names(seg.out) <- c(sesame.comparison[1], sesame.comparison[2])
+
+    }else{
+
+      sesame_seg_treatment <- sesame.seg[names(sesame.seg) %in%
+      sesame.sample.sheet.df[sesame.sample.sheet.df$Sample_Group %in%
+                               sesame.comparison[1], "Sample_Name"]]
+
+      sesame_seg_control <- sesame.seg[names(sesame.seg) %in%
+      sesame.sample.sheet.df[sesame.sample.sheet.df$Sample_Group %in%
+                               sesame.comparison[2], "Sample_Name"]]
+
+      sesame_seg_treatment.df <- binding_frames_mm(
+        sesame_seg_treatment)
+
+      sesame_seg_treatment.df <- sesame_seg_treatment.df[
+        sesame_seg_treatment.df$pval <= 0.05,]
+
+      sesame_seg_control.df <- binding_frames_mm(
+        sesame_seg_control)
+
+      sesame_seg_control.df <- sesame_seg_control.df[
+        sesame_seg_control.df$pval <= 0.05,]
+
+      split.categories <- unique(sesame.sample.sheet.df[[sesame.split.by]])
 
       sesame_seg_treatment.df.1 <- sesame_seg_treatment.df[
-        sesame_seg_treatment.df[[split.by]] %in% split.categories[1],]
+        sesame.sample.sheet.df[[sesame.split.by]] %in% split.categories[1],]
 
       sesame_seg_treatment.df.2 <- sesame_seg_treatment.df[
-        sesame_seg_treatment.df[[split.by]] %in% split.categories[2],]
+        sesame.sample.sheet.df[[sesame.split.by]] %in% split.categories[2],]
 
       sesame_seg_control.df.1 <- sesame_seg_treatment.df[
-        sesame_seg_treatment.df[[split.by]] %in% split.categories[1],]
+        sesame.sample.sheet.df[[sesame.split.by]] %in% split.categories[1],]
 
       sesame_seg_control.df.2 <- sesame_seg_treatment.df[
-        sesame_seg_treatment.df[[split.by]] %in% split.categories[2],]
+        sesame.sample.sheet.df[[sesame.split.by]] %in% split.categories[2],]
 
       colnames(sesame_seg_treatment.df.1)[1] <- "Sample_ID"
       seg.treatment.1 <- sesame_seg_treatment.df.1[,c(1,2,3,4,5,6,10)]
-      seg.treatment.1$state <- round(2^seg$seg.mean * 2)
-      seg.treatment.1$state[seg$state > 4] <- 4
+      seg.treatment.1$state <- round(2^seg.treatment.1$seg.mean * 2)
+      seg.treatment.1$state[seg.treatment.1$state > 4] <- 4
       seg.treatment.1$method <- "sesame"
       row.names(seg.treatment.1) <- NULL
       seg.treatment.1 <- na.omit(seg.treatment.1)
@@ -568,8 +627,8 @@ if(reference=="internal"){
 
       colnames(sesame_seg_treatment.df.2)[1] <- "Sample_ID"
       seg.treatment.2 <- sesame_seg_treatment.df.2[,c(1,2,3,4,5,6,10)]
-      seg.treatment.2$state <- round(2^seg$seg.mean * 2)
-      seg.treatment.2$state[seg$state > 4] <- 4
+      seg.treatment.2$state <- round(2^seg.treatment.2$seg.mean * 2)
+      seg.treatment.2$state[seg.treatment.2$state > 4] <- 4
       seg.treatment.2$method <- "sesame"
       row.names(seg.treatment.2) <- NULL
       seg.treatment.2 <- na.omit(seg.treatment.2)
@@ -578,8 +637,8 @@ if(reference=="internal"){
 
       colnames(sesame_seg_control.df.1)[1] <- "Sample_ID"
       seg.control.1 <- sesame_seg_control.df.1[,c(1,2,3,4,5,6,10)]
-      seg.control.1$state <- round(2^seg.1$seg.mean * 2)
-      seg.control.1$state[seg.1$state > 4] <- 4
+      seg.control.1$state <- round(2^seg.control.1$seg.mean * 2)
+      seg.control.1$state[seg.control.1$state > 4] <- 4
       seg.control.1$method <- "sesame"
       row.names(seg.control.1) <- NULL
       seg.control.1 <- na.omit(seg.control.1)
@@ -588,8 +647,8 @@ if(reference=="internal"){
 
       colnames(sesame_seg_control.df.2)[1] <- "Sample_ID"
       seg.control.2 <- sesame_seg_control.df.2[,c(1,2,3,4,5,6,10)]
-      seg.control.2$state <- round(2^seg.2$seg.mean * 2)
-      seg.control.2$state[seg.2$state > 4] <- 4
+      seg.control.2$state <- round(2^seg.control.2$seg.mean * 2)
+      seg.control.2$state[seg.control.2$state > 4] <- 4
       seg.control.2$method <- "sesame"
       row.names(seg.control.2) <- NULL
       seg.control.2 <- na.omit(seg.control.2)
@@ -604,10 +663,10 @@ if(reference=="internal"){
                       seg.control.1,
                       seg.control.2)
 
-      names(seg.out) <- c(paste0(comparison[1],"_1"),
-                          paste0(comparison[1],"_2"),
-                          paste0(comparison[2],"_1"),
-                          paste0(comparison[2],"_2"))
+      names(seg.out) <- c(paste0(sesame.comparison[1],"_1"),
+                          paste0(sesame.comparison[1],"_2"),
+                          paste0(sesame.comparison[2],"_1"),
+                          paste0(sesame.comparison[2],"_2"))
 
     }
 

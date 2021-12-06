@@ -1,6 +1,7 @@
 #!/usr/bin/env Rscript
 
-#' Modified population ranges function
+#' @title methyl_master_population_ranges
+#' @description  Modified population ranges function
 #'
 #' originally by Ludwig Geistlinger
 #' ###########################################################
@@ -108,7 +109,7 @@
 #' Beroukhim et al. (2007) Assessing the significance of chromosomal aberrations
 #' in cancer: methodology and application to glioma. PNAS, 104(50):20007-12.
 #'
-#' @author Ludwig Geistlinger, Martin Morgan
+#' @author Ludwig Geistlinger, Martin Morgan, Michael Mariani
 #' @seealso \code{\link{findOverlaps}}
 #'
 #' @examples
@@ -137,21 +138,22 @@
 #' populationRanges(grl, mode="RO", ro.thresh=0.5, classify.ranges=FALSE)
 #'
 #' @param data
-#' @param grl,
-#' @param mode=c("density", "RO"),
-#' @param density=0.1,
-#' @param ro.thresh=0.5,
-#' @param multi.assign=FALSE,
-#' @param verbose=FALSE,
-#' @param min.size=2,
-#' @param classify.ranges=TRUE,
-#' @param type.thresh=0.1,
-#' @param est.recur=FALSE)
-#' @import(CNVRanger)
+#' @param grl
+#' @param mode
+#' @param density
+#' @param ro.thresh
+#' @param multi.assign
+#' @param verbose
+#' @param min.size
+#' @param classify.ranges
+#' @param type.thresh
+#' @param est.recur
+#' @import CNVRanger
+#' @import S4Vectors
 #' @return
 #' @export
 #' @export
-salas_mm_population_ranges <- function(grl,
+methyl_master_population_ranges <- function(grl,
                                        mode=c("density", "RO"),
                                        density=0.1,
                                        ro.thresh=0.5,
@@ -188,8 +190,8 @@ salas_mm_population_ranges <- function(grl,
 {
   # exclude neutral regions (CN = 2, diploid)
   calls <- IRanges::stack(grl, index.var = "sample")
-  if(!("state" %in% colnames(mcols(calls))))
-    stop("Required column \'state\' storing integer copy number state not found")
+  if(!("state" %in% colnames(S4Vectors::mcols(calls))))
+  stop("Required column \'state\' storing integer copy number state not found")
 
   is.neutral <- calls$state == "2"
   sum.neutral <- sum(is.neutral)
@@ -199,8 +201,8 @@ salas_mm_population_ranges <- function(grl,
                   "(CN state = 2, diploid)"))
     calls <- calls[!is.neutral]
     sample <- calls$sample
-    ind <- colnames(mcols(calls)) != "sample"
-    mcols(calls) <- mcols(calls)[,ind, drop = FALSE]
+    ind <- colnames(S4Vectors::mcols(calls)) != "sample"
+    S4Vectors::mcols(calls) <- S4Vectors::mcols(calls)[,ind, drop = FALSE]
     grl <- split(calls, sample)
   }
   grl
@@ -372,7 +374,7 @@ cnvOncoPrint <- function(calls, features, multi.calls=.largest,
   qassay <- RaggedExperiment::qreduceAssay(calls, features,
                                            simplifyReduce=multi.calls, background=2)
 
-  if("symbol" %in% colnames(mcols(features))) rownames(qassay) <- features$symbol
+  if("symbol" %in% colnames(S4Vectors::mcols(features))) rownames(qassay) <- features$symbol
   else rownames(qassay) <- names(features)
 
   qassay <- qassay[rownames(qassay) != "",]

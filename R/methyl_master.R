@@ -33,7 +33,14 @@
 #' @param sesame.ref.version
 #' @param epi.run.gistic
 #' @param compare.name
+#' @param olaps.split.field
+#' @param estimate.recurrence
+#' @param ov.less.stringent.ra.setting
+#' @param ov.keep.extra.columns
+#' @param ov.pvalue
+#' @param ov.simplify.reduce
 #' @param save.seg
+#' @param create.dir
 #' @param ...
 #' @importFrom magrittr %>%
 #' @import profmem
@@ -62,6 +69,13 @@ methyl_master <- function(input.dir            = NULL,
                           epi.run.gistic       = FALSE,
                           compare.name         = NULL,
                           save.seg             = FALSE,
+                          olaps.split.field    = "Sample_ID",
+                          estimate.recurrence  = FALSE,
+                          ov.less.stringent.ra.setting = ov.less.stringent.ra.setting,
+                          ov.pvalue            = ov.pvalue,
+                          ov.keep.extra.columns = TRUE,
+                          ov.simplify.reduce  = weightedmean,
+                          create.dir           = FALSE,
                           ...
                           ){
 
@@ -93,15 +107,17 @@ sample.sheet.csv <- paste0(sample.sheet.path) %>%
                       read.csv(header = TRUE,
                                stringsAsFactors = FALSE)
 
-if(!dir.exists(output.dir)){
-  dir.create(output.dir)
-}else{
-  print("<output.dir> exists, overwriting")
-  message("<output.dir> exists, overwriting")
-  unlink(output.dir,
+if(create.dir==TRUE){
+  if(!dir.exists(output.dir)){
+    dir.create(output.dir)
+  }else{
+    print("<output.dir> exists, overwriting")
+    message("<output.dir> exists, overwriting")
+    unlink(output.dir,
          recursive=TRUE,
          force=TRUE)
-  dir.create(output.dir)
+    dir.create(output.dir)
+  }
 }
 
 if(visualize.individual==TRUE){
@@ -190,6 +206,7 @@ hm450 = {
                              hm450.sesame.data.cache  = "EPIC",
                              hm450.sesame.data.normal = 'EPIC.5.normal',
                              hm450.sesame.ref.version = "hg38",
+                             hm.450.save.seg          = save.seg,
                              ...)
 
 }, ##End K450
@@ -219,6 +236,7 @@ champ = {
                              champ.runDMR=TRUE,
                              champ.runBlock=TRUE,
                              champ.runGSEA=TRUE,
+                             champ.save.seg=save.seg,
                              ...
                              )
 
@@ -250,7 +268,10 @@ epicopy = {
                                epi.filter.probes=FALSE,
                                epi.retained.probes=NULL,
                                epi.keepfnobj=TRUE,
-                               epi.fn.output=NULL)
+                               epi.fn.output=NULL,
+                               epi.save.seg=save.seg,
+                               ...
+                               )
 
 }, ##End Epicopy
 
@@ -345,17 +366,44 @@ writeLines(c("\nTotal time:\n",
 
 #################### VISUALISE INDIVIDUAL ######################################
 
-lapply(seg.out,
-       olaps_and_visualize,
-       ov.split.field = TRUE,
-       ov.keep.extra.columns = TRUE,
-       ov.overlap.density = overlap.density,
-       ov.estimate.recursion = estimate.recursion,
-       ov.simplify.reduce = simplify.reduce)
+mapply(x=seg,y=names(seg),
+  function(x=x,
+           y=y,
+           output.dir1=output.dir,
+           routine1=routine,
+           olaps.split.field1=olaps.split.field,
+           ov.keep.extra.columns1=ov.keep.extra.columns,
+           overlap.density1=overlap.density,
+           estimate.recurrence1=estimate.recurrence,
+           ov.simplify.reduce1=ov.simplify.reduce,
+           ov.less.stringent.ra.setting1=ov.less.stringent.ra.setting,
+           ov.pvalue1=ov.pvalue){
+    methyl_master_olaps_and_visualize(
+       ov.seg                       = x,
+       ov.name                      = y,
+       ov.output.dir                = output.dir1,
+       ov.routine                   = routine1,
+       ov.split.field               = olaps.split.field1,
+       ov.keep.extra.columns        = ov.keep.extra.columns1,
+       ov.overlap.density           = overlap.density1,
+       ov.estimate.recurrence       = estimate.recurrence1,
+       ov.simplify.reduce           = ov.simplify.reduce1,
+       ov.less.stringent.ra.setting = ov.less.stringent.ra.setting1,
+       ov.pvalue                    = ov.pvalue1
+       )})
 
 if(visualize.individual==TRUE){
-
-  lapply(seg.out, plot.individual)
+  load(paste0(output.dir,.Platform$file.sep,"seg.RData"))
+  mapply(x=seg,y=names(seg),
+         function(x=x,
+                  y=y,
+                  output.dir1=output.dir
+                  ){
+                 methyl_master_plot_individual(
+                   pi.seg=x,
+                   pi.name=y,
+                   pi.output.dir=output.dir1
+                 )})
 
 }##End visualize individual
 

@@ -1,49 +1,60 @@
 #!/usr/bin/env Rscript
 
-##Michael Mariani Dartmouth College 2021
-
-##For Testing:
-##library(magrittr)
-##load("C:\\Users\\Mike\\Desktop\\cnv_testing\\sesame_cord\\seg.RData")
-##routine    <- "sesame"
-##output.dir <- "C:\\Users\\Mike\\Desktop\\cnv_testing\\sesame_cord"
-##file.sep   <- .Platform$file.sep
-##reference  <- "internal"
-##split.by <- "gender_reported"
-##comparison <- c("tumor", "normal")
-##
-##sample.sheet.path <- paste0("C:\\Users\\Mike",
-##                            "\\Desktop\\cnv_testing",
-##                            "\\Sample_Sheet.csv")
-##
-##sample.sheet.csv <- paste0(sample.sheet.path) %>%
-##  read.csv(header = TRUE,
-##           stringsAsFactors = FALSE)
-
 #' @title methyl_master_olaps_and_visualize
 #' @description perform overlaps analysis and visualization
-#'
+#' ##Michael Mariani Dartmouth College 2021
+#' #For Testing:
+#' #library(magrittr)
+#' #load("C:\\Users\\Mike\\Desktop\\cnv_testing\\sesame_cord\\seg.RData")
+#' #routine    <- "sesame"
+#' #output.dir <- "C:\\Users\\Mike\\Desktop\\cnv_testing\\sesame_cord"
+#' #file.sep   <- .Platform$file.sep
+#' #reference  <- "internal"
+#' #split.by <- "gender_reported"
+#' #comparison <- c("tumor", "normal")
+#' #
+#' #sample.sheet.path <- paste0("C:\\Users\\Mike",
+#' #                            "\\Desktop\\cnv_testing",
+#' #                            "\\Sample_Sheet.csv")
+#' #
+#' #sample.sheet.csv <- paste0(sample.sheet.path) %>%
+#' #  read.csv(header = TRUE,
+#' #           stringsAsFactors = FALSE)
 #' @param ov.seg
+#' @param ov.name
+#' @param ov.output.dir
+#' @param ov.routine
 #' @param ov.split.field
 #' @param ov.keep.extra.columns
 #' @param ov.overlap.density
-#' @param ov.estimate.recursion
+#' @param ov.estimate.recurrence
+#' @param ov.keep.extra.columns
 #' @param ov.simplify.reduce
+#' @param ov.less.stringent.ra.setting
+#' @param ov.pvalue
 #' @param ...
+#' @import pheatmap
+#' @import ggplot2
 #' @return #seg.out
 #' @export
-olaps_and_visualize <- function(ov.seg                = NULL,
-                                ov.split.field        = "Sample_ID",
-                                ov.keep.extra.columns = TRUE,
-                                ov.overlap.density    = 0.1,
-                                ov.estimate.recursion = TRUE,
-                                ov.simplify.reduce    = weighted.mean,
+methyl_master_olaps_and_visualize <- function(ov.seg   = NULL,
+                                              ov.name  = NULL,
+                                ov.output.dir          = getwd(),
+                                ov.routine             = NULL,
+                                ov.split.field         = "Sample_ID",
+                                ov.keep.extra.columns  = TRUE,
+                                ov.overlap.density     = 0.1,
+                                ov.estimate.recurrence = FALSE,
+                                ov.simplify.reduce     = weightedmean,
+                                ov.less.stringent.ra.setting = FALSE,
+                                ov.pvalue              = 0.05,
                                 ...
                                 ){
 
+  seg <- ov.seg
   grl <- GenomicRanges::makeGRangesListFromDataFrame(seg,
-                                                     split.field=split.field,
-                                                     keep.extra.columns=keep.extra.columns)
+    split.field=ov.split.field,
+    keep.extra.columns=ov.keep.extra.columns)
 
   grl <- GenomicRanges::sort(grl)
 
@@ -61,23 +72,22 @@ olaps_and_visualize <- function(ov.seg                = NULL,
   ##of the total contributing individual
   ##calls within a summarized region).
 
-  cnvrs <- salas_mm_population_ranges(grl,
+  cnvrs <- methyl_master_population_ranges(grl,
                                       ##density=0.1,
                                       ##We can also like the density
                                       ##Jenn likes .01
                                       density         = ov.overlap.density,
-                                      est.recur       = ov.estimate.recursion,
-                                      simplify.reduce = ov.weighted.mean
+                                      est.recur       = ov.estimate.recurrence
                                       )
   ##cnvrs$type %>% unique()##
-  cnvrs.filt <- subset(cnvrs, pvalue < 0.05)
+  cnvrs.filt <- subset(cnvrs, pvalue < ov.pvalue)
 
   ra  <- RaggedExperiment::RaggedExperiment(grl)
 
   ##RaggedExperiment::assay(ra[1:5,1:5])
 
   ##below the less filtered ragged experiment
-  if(less.stringent.ra.setting==TRUE){
+  if(ov.less.stringent.ra.setting==TRUE){
     cvns.matrix <- RaggedExperiment::assay(ra)
   }else{
     ##This will likley not work as well with
@@ -86,7 +96,7 @@ olaps_and_visualize <- function(ov.seg                = NULL,
     cvns.matrix <-
       RaggedExperiment::qreduceAssay(ra,
                                      cnvrs.filt,
-                                     simplifyReduce = weightedmean)
+                                     simplifyReduce = ov.simplify.reduce)
   }
 
   cvns.matrix <- cvns.matrix[order(rownames(cvns.matrix)),]
@@ -94,11 +104,11 @@ olaps_and_visualize <- function(ov.seg                = NULL,
   cvns.matrix <- round(cvns.matrix, 0)
 
   write.table(cvns.matrix,
-              file = paste0(output.dir,
-                            file.sep,
-                            routine,
+              file = paste0(ov.output.dir,
+                            .Platform$file.sep,
+                            ov.routine,
                             "_",
-                            names(seg),
+                            ov.name,
                             "_overlaps.csv"),
               sep=",",
               col.names=TRUE,
@@ -110,12 +120,12 @@ olaps_and_visualize <- function(ov.seg                = NULL,
                                      cluster_cols = T,
                                      show_colnames = T)
 
-  ggsave(pheatmap.out,
-         file = paste0(output.dir,
-                       file.sep,
-                       routine,
+  ggplot2::ggsave(pheatmap.out,
+         file = paste0(ov.output.dir,
+                       .Platform$file.sep,
+                       ov.routine,
                        "_",
-                       names(seg),
+                       ov.name,
                        "_pheatmap.pdf"),
          device="pdf",
          width=12,
@@ -168,49 +178,47 @@ olaps_and_visualize <- function(ov.seg                = NULL,
                                   "gain"))
 
   ##floor(seg.vis.total$loc.start + seg.vis.total$loc.end) /2)
-  seg.heatmap <- ggplot(seg,
-                        aes(x=as.integer((floor((loc.start + loc.end)/2))),
+  seg.heatmap <- ggplot2::ggplot(seg,
+                        ggplot2::aes(x=as.integer((floor((loc.start + loc.end)/2))),
                             ##x=chrom,
                             ##y=seg.mean,
                             y=0.5,
                             width=loc.start - loc.end,
                             fill=status)) +
-    geom_tile() +
+    ggplot2::geom_tile() +
     ##geom_vline(xintercept=0) +
-    facet_grid(rows=vars(Sample_ID),
+    ggplot2::facet_grid(rows=vars(Sample_ID),
                cols=vars(chrom),
                scales = "free",
                space = "free",
                switch = "y") +
-    theme_bw() +
-    theme(panel.spacing = unit(0,"cm"),
-          axis.ticks.x  = element_blank(),
-          axis.ticks.y  = element_blank(),
-          axis.text.x   = element_blank(),
-          axis.text.y   = element_blank(),
-          axis.text.x.bottom  = element_blank(),
-          axis.text.y.left = element_blank(),
-          axis.title.y.left = element_blank(),
-          axis.title.x = element_blank(),
-          panel.grid.minor.x = element_blank(),
-          panel.grid.major.x = element_blank(),
-          panel.grid.minor.y = element_blank(),
-          panel.grid.major.y = element_blank(),
-          strip.text.y.left = element_text(angle = 0),
-          strip.text.x.top = element_text(angle = 90)) +
-    ylim(c(0,1)) +
-    scale_fill_manual(values=c("orange",
+    ggplot2::theme_bw() +
+    ggplot2::theme(panel.spacing = ggplot2::unit(0,"cm"),
+          axis.ticks.x        = ggplot2::element_blank(),
+          axis.ticks.y        = ggplot2::element_blank(),
+          axis.text.x         = ggplot2::element_blank(),
+          axis.text.y         = ggplot2::element_blank(),
+          axis.text.x.bottom  = ggplot2::element_blank(),
+          axis.text.y.left    = ggplot2::element_blank(),
+          axis.title.y.left   = ggplot2::element_blank(),
+          axis.title.x        = ggplot2::element_blank(),
+          panel.grid.minor.x  = ggplot2::element_blank(),
+          panel.grid.major.x  = ggplot2::element_blank(),
+          panel.grid.minor.y  = ggplot2::element_blank(),
+          panel.grid.major.y  = ggplot2::element_blank(),
+          strip.text.y.left   = ggplot2::element_text(angle = 0),
+          strip.text.x.top    = ggplot2::element_text(angle = 90)) +
+    ggplot2::ylim(c(0,1)) +
+    ggplot2::scale_fill_manual(values=c("orange",
                                "white",
                                "blue"))
 
-  ggsave(seg.heatmap,
-         filename = paste0(output.dir,
-                           file.sep,
-                           routine,
+  ggplot2::ggsave(seg.heatmap,
+         filename = paste0(ov.output.dir,
+                           .Platform$file.sep,
+                           ov.routine,
                            "_",
-                           sub.workflow,
-                           "_",
-                           ref,
+                            ov.name,
                            "_mmheatmap.pdf"),
          width=12,
          height=8,

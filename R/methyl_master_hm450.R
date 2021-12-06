@@ -12,13 +12,14 @@
 #' @param hm450.sesame.data.cache
 #' @param hm450.sesame.data.normal
 #' @param hm450.sesame.ref.version
+#' @param hm450.save.seg
 #' @param ...
 #' @import Biobase
 #' @import from sesameData sesamesesameDataGet
 #' @import from sesameData sesamesesameDataCache
 #' @import from sesame SigSetsToRGChannel
 #' @import from sesame openSesame
-#' @return Nothing
+#' @return #seg.out
 #' @export
 methyl_master_hm450 <- function(hm450.idat.files.dir=NULL,
                                hm450.sample.sheet.path=NULL,
@@ -28,6 +29,7 @@ methyl_master_hm450 <- function(hm450.idat.files.dir=NULL,
                                hm450.sesame.data.cache="EPIC",
                                hm450.sesame.data.normal="EPIC.5.normal",
                                hm450.sesame.ref.version="hg38",
+                               hm450.save.seg=FALSE,
                                ...
                                ){
   if(hm450.reference=="internal"){
