@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 
-#' @title My 450k
-#' @description My version of 450k analyses
+#' @title methyl_master_hm450
+#' @description My version of hm450 analyses
 #' @param hm450.input.dir
 #' @param hm450.output.dir
 #' @param hm450.sample.sheet
@@ -33,8 +33,102 @@ methyl_master_hm450 <- function(hm450.idat.files.dir=NULL,
                                ...
                                ){
   if(hm450.reference=="internal"){
-    sesameData::sesameDataCache(hm450.sesame.data.cache)
-    sesame_ssets_ref <- sesameData::sesameDataGet(hm450.sesame.data.normal)
+
+    if(hm450.split.by==FALSE){
+
+    sesameData::sesameDataCache(sesame.data.cache)
+    sesame_ssets_normal <- sesameData::sesameDataGet(sesame.data.normal)
+    ExperimentHub::setExperimentHubOption("CACHE", idat.files.dir)
+    ExperimentHub::ExperimentHub()
+    treatment_idat_prefixes <- sesame::searchIDATprefixes(idat.files.dir,
+                                                          recursive=TRUE)
+    sesameData::sesameDataCacheAll()
+
+    treatment.names <-    sesame.sesame.sample.sheet.df[
+      sesame.sesame.sample.sheet.df$Sample_Group %in%
+        sesame.comparison[1],"Sample_Name"]
+
+    treatment_idat_prefixes <-
+      treatment_idat_prefixes[gsub(paste0(".*",
+                                          .Platform$file.sep),
+                                          "",
+                                          treatment_idat_prefixes) %in%
+                                          treatment.names]
+
+    treatment.platform <- unique(sesame.sesame.sample.sheet.df[
+      sesame.sesame.sample.sheet.df$Sample_Name %in%
+        treatment.names, "Platform"])
+
+    hm450_sset <- sesame::openSesame(treatment_idat_prefixes,
+                                      mask = TRUE,
+                                      sum.TypeI = TRUE,
+                                      platform = treatment.platform,
+                                      what="sigset")
+
+    hm450_rgset <- sesame::SigSetsToRGChannelSet(hm450_sset)
+
+    hm450_cn_methylset_treatment <-
+      minfi::getCN(minfi::preprocessRaw(hm450_rgset))
+
+    save(hm450_cn_methylset_treatment,
+         file=paste0(hm.450.output.dir,
+                     .Platform$file.sep,
+                     "hm450_cn_methylset_treatment.RData"))
+
+    seg <- list(hm450_cn_methylset_treatment)
+
+    }else{
+
+      stop(paste0("Error: Epic.5.Normal internal reference samples are all male",
+                  "\ncan't split by sex!"))
+      ##Get sesame normal samples:
+
+      split.by.cat <- unique(hm450.sample.sheet.df[[hm450.split.by]])
+
+      sesameData::sesameDataCache(hm450.data.cache)
+      hm450_ssets_normal <- sesameData::sesameDataGet(hm450.data.normal)
+      normal.sexes <- unlist(lapply(hm450_ssets_normal,sesame::inferSex))
+      hm450_ssets.normal.1 <-
+        hm450_ssets_normal[names(which(normal.sexes==split.by.cat[1]))]
+      hm450_ssets.normal.2 <-
+        hm450_ssets_normal[names(which(normal.sexes==split.by.cat[2]))]
+
+      ExperimentHub::setExperimentHubOption("CACHE", idat.files.dir)
+      ExperimentHub::ExperimentHub()
+      treatment_idat_prefixes <- sesame::searchIDATprefixes(idat.files.dir,
+                                                            recursive=TRUE)
+      sesameData::sesameDataCacheAll()
+
+      hm450_sset.1 <- sesame::openSesame(treatment_idat_prefixes,
+                                          mask = TRUE,
+                                          sum.TypeI = TRUE,
+                                          platform = hm450.sesame.platform,
+                                          what="sigset")
+
+      hm450_seg.1 <- foreach(i = 1:length(names(hm450_sset.1))) %do% {
+        sesame::cnSegmentation(hm450_sset.1[[i]],
+                               hm450_ssets_normal.1,
+                               refversion = hm450.sesame.ref.version)
+      }
+      names(hm450_seg.1) <- names(hm450_sset.1)
+
+      hm450_sset.2 <- sesame::openSesame(treatment_idat_prefixes,
+                                          mask = TRUE,
+                                          sum.TypeI = TRUE,
+                                          platform = hm450.sesame.platform,
+                                          what="sigset")
+
+      hm450_seg.2 <- foreach(i = 1:length(names(hm450_sset.2))) %do% {
+        sesame::cnSegmentation(hm450_sset.2[[i]],
+                               hm450_ssets_normal.2,
+                               refversion = hm450.sesame.ref.version)
+      }
+      names(hm450_seg.2) <- names(hm450_sset.2)
+
+      seg <- list(hm450_seg.1, hm450_seg.2)
+
+    }
+
   }else{
     sample.sheet.df <- read.csv(hm450.sample.sheet.path,
                                 header=TRUE,
@@ -64,13 +158,153 @@ methyl_master_hm450 <- function(hm450.idat.files.dir=NULL,
   }
 
   if(!is.null(split.by)){
-    split.names <- unique(subset.sample.sheet.df[[split.by]])
-      sesame_ssets_treatment.1 <- sesame_ssets_treatment[sesame_ssets_treatment ]
-      sesame_ssets_treatment.2 <-
-      sesame_ssets_control.1   <-
-      sesame_ssets_control.2   <-
-    idat_prefixes.treatment
+
+    split.by.cat <- unique(subset.sample.sheet.df[[split.by]])
+
+    treatment.samples.1 <-
+      sesame.sample.sheet.df[
+        sesame.sample.sheet.df$Sample_Group==sesame.comparison[1] &
+          sesame.sample.sheet.df[[sesame.split.by]]==split.by.cat[1],
+        "Sample_Name"]
+
+    control.samples.1 <-
+      sesame.sample.sheet.df[
+        sesame.sample.sheet.df$Sample_Group==sesame.comparison[2] &
+          sesame.sample.sheet.df[[sesame.split.by]]==split.by.cat[1],
+        "Sample_Name"]
+
+    treatment.paths.1 <-
+      sesame.sample.sheet.df[
+        sesame.sample.sheet.df$Sample_Group==sesame.comparison[1] &
+          sesame.sample.sheet.df[[sesame.split.by]]==split.by.cat[1],
+        "Basename"]
+
+    control.paths.1   <-
+      sesame.sample.sheet.df[
+        sesame.sample.sheet.df$Sample_Group==sesame.comparison[2] &
+          sesame.sample.sheet.df[[sesame.split.by]]==split.by.cat[1],
+        "Basename"]
+
+    treatment.platform.1 <-
+      unique(sesame.sample.sheet.df[
+        sesame.sample.sheet.df$Sample_Group==sesame.comparison[1] &
+          sesame.sample.sheet.df[[sesame.split.by]]==split.by.cat[2],
+        "Platform"])
+
+    control.platform.1 <-
+      unique(sesame.sample.sheet.df[
+        sesame.sample.sheet.df$Sample_Group==sesame.comparison[2] &
+          sesame.sample.sheet.df[[sesame.split.by]]==split.by.cat[2],
+        "Platform"])
+
+    treatment.samples.2 <-
+      sesame.sample.sheet.df[
+        sesame.sample.sheet.df$Sample_Group==sesame.comparison[1] &
+          sesame.sample.sheet.df[[sesame.split.by]]==split.by.cat[2],
+        "Sample_Name"]
+
+    control.samples.2 <-
+      sesame.sample.sheet.df[
+        sesame.sample.sheet.df$Sample_Group==sesame.comparison[2] &
+          sesame.sample.sheet.df[[sesame.split.by]]==split.by.cat[2],
+        "Sample_Name"]
+
+    treatment.paths.2 <-
+      sesame.sample.sheet.df[
+        sesame.sample.sheet.df$Sample_Group==sesame.comparison[1] &
+          sesame.sample.sheet.df[[sesame.split.by]]==split.by.cat[2],
+        "Basename"]
+
+    control.paths.2   <-
+      sesame.sample.sheet.df[
+        sesame.sample.sheet.df$Sample_Group==sesame.comparison[2] &
+          sesame.sample.sheet.df[[sesame.split.by]]==split.by.cat[2],
+        "Basename"]
+
+    treatment.platform.2 <-
+      unique(sesame.sample.sheet.df[
+        sesame.sample.sheet.df$Sample_Group==sesame.comparison[1] &
+          sesame.sample.sheet.df[[sesame.split.by]]==split.by.cat[2],
+        "Platform"])
+
+    control.platform.2   <-
+      unique(sesame.sample.sheet.df[
+        sesame.sample.sheet.df$Sample_Group==sesame.comparison[2] &
+          sesame.sample.sheet.df[[sesame.split.by]]==split.by.cat[2],
+        "Platform"])
+
+    ExperimentHub::setExperimentHubOption("CACHE",
+                                          sesame.idat.files.dir)
+
+    ExperimentHub::ExperimentHub()
+
+    idat_prefixes <- sesame::searchIDATprefixes(sesame.idat.files.dir,
+                                                recursive=TRUE)
+
+    idat_prefixes.treatment <-
+      idat_prefixes[gsub(".*/","",idat_prefixes) %in%
+                      gsub(paste0(".*",sesame.file.sep),
+                           "",treatment.paths)]
+
+    idat_prefixes.control   <-
+      idat_prefixes[gsub(".*/","",idat_prefixes) %in%
+                      gsub(paste0(".*",sesame.file.sep),
+                           "",control.paths)]
+
+    sesameData::sesameDataCacheAll()
+
+    sesame_sset.treatment <- sesame::openSesame(idat_prefixes.treatment,
+                                                mask = TRUE,
+                                                sum.TypeI = TRUE,
+                                                platform = treatment.platform,
+                                                what="sigset")
+
+    sesame_sset.control <- sesame::openSesame(idat_prefixes.control,
+                                              mask = TRUE,
+                                              sum.TypeI = TRUE,
+                                              platform = control.platform,
+                                              what="sigset")
+
+    sesame_rgset <- sesame::SigSetsToRGChannelSet(sesame_sset)
+
+    hm450_cn_methylset_normal_female <-
+      minfi::getCN(minfi::preprocessRaw(sesame_rgset_normal_female))
+
+    hm450_cn_methylset_normal_male <-
+      minfi::getCN(minfi::preprocessRaw(sesame_rgset_normal_male))
+
+    hm450_cn_methylset_tumor_female <-
+      minfi::getCN(minfi::preprocessRaw(sesame_rgset_tumor_female))
+
+    hm450_cn_methylset_tumor_male <-
+      minfi::getCN(minfi::preprocessRaw(sesame_rgset_tumor_male))
+
+    hm450_cn_methylset_cord_female <-
+      minfi::getCN(minfi::preprocessRaw(sesame_rgset_cord_female))
+
+    hm450_cn_methylset_cord_male <-
+      minfi::getCN(minfi::preprocessRaw(sesame_rgset_cord_male))
+
+    save(hm450_cn_methylset_normal_female,
+         file=paste0(work.dir,file.sep,"hm450_cn_methylset_normal_female.RData"))
+
+    save(hm450_cn_methylset_normal_male,
+         file=paste0(work.dir,file.sep,"hm450_cn_methylset_normal_male.RData"))
+
+    save(hm450_cn_methylset_tumor_female,
+         file=paste0(work.dir,file.sep,"hm450_cn_methylset_tumor_female.RData"))
+
+    save(hm450_cn_methylset_tumor_male,
+         file=paste0(work.dir,file.sep,"hm450_cn_methylset_tumor_male.RData"))
+
+    save(hm450_cn_methylset_cord_female,
+         file=paste0(work.dir,file.sep,"hm450_cn_methylset_cord_female.RData"))
+
+    save(hm450_cn_methylset_cord_male,
+         file=paste0(work.dir,file.sep,"hm450_cn_methylset_cord_male.RData"))
+
   }
+
   setExperimentHubOption("CACHE", idat.files.dir)
 
   ExperimentHub()

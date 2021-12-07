@@ -200,7 +200,7 @@ hm450 = {
   seg <- methyl_master_hm450(hm450.input.file.dir     = input.dir,
                              hm450.output.file.dir    = output.dir,
                              hm450.sample.sheet.path  = sample.sheet.path,
-                             hm450.comparison         = comparisons,
+                             hm450.comparison         = comparison,
                              hm450.split.by           = split.by,
                              hm450.reference          = reference,
                              hm450.sesame.data.cache  = "EPIC",
@@ -255,7 +255,7 @@ epicopy = {
                                epi.single.file=TRUE,
                                epi.single.file.path=sample.sheet.path,
                                epi.run.gistic=epi.run.gistic,
-                               epi.comparisons=comparisons,
+                               epi.comparison=comparison,
                                epi.ncores=n.cores,
                                epi.ref="median",
                                epi.normals="Sample_Group",
@@ -365,7 +365,7 @@ writeLines(c("\nTotal time:\n",
 ##to fix the population ranges problem.
 
 #################### VISUALISE INDIVIDUAL ######################################
-
+##load(paste0(output.dir,.Platform$file.sep,"seg.RData"))
 mapply(x=seg,y=names(seg),
   function(x=x,
            y=y,
@@ -393,7 +393,7 @@ mapply(x=seg,y=names(seg),
        )})
 
 if(visualize.individual==TRUE){
-  load(paste0(output.dir,.Platform$file.sep,"seg.RData"))
+  ##load(paste0(output.dir,.Platform$file.sep,"seg.RData"))
   mapply(x=seg,y=names(seg),
          function(x=x,
                   y=y,
