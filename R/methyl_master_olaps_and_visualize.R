@@ -3,23 +3,6 @@
 #' @title methyl_master_olaps_and_visualize
 #' @description perform overlaps analysis and visualization
 #' ##Michael Mariani Dartmouth College 2021
-#' #For Testing:
-#' #library(magrittr)
-#' #load("C:\\Users\\Mike\\Desktop\\cnv_testing\\sesame_cord\\seg.RData")
-#' #routine    <- "sesame"
-#' #output.dir <- "C:\\Users\\Mike\\Desktop\\cnv_testing\\sesame_cord"
-#' #file.sep   <- .Platform$file.sep
-#' #reference  <- "internal"
-#' #split.by <- "gender_reported"
-#' #comparison <- c("tumor", "normal")
-#' #
-#' #sample.sheet.path <- paste0("C:\\Users\\Mike",
-#' #                            "\\Desktop\\cnv_testing",
-#' #                            "\\Sample_Sheet.csv")
-#' #
-#' #sample.sheet.csv <- paste0(sample.sheet.path) %>%
-#' #  read.csv(header = TRUE,
-#' #           stringsAsFactors = FALSE)
 #' @param ov.seg
 #' @param ov.name
 #' @param ov.output.dir
@@ -88,22 +71,22 @@ methyl_master_olaps_and_visualize <- function(ov.seg   = NULL,
 
   ##below the less filtered ragged experiment
   if(ov.less.stringent.ra.setting==TRUE){
-    cvns.matrix <- RaggedExperiment::assay(ra)
+    cnvs.matrix <- RaggedExperiment::assay(ra)
   }else{
     ##This will likley not work as well with
     ##fewer samples so can default to the
     ##above, both return overlaps.
-    cvns.matrix <-
+    cnvs.matrix <-
       RaggedExperiment::qreduceAssay(ra,
                                      cnvrs.filt,
                                      simplifyReduce = ov.simplify.reduce)
   }
 
-  cvns.matrix <- cvns.matrix[order(rownames(cvns.matrix)),]
-  cvns.matrix[is.na(cvns.matrix)] <- 2
-  cvns.matrix <- round(cvns.matrix, 0)
+  cnvs.matrix <- cnvs.matrix[order(rownames(cnvs.matrix)),]
+  cnvs.matrix[is.na(cnvs.matrix)] <- 2
+  cnvs.matrix <- round(cnvs.matrix, 0)
 
-  write.table(cvns.matrix,
+  write.table(cnvs.matrix,
               file = paste0(ov.output.dir,
                             .Platform$file.sep,
                             ov.routine,
@@ -115,9 +98,18 @@ methyl_master_olaps_and_visualize <- function(ov.seg   = NULL,
               row.names=TRUE,
               quote=FALSE)
 
-  pheatmap.out <- pheatmap::pheatmap(cvns.matrix,
-                                     cluster_rows = T,
-                                     cluster_cols = T,
+  cluster.cols <- TRUE
+  cluster.rows <- TRUE
+  if(is.null(ncol(cnvs.matrix))){
+    cluster.cols <- FALSE
+  }
+  if(is.null(nrow(cnvs.matrix))){
+    cluster.rows <- FALSE
+  }
+
+  pheatmap.out <- pheatmap::pheatmap(cnvs.matrix,
+                                     cluster_rows = cluster.cols,
+                                     cluster_cols = cluster.rows,
                                      show_colnames = T)
 
   ggplot2::ggsave(pheatmap.out,
@@ -179,7 +171,7 @@ methyl_master_olaps_and_visualize <- function(ov.seg   = NULL,
 
   ##floor(seg.vis.total$loc.start + seg.vis.total$loc.end) /2)
   seg.heatmap <- ggplot2::ggplot(seg,
-                        ggplot2::aes(x=as.integer((floor((loc.start + loc.end)/2))),
+                  ggplot2::aes(x=as.integer((floor((loc.start + loc.end)/2))),
                             ##x=chrom,
                             ##y=seg.mean,
                             y=0.5,

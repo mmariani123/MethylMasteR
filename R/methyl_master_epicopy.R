@@ -28,6 +28,8 @@
 #'
 #' @param epi.target.dir
 #' @param epi.output.dir
+#' @param epi.single.file
+#' @param epi.single.file.path
 #' @param epi.ref
 #' @param epi.normals
 #' @param epi.samp.names

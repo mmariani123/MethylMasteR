@@ -42,9 +42,9 @@
 #' @param save.seg
 #' @param create.dir
 #' @param ...
+#' @import CNVRanger
+#' @import matter
 #' @importFrom magrittr %>%
-#' @import profmem
-#' @import profvis
 #' @return #NULL
 #' @export
 methyl_master <- function(input.dir            = NULL,
@@ -146,7 +146,7 @@ if(routine!="compare"){
 
 ##profvis.out <- profvis({
 
-profmem.out <- profmem::profmem({
+profmem.out <- matter::profmem({
 
 start.time <- Sys.time()
 
@@ -161,7 +161,7 @@ switch(routine,
 test = {
 
   print("Hello World")
-  profvis::pause(10)
+  ##profvis::pause(10)
 
 },
 
@@ -299,8 +299,10 @@ writeLines(c("\nTotal time:\n",
              "\nGC output: \n",
              capture.output(gc()),
              "\nProfmem max output (bytes): \n",
-             {profmem.out$bytes[!is.na(profmem.out$bytes)] %>%
-                 max()}),
+             profmem.out[3]
+             ##{profmem.out$bytes[!is.na(profmem.out$bytes)] %>%
+             ##     max()}
+             ),
            paste0(output.dir,
                   file.sep,
                   "time_mem.",
