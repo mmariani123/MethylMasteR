@@ -67,9 +67,9 @@ if(sesame.reference=="internal"){
     ##Loads all refs as <sesame.data.cache> defaults to "EPIC"?
     sesameData::sesameDataCache(sesame.data.cache)
     sesame_ssets_normal <- sesameData::sesameDataGet(sesame.data.normal)
-    ExperimentHub::setExperimentHubOption("CACHE", idat.files.dir)
+    ExperimentHub::setExperimentHubOption("CACHE", sesame.idat.files.dir)
     ExperimentHub::ExperimentHub()
-    treatment_idat_prefixes <- sesame::searchIDATprefixes(idat.files.dir,
+    treatment_idat_prefixes <- sesame::searchIDATprefixes(sesame.idat.files.dir,
                                                         recursive=TRUE)
     sesameData::sesameDataCacheAll()
 
@@ -150,10 +150,18 @@ if(sesame.reference=="internal"){
                       gsub(paste0(".*",sesame.file.sep,".*_"),
                            "",treatment.paths.2)]
 
+    treatment.platform.1 <- unique(sesame.sample.sheet.df[
+      sesame.sample.sheet.df$Sample_Name %in%
+        treatment.samples.1, "Platform"])
+
+    treatment.platform.2 <- unique(sesame.sample.sheet.df[
+      sesame.sample.sheet.df$Sample_Name %in%
+        treatment.samples.2, "Platform"])
+
     sesame_sset.1 <- sesame::openSesame(treatment_idat_prefixes.1,
                                       mask = TRUE,
                                       sum.TypeI = TRUE,
-                                      platform = sesame.platform,
+                                      platform = treatment.platform.1,
                                       what="sigset")
 
     sesame_seg.1 <- foreach(i = 1:length(names(sesame_sset.1))) %do% {
@@ -166,7 +174,7 @@ if(sesame.reference=="internal"){
     sesame_sset.2 <- sesame::openSesame(treatment_idat_prefixes.2,
                                         mask = TRUE,
                                         sum.TypeI = TRUE,
-                                        platform = sesame.platform,
+                                        platform = treatment.platform.2,
                                         what="sigset")
 
     sesame_seg.2 <- foreach(i = 1:length(names(sesame_sset.2))) %do% {

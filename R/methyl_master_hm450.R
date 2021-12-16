@@ -8,6 +8,7 @@
 #' @param hm450.output.dir
 #' @param hm450.sample.sheet
 #' @param hm450.reference
+#' @param hm450.workflow
 #' @param hm450.file.sep
 #' @param hm450.comparison
 #' @param hm450.split.by
@@ -25,20 +26,31 @@
 #' @importFrom sesame openSesame
 #' @return #seg.out
 #' @export
-methyl_master_hm450 <- function(hm450.idat.files.dir=NULL,
-                               hm450.sample.sheet.path=NULL,
-                               hm450.comparison=c("tumor","normal"),
-                               hm450.split.by=NULL,
-                               hm450.reference="internal",
-                               hm450.sesame.data.cache="EPIC",
-                               hm450.sesame.data.normal="EPIC.5.normal",
-                               hm450.sesame.ref.version="hg38",
-                               hm450.save.seg=FALSE,
-                               ...
-                               ){
+methyl_master_hm450 <- function(hm450.input.dir=NULL,
+                                hm450.output.dir=NULL,
+                                hm450.sample.sheet.path=NULL,
+                                hm450.comparison=c("tumor","normal"),
+                                hm450.split.by=NULL,
+                                hm450.reference="internal",
+                                hm450.workflow="B",
+                                hm450.file.sep="/",
+                                hm450.sesame.data.cache="EPIC",
+                                hm450.sesame.data.normal="EPIC.5.normal",
+                                hm450.sesame.ref.version="hg38",
+                                hm450.save.seg=FALSE,
+                                ...
+                                ){
+
+  sample.sheet.df <- read.csv(hm450.sample.sheet.path,
+                              header=TRUE,
+                              stringsAsFactors = FALSE)
+
   if(hm450.reference=="internal"){
 
-    if(is.null(hm450.split.by){
+    if(is.null(hm450.split.by)){
+
+    sample.sheet.df <- sample.sheet.df[sample.sheet.df$Sample_Group %in%
+                                                  hm450.comparison,]
 
     sesameData::sesameDataCache(sesame.data.cache)
 
@@ -52,13 +64,13 @@ methyl_master_hm450 <- function(hm450.idat.files.dir=NULL,
                                                           recursive=TRUE)
     sesameData::sesameDataCacheAll()
 
-    treatment.names <-    sesame.sesame.sample.sheet.df[
-      sesame.sesame.sample.sheet.df$Sample_Group %in%
-        sesame.comparison[1],"Sample_Name"]
+    treatment.names <- sample.sheet.df[
+      sample.sheet.df$Sample_Group %in%
+        hm450.comparison[1],"Sample_Name"]
 
     treatment_idat_prefixes <-
       treatment_idat_prefixes[gsub(paste0(".*",
-                                          .Platform$file.sep),
+                                          hm450.file.sep),
                                           "",
                                           treatment_idat_prefixes) %in%
                                           treatment.names]
@@ -67,21 +79,18 @@ methyl_master_hm450 <- function(hm450.idat.files.dir=NULL,
       sesame.sesame.sample.sheet.df$Sample_Name %in%
         treatment.names, "Platform"])
 
-    hm450_sset <- sesame::openSesame(treatment_idat_prefixes,
+    sesame_sset <- sesame::openSesame(treatment_idat_prefixes,
                                       mask = TRUE,
                                       sum.TypeI = TRUE,
                                       platform = treatment.platform,
                                       what="sigset")
 
-    hm450_rgset <- sesame::SigSetsToRGChannelSet(hm450_sset)
+    hm450_rgset <- sesame::SigSetsToRGChannelSet(sesame_sset)
 
     hm450_cn_methylset_treatment <-
       minfi::getCN(minfi::preprocessRaw(hm450_rgset))
 
-    save(hm450_cn_methylset_treatment,
-         file=paste0(hm.450.output.dir,
-                     .Platform$file.sep,
-                     "hm450_cn_methylset_treatment.RData"))
+    names(hm450_cn_methylset_treatment) <- names(sesame_sset)
 
     seg <- list(hm450_cn_methylset_treatment)
 
@@ -91,55 +100,86 @@ methyl_master_hm450 <- function(hm450.idat.files.dir=NULL,
                   "\nreference samples are all male",
                   "\ncan't split by sex!"))
 
-      split.by.cat <- unique(hm450.sample.sheet.df[[hm450.split.by]])
+      sample.sheet.df <- sample.sheet.df[sample.sheet.df$Sample_Group %in%
+                                                  hm450.comparison,]
 
-      sesameData::sesameDataCache(hm450.data.cache)
+      split.by.cat <- unique(sesame.sample.sheet.df[[sesame.split.by]])
 
-      hm450_ssets_normal <- sesameData::sesameDataGet(hm450.data.normal)
-
-      normal.sexes <- unlist(lapply(hm450_ssets_normal,sesame::inferSex))
-
-      hm450_ssets.normal.1 <-
-        hm450_ssets_normal[names(which(normal.sexes==split.by.cat[1]))]
-
-      hm450_ssets.normal.2 <-
-        hm450_ssets_normal[names(which(normal.sexes==split.by.cat[2]))]
+      sesameData::sesameDataCache(hm450.sesame.data.cache)
+      sesame_ssets_normal <- sesameData::sesameDataGet(hm450.sesame.data.normal)
+      normal.sexes <- unlist(lapply(sesame_ssets_normal,sesame::inferSex))
+      ssesame_ssets.normal.1 <-
+        sesame_ssets_normal[names(which(normal.sexes==split.by.cat[1]))]
+      ssesame_ssets.normal.2 <-
+        sesame_ssets_normal[names(which(normal.sexes==split.by.cat[2]))]
 
       ExperimentHub::setExperimentHubOption("CACHE", idat.files.dir)
 
       ExperimentHub::ExperimentHub()
 
-      treatment_idat_prefixes <- sesame::searchIDATprefixes(idat.files.dir,
-                                                            recursive=TRUE)
+      idat_prefixes <- sesame::searchIDATprefixes(idat.files.dir,
+                                                  recursive=TRUE)
+
       sesameData::sesameDataCacheAll()
 
-      hm450_sset.1 <- sesame::openSesame(treatment_idat_prefixes,
+      treatment.samples.1 <-
+        sample.sheet.df[
+          sample.sheet.df$Sample_Group==hm450.comparison[1] &
+            sample.sheet.df[[hm450.split.by]]==split.by.cat[1],
+            "Sample_Name"]
+
+      treatment.samples.2 <-
+        sample.sheet.df[
+          sample.sheet.df$Sample_Group==sesame.comparison[1] &
+            sample.sheet.df[[hm450.split.by]]==split.by.cat[2],
+            "Sample_Name"]
+
+      idat_prefixes.treatment.1 <-
+        idat_prefixes[gsub(".*/","",idat_prefixes) %in%
+                      gsub(paste0(".*",hm450.file.sep),
+                             "",treatment.paths.1)]
+
+      idat_prefixes.treatment.2 <-
+        idat_prefixes[gsub(".*/","",idat_prefixes) %in%
+                      gsub(paste0(".*",hm450.file.sep),
+                             "",treatment.paths.2)]
+
+      treatment.platform.1 <- unique(sample.sheet.df[
+        sample.sheet.df$Sample_Name %in%
+          treatment.samples.1, "Platform"])
+
+      treatment.platform.2 <- unique(sample.sheet.df[
+        sample.sheet.df$Sample_Name %in%
+          treatment.samples.2, "Platform"])
+
+      sesame_sset.1 <- sesame::openSesame(treatment_idat_prefixes.1,
                                           mask = TRUE,
                                           sum.TypeI = TRUE,
-                                          platform = hm450.sesame.platform,
+                                          platform = treatment.platform.1,
                                           what="sigset")
 
-      hm450_seg.1 <- foreach(i = 1:length(names(hm450_sset.1))) %do% {
-        sesame::cnSegmentation(hm450_sset.1[[i]],
-                               hm450_ssets_normal.1,
-                               refversion = hm450.sesame.ref.version)
-      }
-      names(hm450_seg.1) <- names(hm450_sset.1)
+      hm450_rgset.1 <- sesame::SigSetsToRGChannelSet(sesame_sset.1)
 
-      hm450_sset.2 <- sesame::openSesame(treatment_idat_prefixes,
+      hm450_cn_methylset_treatment.1 <-
+        minfi::getCN(minfi::preprocessRaw(hm450_rgset.1))
+
+      names(hm450_cn_methylset_treatment.1) <- names(sesame_sset.1)
+
+      sesame_sset.2 <- sesame::openSesame(treatment_idat_prefixes.2,
                                           mask = TRUE,
                                           sum.TypeI = TRUE,
-                                          platform = hm450.sesame.platform,
+                                          platform = treatment.platform.2,
                                           what="sigset")
 
-      hm450_seg.2 <- foreach(i = 1:length(names(hm450_sset.2))) %do% {
-        sesame::cnSegmentation(hm450_sset.2[[i]],
-                               hm450_ssets_normal.2,
-                               refversion = hm450.sesame.ref.version)
-      }
-      names(hm450_seg.2) <- names(hm450_sset.2)
+      hm450_rgset.2 <- sesame::SigSetsToRGChannelSet(sesame_sset.2)
 
-      seg <- list(hm450_seg.1, hm450_seg.2)
+      hm450_cn_methylset_treatment.2 <-
+        minfi::getCN(minfi::preprocessRaw(hm450_rgset.2))
+
+      names(hm450_cn_methylset_treatment.2) <- names(sesame_sset.2)
+
+      seg <- list(hm450_cn_methylset_treatment.1,
+                  hm450_cn_methylset_treatment.2)
 
     }
 
@@ -147,16 +187,8 @@ methyl_master_hm450 <- function(hm450.idat.files.dir=NULL,
 
     if(is.null(hm450.split.by)){
 
-    sample.sheet.df <- read.csv(hm450.sample.sheet.path,
-                                header=TRUE,
-                                stringsAsFactors = FALSE)
-
-    subset.sample.sheet.df <- sample.sheet.df[sample.sheet.df %in%
-                                                hm450.comparison,]
-
-    subset.sample.sheet.df.normal <-
-      sample.sheet.df[sample.sheet.df$Sample_Group %in%
-                        hm450.comparison[2],]
+    sample.sheet.df <- sample.sheet.df[sample.sheet.df$Sample_Group %in%
+                                       hm450.comparison,]
 
     ExperimentHub::setExperimentHubOption("CACHE", idat.files.dir)
 
@@ -166,574 +198,399 @@ methyl_master_hm450 <- function(hm450.idat.files.dir=NULL,
 
     sesameData::sesameDataCacheAll()
 
-    treatment.names <- sesame.sample.sheet.df[
-      sesame.sample.sheet.df$Sample_Group %in%
-        sesame.comparison[1],"Sample_Name"]
+    treatment.names <- sample.sheet.df[
+      sample.sheet.df$Sample_Group %in%
+        hm450.comparison[1],"Sample_Name"]
 
-    treatment_idat_prefixes <-  idat_prefixes[gsub(paste0(".*",
-                                .Platform$file.sep),
+    treatment_idat_prefixes <-  idat_prefixes[gsub(".*",
                                 "",
                                 idat_prefixes) %in%
                                 treatment.names]
 
-    treatment.platform <- unique(sesame.sample.sheet.df[
-      sesame.sample.sheet.df$Sample_Name %in%
+    treatment.platform <- unique(sample.sheet.df[
+      sample.sheet.df$Sample_Name %in%
         treatment.names, "Platform"])
 
-    control_idat_prefixes <-  idat_prefixes[gsub(paste0(".*",
-                                            .Platform$file.sep),
+    control.names <- sample.sheet.df[
+      sample.sheet.df$Sample_Group %in%
+        hm450.comparison[2],"Sample_Name"]
+
+    control_idat_prefixes <-  idat_prefixes[gsub(".*/",
                                             "",
                                             idat_prefixes) %in%
                                             control.names]
 
-    control.platform <- unique(sesame.sample.sheet.df[
-      sesame.sample.sheet.df$Sample_Name %in%
+    control.platform <- unique(sample.sheet.df[
+      sample.sheet.df$Sample_Name %in%
         control.names, "Platform"])
 
-    sesame_ssets_control <- openSesame(idat_prefixes.control,
+    sesame_ssets_control <- openSesame(control_idat_prefixes,
                                    mask = TRUE,
                                    sum.TypeI = TRUE,
                                    platform = control.platform,
                                    what="sigset")
 
-    sesame_ssets_treatment <- openSesame(idat_prefixes.treatment,
+    sesame_ssets_treatment <- openSesame(treatment_idat_prefixes,
                                    mask = TRUE,
                                    sum.TypeI = TRUE,
                                    platform = treatment.platform,
                                    what="sigset")
+
+    sesame_rgset_treatment <-
+      sesame::SigSetsToRGChannelSet(sesame_ssets_treatment)
+
+    sesame_rgset_control <-
+      sesame::SigSetsToRGChannelSet(sesame_ssets_control)
+
+    sesame_cn_methylset_treatment <-
+      minfi::getCN(minfi::preprocessRaw(sesame_rgset_treatment))
+
+    sesame_cn_methylset_control <-
+      minfi::getCN(minfi::preprocessRaw(sesame_rgset_control))
+
+    if(hm450.workflow=="A"){
+
+      proc_treatment_A  <- sesame_cn_methylset_treatment
+      rm(sesame_cn_methylset_treatment)
+
+      proc_control_A <- sesame_cn_methylset_control
+      rm(sesame_cn_methylset_control)
+      med_control_A  <- apply(proc_control_A, 1, "median")
+
+      candidates_data_treatment_A <-
+        findSegments2(proc_treatment_A[, , drop = FALSE],
+                      med_control_A,
+                      proc_control_A) ##Scaled with B but not A
+
+      seg <- list(candidates_data_treatment_A)
+
+    }else if(hm450.workflow=="B"){
+
+      ## With z-Transformation, illumina
+      proc_treatment_B  <- sesame_cn_methylset_treatment
+      rm(sesame_cn_methylset_treatment)
+      proc_treatment_B[is.infinite(proc_treatment_B)] <- NA
+      proc_treatment_B <- scale(proc_treatment_B)
+
+      proc_control_B  <- sesame_cn_methylset_control
+      rm(sesame_cn_methylset_control)
+      proc_control_B[is.infinite(proc_control_B)] <- NA
+      proc_control_B <- scale(proc_control_B) ##Z transform
+      med_control_B <- apply(proc_control_B, 1, "median")
+
+      candidates_data_treatment_B <-
+        findSegments2(proc_treatment_B[, , drop = FALSE],
+                      med_control_B,
+                      proc_control_B) ##Scaled with B but not A
+
+      seg <- list(candidates_data_treatment_B)
+
+    }else if(hm450.workflow=="C"){
+
+      ## Conumee-path, Illumina
+
+      proc_treatment_C <- sesame_cn_methylset_treatment
+      rm(sesame_cn_methylset_treatment)
+
+      proc_control_C <- sesame_cn_methylset_control
+      rm(sesame_cn_methylset_control)
+
+      ##What was I doing with shared names here?
+      ##proc_treatment_sorted_C.1 <-
+      ##  proc_treatment_sorted_C.1[female_shared_names,]
+      ##proc_control_sorted_C.1   <-
+      ##  proc_control_sorted_C.1[male_shared_names,]
+
+      ####################### RUN CONUMEE ##############################
+
+      candidates_data_treatment_C <-
+        cnAnalysis450k::runConumee(proc_treatment_C,
+                                   proc_control_C
+                                   ##proc_treatment_sorted_C,
+                                   ##proc_control_sorted_C
+                                   )
+
+      seg <- list(candidates_data_treatment_C)
+
+    }
+
     }else{
 
-      split.by.cat <- unique(subset.sample.sheet.df[[hm450.split.by]])
+      sample.sheet.df <- sample.sheet.df[sample.sheet.df$Sample_Group %in%
+                                                  hm450.comparison,]
+
+      split.by.cat <- unique(sample.sheet.df[[hm450.split.by]])
 
       treatment.samples.1 <-
-        sesame.sample.sheet.df[
-          sesame.sample.sheet.df$Sample_Group==sesame.comparison[1] &
-            sesame.sample.sheet.df[[hm450.split.by]]==split.by.cat[1],
+        sample.sheet.df[
+          sample.sheet.df$Sample_Group==hm450.comparison[1] &
+            sample.sheet.df[[hm450.split.by]]==split.by.cat[1],
             "Sample_Name"]
 
       control.samples.1 <-
-        sesame.sample.sheet.df[
-          sesame.sample.sheet.df$Sample_Group==sesame.comparison[2] &
-            sesame.sample.sheet.df[[hm450.split.by]]==split.by.cat[1],
+        sample.sheet.df[
+          sample.sheet.df$Sample_Group==hm450.comparison[2] &
+            sample.sheet.df[[hm450.split.by]]==split.by.cat[1],
             "Sample_Name"]
 
       treatment.paths.1 <-
-        sesame.sample.sheet.df[
-          sesame.sample.sheet.df$Sample_Group==sesame.comparison[1] &
-            sesame.sample.sheet.df[[hm450.split.by]]==split.by.cat[1],
+        sample.sheet.df[
+          sample.sheet.df$Sample_Group==hm450.comparison[1] &
+            sample.sheet.df[[hm450.split.by]]==split.by.cat[1],
             "Basename"]
 
       control.paths.1   <-
-        sesame.sample.sheet.df[
-          sesame.sample.sheet.df$Sample_Group==sesame.comparison[2] &
-            sesame.sample.sheet.df[[hm450.split.by]]==split.by.cat[1],
+        sample.sheet.df[
+          sample.sheet.df$Sample_Group==hm450.comparison[2] &
+            sample.sheet.df[[hm450.split.by]]==split.by.cat[1],
             "Basename"]
 
       treatment.platform.1 <-
-        unique(sesame.sample.sheet.df[
-          sesame.sample.sheet.df$Sample_Group==sesame.comparison[1] &
-            sesame.sample.sheet.df[[hm450.split.by]]==split.by.cat[2],
+        unique(sample.sheet.df[
+          sample.sheet.df$Sample_Group==hm450.comparison[1] &
+            sample.sheet.df[[hm450.split.by]]==split.by.cat[2],
             "Platform"])
 
       control.platform.1 <-
-        unique(sesame.sample.sheet.df[
-          sesame.sample.sheet.df$Sample_Group==sesame.comparison[2] &
-            sesame.sample.sheet.df[[hm450.split.by]]==split.by.cat[2],
+        unique(sample.sheet.df[
+          sample.sheet.df$Sample_Group==hm450.comparison[2] &
+            sample.sheet.df[[hm450.split.by]]==split.by.cat[2],
             "Platform"])
 
       treatment.samples.2 <-
-        sesame.sample.sheet.df[
-          sesame.sample.sheet.df$Sample_Group==sesame.comparison[1] &
-            sesame.sample.sheet.df[[hm450.split.by]]==split.by.cat[2],
+        sample.sheet.df[
+          sample.sheet.df$Sample_Group==hm450.comparison[1] &
+            sample.sheet.df[[hm450.split.by]]==split.by.cat[2],
             "Sample_Name"]
 
       control.samples.2 <-
-        sesame.sample.sheet.df[
-          sesame.sample.sheet.df$Sample_Group==sesame.comparison[2] &
-            sesame.sample.sheet.df[[hm450.split.by]]==split.by.cat[2],
+        sample.sheet.df[
+          sample.sheet.df$Sample_Group==hm450.comparison[2] &
+            sample.sheet.df[[hm450.split.by]]==split.by.cat[2],
             "Sample_Name"]
 
       treatment.paths.2 <-
-        sesame.sample.sheet.df[
-          sesame.sample.sheet.df$Sample_Group==sesame.comparison[1] &
-            sesame.sample.sheet.df[[hm450.split.by]]==split.by.cat[2],
+        sample.sheet.df[
+          sample.sheet.df$Sample_Group==hm450.comparison[1] &
+            sample.sheet.df[[hm450.split.by]]==split.by.cat[2],
             "Basename"]
 
       control.paths.2   <-
-        sesame.sample.sheet.df[
-          sesame.sample.sheet.df$Sample_Group==sesame.comparison[2] &
-            sesame.sample.sheet.df[[hm450.split.by]]==split.by.cat[2],
+        sample.sheet.df[
+          sample.sheet.df$Sample_Group==hm450.comparison[2] &
+            sample.sheet.df[[hm450.split.by]]==split.by.cat[2],
             "Basename"]
 
       treatment.platform.2 <-
-        unique(hm450.sample.sheet.df[
-          hm450.sample.sheet.df$Sample_Group==hm450.comparison[1] &
-            hm450.sample.sheet.df[[hm450.split.by]]==split.by.cat[2],
+        unique(sample.sheet.df[
+          sample.sheet.df$Sample_Group==hm450.comparison[1] &
+            sample.sheet.df[[hm450.split.by]]==split.by.cat[2],
             "Platform"])
 
       control.platform.2   <-
-        unique(hm450.sample.sheet.df[
-          hm450.sample.sheet.df$Sample_Group==hm450.comparison[2] &
-            hm450.sample.sheet.df[[hm450.split.by]]==split.by.cat[2],
+        unique(sample.sheet.df[
+          sample.sheet.df$Sample_Group==hm450.comparison[2] &
+            sample.sheet.df[[hm450.split.by]]==split.by.cat[2],
             "Platform"])
 
       ExperimentHub::setExperimentHubOption("CACHE",
-                                          hm450.idat.files.dir)
+                                          hm450.input.dir)
 
       ExperimentHub::ExperimentHub()
 
-      idat_prefixes <- sesame::searchIDATprefixes(hm450.idat.files.dir,
+      idat_prefixes <- sesame::searchIDATprefixes(hm450.input.dir,
                                                 recursive=TRUE)
 
-      idat_prefixes.treatment <-
+      idat_prefixes.treatment.1 <-
         idat_prefixes[gsub(".*/","",idat_prefixes) %in%
-                      gsub(paste0(".*",.Platform$file.sep),
-                           "",treatment.paths)]
+                      gsub(paste0(".*",hm450.file.sep),
+                           "",treatment.paths.1)]
 
-      idat_prefixes.control   <-
+      idat_prefixes.treatment.2 <-
         idat_prefixes[gsub(".*/","",idat_prefixes) %in%
-                      gsub(paste0(".*",.Platform$file.sep),
-                           "",control.paths)]
+                      gsub(paste0(".*",hm450.file.sep),
+                             "",treatment.paths.2)]
+
+      idat_prefixes.control.1   <-
+        idat_prefixes[gsub(".*/","",idat_prefixes) %in%
+                      gsub(paste0(".*",hm450.file.sep),
+                           "",control.paths.1)]
+
+      idat_prefixes.control.2   <-
+        idat_prefixes[gsub(".*/","",idat_prefixes) %in%
+                        gsub(paste0(".*",hm450.file.sep),
+                             "",control.paths.2)]
 
       sesameData::sesameDataCacheAll()
 
-      sesame_sset.treatment <- sesame::openSesame(idat_prefixes.treatment,
+      sesame_sset.treatment.1 <- sesame::openSesame(idat_prefixes.treatment.1,
                                                 mask = TRUE,
                                                 sum.TypeI = TRUE,
-                                                platform = treatment.platform,
+                                                platform = treatment.platform.1,
                                                 what="sigset")
 
-      sesame_sset.control <- sesame::openSesame(idat_prefixes.control,
+      sesame_sset.treatment.2 <- sesame::openSesame(idat_prefixes.treatment.2,
+                                                  mask = TRUE,
+                                                  sum.TypeI = TRUE,
+                                                platform = treatment.platform.2,
+                                                  what="sigset")
+
+      sesame_sset.control.1 <- sesame::openSesame(idat_prefixes.control.1,
                                               mask = TRUE,
                                               sum.TypeI = TRUE,
-                                              platform = control.platform,
+                                              platform = control.platform.1,
                                               what="sigset")
 
-      sesame_rgset.treatment <-
-        sesame::SigSetsToRGChannelSet(sesame_sset.treatment)
+      sesame_sset.control.2 <- sesame::openSesame(idat_prefixes.control.2,
+                                                mask = TRUE,
+                                                sum.TypeI = TRUE,
+                                                platform = control.platform.2,
+                                                what="sigset")
 
-      sesame_rgset.control <-
-        sesame::SigSetsToRGChannelSet(sesame_sset.control)
+      sesame_rgset.treatment.1 <-
+        sesame::SigSetsToRGChannelSet(sesame_sset.treatment.1)
 
-      sesame_cn_methylset.treatment <-
-        minfi::getCN(minfi::preprocessRaw(sesame_rgset.treatment))
+      sesame_rgset.treatment.2 <-
+        sesame::SigSetsToRGChannelSet(sesame_sset.treatment.2)
 
-      sesame_cn_methylset.control <-
-        minfi::getCN(minfi::preprocessRaw(sesame_rgset.control))
+      sesame_rgset.control.1 <-
+        sesame::SigSetsToRGChannelSet(sesame_sset.control.1)
+
+      sesame_rgset.control.2 <-
+        sesame::SigSetsToRGChannelSet(sesame_sset.control.2)
+
+      sesame_cn_methylset.treatment.1 <-
+        minfi::getCN(minfi::preprocessRaw(sesame_rgset.treatment.1))
+
+      sesame_cn_methylset.treatment.2 <-
+        minfi::getCN(minfi::preprocessRaw(sesame_rgset.treatment.2))
+
+      sesame_cn_methylset.control.1 <-
+        minfi::getCN(minfi::preprocessRaw(sesame_rgset.control.1))
+
+      sesame_cn_methylset.control.2 <-
+        minfi::getCN(minfi::preprocessRaw(sesame_rgset.control.2))
 
       if(hm450.workflow=="A"){
 
-        proc_treatment_A.1  <-
-          hm450_cn_methylset_treatment.1[,
-                                      1:length(colnames(
-                                      sesame_rgset_treatment.1))]
+        proc_treatment_A.1  <- sesame_cn_methylset.treatment.1
+        rm(sesame_cn_methylset.treatment.1)
 
-        proc_treatment_A.2    <-
-          hm450_cn_methylset_treatment.2[,
-                                      1:length(colnames(
-                                      sesame_rgset_treatment.2))]
+        proc_treatment_A.2  <- sesame_cn_methylset.treatment.2
+        rm(sesame_cn_methylset.treatment.2)
 
-        proc_control_A.1 <-
-          hm450_cn_methylset_control.1[,
-                                    1:length(colnames(
-                                    sesame_rgset_control.1))] ##4 Cols
-        med_control_A.1  <- apply(proc_normal_female_A, 1, "median")
+        proc_control_A.1 <- sesame_cn_methylset.control.1
+        rm(sesame_cn_methylset.control.1)
+        med_control_A.1  <- apply(proc_control_A.1, 1, "median")
 
-        proc_control_A.2   <-
-          hm450_cn_methylset_control.2[,
-                                    1:length(colnames(
-                                    sesame_rgset_control.2))]
-        med_control_A.2    <- apply(proc_control_A.2, 1, "median")
+        proc_control_A.2 <- sesame_cn_methylset.control.2
+        rm(sesame_cn_methylset.control.2)
+        med_control_A.2 <- apply(proc_control_A.2, 1, "median")
 
         candidates_data_treatment_A.1 <-
-          findSegments2(proc_tumor_female_A[, , drop = FALSE],
-                      med_normal_female_A,
-                      proc_normal_female_A) ##Scaled with B but not A
+          findSegments2(proc_treatment_A.1[, , drop = FALSE],
+                      med_control_A.1,
+                      proc_control_A.1) ##Scaled with B but not A
 
         candidates_data_treatment_A.2 <-
-          findSegments2(proc_tumor_male_A[, , drop = FALSE],
-                      med_normal_male_A,
-                      proc_normal_male_A)
+          findSegments2(proc_treatment_A.2[, , drop = FALSE],
+                      med_control_A.2,
+                      proc_control_A.2)
+
+        seg <- list(candidates_data_treatment_A.1,
+                    candidates_data_treatment_A.2)
 
       }else if(hm450.workflow=="B"){
 
-      ## With z-Transformation, illumina
-        proc_normal_female_B  <-
-          hm450_cn_methylset_normal_female[,
-                                         1:length(colnames(
-                                           sesame_rgset_normal_female))]
-        proc_normal_female_B[is.infinite(proc_normal_female_B)] <- NA
-        proc_normal_female_B <- scale(proc_normal_female_B) ##Z transform
-        med_normal_female_B <- apply(proc_normal_female_B, 1, "median")
+        ## With z-Transformation, illumina
+        proc_control_B.1  <- sesame_cn_methylset.control.1
+        rm(sesame_cn_methylset.control.1)
+        proc_control_B.1[is.infinite(proc_control_B.1)] <- NA
+        proc_control_B.1 <- scale(proc_control_B.1) ##Z transform
+        med_control_B.1 <- apply(proc_control_B.1, 1, "median")
 
-        proc_normal_male_B <-
-          hm450_cn_methylset_normal_male[,
-                                       1:length(colnames(
-                                         sesame_rgset_normal_male))]
-        proc_normal_male_B[is.infinite(proc_normal_male_B)] <- NA
-        proc_normal_male_B <- scale(proc_normal_male_B)
-        med_normal_male_B <- apply(proc_normal_male_B, 1, "median")
+        proc_control_B.2 <- sesame_cn_methylset.control.2
+        rm(sesame_cn_methylset.control.2)
+        proc_control_B.2[is.infinite(proc_control_B.2)] <- NA
+        proc_control_B.2 <- scale(proc_control_B.2)
+        med_control_B.2 <- apply(proc_control_B.2, 1, "median")
 
-        proc_tumor_female_B  <-
-          hm450_cn_methylset_tumor_female[,
-                                        1:length(colnames(
-                                          sesame_rgset_tumor_female))]
-        proc_tumor_female_B[is.infinite(proc_tumor_female_B)] <- NA
-        proc_tumor_female_B <- scale(proc_tumor_female_B)
-        med_tumor_female_B <- apply(proc_tumor_female_B, 1, "median")
+        proc_treatment_B.1  <- sesame_cn_methylset.treatment.1
+        rm(sesame_cn_methylset.treatment.1)
+        proc_treatment_B.1[is.infinite(proc_treatment_B.1)] <- NA
+        proc_treatment_B.1 <- scale(proc_treatment_B.1)
+        med_treatment_B.1 <- apply(proc_treatment_B.1, 1, "median")
 
-        proc_tumor_male_B  <-
-          hm450_cn_methylset_tumor_male[,
-                                      1:length(colnames(
-                                        sesame_rgset_tumor_male))]
-        proc_tumor_male_B[is.infinite(proc_tumor_male_B)] <- NA
-        proc_tumor_male_B <- scale(proc_tumor_male_B)
-        med_tumor_male_B <- apply(proc_tumor_male_B, 1, "median")
+        proc_treatment_B.2  <- sesame_cn_methylset.treatment.2
+        rm(sesame_cn_methylset.treatment.2)
+        proc_treatment_B.2[is.infinite(proc_treatment_B.2)] <- NA
+        proc_treatment_B.2 <- scale(proc_treatment_B.2)
+        med_treatment_B.2 <- apply(proc_treatment_B.2, 1, "median")
 
-        candidates_data_normal_female_B <-
-          findSegments2(proc_tumor_female_B[, , drop = FALSE],
-                      med_normal_female_B,
-                      proc_normal_female_B) ##Scaled with B but not A
+        candidates_data_treatment_B.1 <-
+          findSegments2(proc_treatment_B.1[, , drop = FALSE],
+                      med_control_B.1,
+                      proc_control_B.1) ##Scaled with B but not A
 
-        candidates_data_normal_male_B <-
-          findSegments2(proc_tumor_male_B[, , drop = FALSE],
-                      med_normal_male_B,
-                      proc_normal_male_B)
+        candidates_data_treatment_B.2 <-
+          findSegments2(proc_treatment_B.2[, , drop = FALSE],
+                      med_control_B.2,
+                      proc_control_B.2)
+
+        seg <- list(candidates_data_treatment_B.1,
+                    candidates_data_treatment_B.2)
 
       }else if(hm450.workflow=="C"){
 
       ## Conumee-path, Illumina
 
-        proc_normal_female_C <-
-          hm450_cn_methylset_normal_female[,
-                                         1:length(colnames(
-                                           sesame_rgset_normal_female))]
+        proc_control_C.1 <- sesame_cn_methylset.control.1
+        rm(sesame_cn_methylset.control.1)
 
-        proc_normal_male_C   <-
-          hm450_cn_methylset_normal_male[,
-                                       1:length(colnames(
-                                         sesame_rgset_normal_male))]
+        proc_control_C.2 <- sesame_cn_methylset.control.2
+        rm(sesame_cn_methylset.control.2)
 
-        proc_tumor_female_C <-
-          hm450_cn_methylset_tumor_female[,
-                                        1:length(colnames(
-                                          sesame_rgset_tumor_female))]
+        proc_treatment_C.1 <- sesame_cn_methylset.treatment.1
+        rm(sesame_cn_methylset.treatment.1)
 
-        proc_tumor_male_C <-
-          hm450_cn_methylset_tumor_male[,
-                                      1:length(colnames(
-                                        sesame_rgset_tumor_male))]
+        proc_treatment_C.2 <- sesame_cn_methylset.treatment.2
+        rm(sesame_cn_methylset.treatment.2)
 
-        proc_cord_female_C  <-
-          hm450_cn_methylset_cord_female[,
-                                       1:length(colnames(
-                                         sesame_rgset_cord_female))]
-
-        proc_cord_male_C    <-
-          hm450_cn_methylset_cord_male[,
-                                     1:length(colnames(
-                                       sesame_rgset_cord_male))]
-
-        proc_cord_female_present_C <-
-          proc_cord_female_C[rownames(proc_cord_female_C) %in%
-                             rownames(proc_tumor_female_C),]
-
-        proc_cord_male_present_C <-
-          proc_cord_male_C[rownames(proc_cord_male_C) %in%
-                           rownames(proc_tumor_male_C),]
-
-        proc_treatment_sorted_C <-
-          proc_tumor_female_sorted_C[female_shared_names,]
-
-        proc_control_sorted_C   <-
-          proc_tumor_male_sorted_C[male_shared_names,]
+        ##What was I doing with shared names here:
+        ##proc_treatment_sorted_C.1 <-
+        ##  proc_treatment_sorted_C.1[female_shared_names,]
+        ##proc_treatment_sorted_C.2 <-
+        ##  proc_treatment_sorted_C.2[female_shared_names,]
+        ##proc_control_sorted_C.1   <-
+        ##  proc_control_sorted_C.1[male_shared_names,]
+        ##proc_control_sorted_C.2   <-
+        ##  proc_control_sorted_C.2[male_shared_names,]
 
       ####################### RUN CONUMEE ##############################
 
-        candidates_data_C <-
-          cnAnalysis450k::runConumee(proc_treatment_sorted_C,
-                                   proc_control_sorted_C)
+        candidates_data_treatment_C.1 <-
+          cnAnalysis450k::runConumee(proc_treatment_C.1,
+                                     proc_control_C.1
+                                     ##proc_treatment_sorted_C.1,
+                                     ##proc_control_sorted_C.1
+                                     )
 
-      }
+        candidates_data_treatment_C.1 <-
+          cnAnalysis450k::runConumee(proc_treatment_C.2,
+                                     proc_control_C.2
+                                     ##proc_treatment_sorted_C.2,
+                                     ##proc_control_sorted_C.2
+                                     )
 
-    }
+        seg <- list(candidates_data_treatment_C.1,
+                    candidates_data_treatment_C.2)
 
-}
+      } ##End hm450 workflow
 
+    } ##End hm450.split.by
 
+  } ##End hm450.reference
 
+  return(seg)
 
-
-
-
-
-
-
-
-if(k450.workflow=="A"){
-
-  ##sub routine A
-  load(paste0(output.dir,
-              file.sep,
-              "candidates_data_normal_female_A.RData"))
-  load(paste0(output.dir,
-              file.sep,
-              "candidates_data_normal_male_A.RData"))
-  load(paste0(output.dir,
-              file.sep,
-              "candidates_data_cord_female_A.RData"))
-  load(paste0(output.dir,
-              file.sep,
-              "candidates_data_cord_male_A.RData"))
-
-  candidates_data_normal_female_A_sig <-
-    candidates_data_normal_female_A[
-      candidates_data_normal_female_A$p.val <= 0.05,]
-  candidates_data_normal_male_A_sig   <-
-    candidates_data_normal_male_A[
-      candidates_data_normal_male_A$p.val <= 0.05,]
-  candidates_data_cord_female_A_sig   <-
-    candidates_data_cord_female_A[
-      candidates_data_cord_female_A$p.val <= 0.05,]
-  candidates_data_cord_male_A_sig   <-
-    candidates_data_cord_male_A[
-      candidates_data_cord_male_A$p.val <= 0.05,]
-
-  candidates_data_normal_female_A_sig$num.mark <- NA
-  candidates_data_normal_female_A_sig$bstat    <- NA
-  candidates_data_normal_female_A_sig$treatment <- "tumor"
-  candidates_data_normal_male_A_sig$num.mark <- NA
-  candidates_data_normal_male_A_sig$bstat    <- NA
-  candidates_data_normal_male_A_sig$treatment <- "tumor"
-  candidates_data_cord_female_A_sig$num.mark <- NA
-  candidates_data_cord_female_A_sig$bstat    <- NA
-  candidates_data_cord_female_A_sig$treatment <- "tumor"
-  candidates_data_cord_male_A_sig$num.mark <- NA
-  candidates_data_cord_male_A_sig$bstat    <- NA
-  candidates_data_cord_male_A_sig$treatment <- "tumor"
-
-  preferred.columns <- c(7,1,2,3,12,13,8,5,4,9,10,11,14)
-
-  candidates_data_normal_female_A_sig <-
-    candidates_data_normal_female_A_sig[, preferred.columns]
-  candidates_data_normal_male_A_sig <-
-    candidates_data_normal_male_A_sig[, preferred.columns]
-  candidates_data_cord_female_A_sig <-
-    candidates_data_cord_female_A_sig[, preferred.columns]
-  candidates_data_cord_male_A_sig <-
-    candidates_data_cord_male_A_sig[, preferred.columns]
-
-  candidates_data_normal_A_sig_colnames <- c("ID",
-                                             "chrom",
-                                             "loc.start",
-                                             "loc.end",
-                                             "num.mark",
-                                             "bstat",
-                                             "pval",
-                                             "seg.mean",
-                                             "seg.median",
-                                             "karyotype",
-                                             "sex_reported",
-                                             "sex_inferred",
-                                             "treatment")
-
-  colnames(candidates_data_normal_female_A_sig) <-
-    candidates_data_normal_A_sig_colnames
-  colnames(candidates_data_normal_male_A_sig) <-
-    candidates_data_normal_A_sig_colnames
-  colnames(candidates_data_cord_female_A_sig) <-
-    candidates_data_normal_A_sig_colnames
-  colnames(candidates_data_cord_male_A_sig) <-
-    candidates_data_normal_A_sig_colnames
-
-  seg <- do.call(rbind,
-                 list(candidates_data_normal_female_A_sig,
-                      candidates_data_normal_male_A_sig,
-                      candidates_data_cord_female_A_sig,
-                      candidates_data_cord_male_A_sig)
-  )
-
-}else if(k450.workflow==B){
-
-  load(paste0(output.dir,
-              file.sep,
-              "candidates_data_normal_female_B.RData"))
-  load(paste0(output.dir,
-              file.sep,
-              "candidates_data_normal_male_B.RData"))
-  load(paste0(output.dir,
-              file.sep,
-              "candidates_data_cord_female_B.RData"))
-  load(paste0(output.dir,
-              file.sep,
-              "candidates_data_cord_male_B.RData"))
-
-  candidates_data_normal_female_B_sig <-
-    candidates_data_normal_female_B[
-      candidates_data_normal_female_B$p.val <= 0.05,]
-  candidates_data_normal_male_B_sig  <-
-    candidates_data_normal_male_B[
-      candidates_data_normal_male_B$p.val <= 0.05,]
-  candidates_data_cord_female_B_sig  <-
-    candidates_data_cord_female_B[
-      candidates_data_cord_female_B$p.val <= 0.05,]
-  candidates_data_cord_male_B_sig  <-
-    candidates_data_cord_male_B[
-      candidates_data_cord_male_B$p.val <= 0.05,]
-
-  candidates_data_normal_female_B_sig$num.mark <- NA
-  candidates_data_normal_female_B_sig$bstat    <- NA
-  candidates_data_normal_female_B_sig$treatment <- "tumor"
-  candidates_data_normal_male_B_sig$num.mark <- NA
-  candidates_data_normal_male_B_sig$bstat    <- NA
-  candidates_data_normal_male_B_sig$treatment <- "tumor"
-  candidates_data_cord_female_B_sig$num.mark <- NA
-  candidates_data_cord_female_B_sig$bstat    <- NA
-  candidates_data_cord_female_B_sig$treatment <- "tumor"
-  candidates_data_cord_male_B_sig$num.mark <- NA
-  candidates_data_cord_male_B_sig$bstat    <- NA
-  candidates_data_cord_male_B_sig$treatment <- "tumor"
-
-  candidates_data_normal_female_B_sig <-
-    candidates_data_normal_female_B_sig[, preferred.columns]
-  candidates_data_normal_male_B_sig <-
-    candidates_data_normal_male_B_sig[, preferred.columns]
-  candidates_data_cord_female_B_sig <-
-    candidates_data_cord_female_B_sig[, preferred.columns]
-  candidates_data_cord_male_B_sig <-
-    candidates_data_cord_male_B_sig[, preferred.columns]
-
-  candidates_data_normal_B_sig_colnames <- c("ID",
-                                             "chrom",
-                                             "loc.start",
-                                             "loc.end",
-                                             "num.mark",
-                                             "bstat",
-                                             "pval",
-                                             "seg.mean",
-                                             "seg.median",
-                                             "karyotype",
-                                             "sex_reported",
-                                             "sex_inferred",
-                                             "treatment")
-
-  colnames(candidates_data_normal_female_B_sig) <-
-    candidates_data_normal_B_sig_colnames
-  colnames(candidates_data_normal_male_B_sig) <-
-    candidates_data_normal_B_sig_colnames
-  colnames(candidates_data_cord_female_B_sig) <-
-    candidates_data_normal_B_sig_colnames
-  colnames(candidates_data_cord_male_B_sig) <-
-    candidates_data_normal_B_sig_colnames
-
-  seg <- do.call(rbind,
-                 list(candidates_data_normal_female_B_sig,
-                      candidates_data_normal_male_B_sig,
-                      candidates_data_cord_female_B_sig,
-                      candidates_data_cord_male_B_sig))
-
-}else if(k450.workflow=="C"){
-
-  load(paste0(output.dir,
-              file.sep,
-              "candidates_data_normal_female_C.RData"))
-  load(paste0(output.dir,
-              file.sep,
-              "candidates_data_normal_male_C.RData"))
-  load(paste0(output.dir,
-              file.sep,
-              "candidates_data_cord_female_C.RData"))
-  load(paste0(output.dir,
-              file.sep,
-              "candidates_data_cord_male_C.RData"))
-
-  candidates_data_normal_female_C_sig <-
-    candidates_data_normal_female_C$data[
-      candidates_data_normal_female_C$data$pval <= 0.05,]
-  candidates_data_normal_male_C_sig    <-
-    candidates_data_normal_male_C$data[
-      candidates_data_normal_male_C$data$pval <= 0.05,]
-  candidates_data_cord_female_C_sig    <-
-    candidates_data_cord_female_C$data[
-      candidates_data_cord_female_C$data$pval <= 0.05,]
-  candidates_data_cord_male_C_sig    <-
-    candidates_data_cord_male_C$data[
-      candidates_data_cord_male_C$data$pval <= 0.05,]
-
-  candidates_data_normal_female_C_sig$treatment <- "tumor"
-  candidates_data_normal_male_C_sig$treatment <- "tumor"
-  candidates_data_cord_female_C_sig$treatment <- "tumor"
-  candidates_data_cord_male_C_sig$treatment <- "tumor"
-
-  seg <- do.call(rbind,
-                 list(candidates_data_normal_female_C_sig,
-                      candidates_data_normal_male_C_sig,
-                      candidates_data_cord_female_C_sig,
-                      candidates_data_cord_male_C_sig))
-
-}else{
-
-  stop(paste0("Error: need to select a ",
-              "proper sub workflow for 450k",
-              " <k450.workflow>"))
-
-}
-
-##Note differences in 450k standard and conumee:
-##colnames(candidates_data_cord_male_B_sig)
-##"chr"
-##"startCG"
-##"endCG"
-##"median"
-##"mean"
-##"sd"
-##"smp"
-##"p.val"
-##"karyotype"
-##"sex_reported"
-##"sex_inferred"
-##"num.mark"
-##"bstat"
-
-##candidates_data_cord_male_C_sig
-##"ID"
-##"chrom"
-##"loc.start"
-##"loc.end"
-##"num.mark"
-##"bstat"
-##"pval"
-##"seg.mean"
-##"seg.median"
-##"karyotype"
-##"sex_reported"
-##"sex_inferred"
-
-##Desired names:
-##colnames(seg)
-##"ID"
-##"chrom"
-##"loc.start"
-##"loc.end"
-##"num.mark"
-##"bstat"
-##"pval"
-##"seg.mean"
-##"seg.median"
-##karyotype
-##sex_reported
-##sex_inferred
-##treatment
-
-colnames(seg)[1] <- "Sample_ID"
-seg <- seg[,c(1,2,3,4,5,8,10,11,12,13)]
-seg$state <- round(2^seg$seg.mean * 2)
-seg$state[seg$state > 4] <- 4
-seg$method <- "k450"
-seg$sub.method <- sub.workflow
-row.names(seg) <- NULL
-seg <- na.omit(seg) ##Workflow C ends up with some NA rows
-
-return(seg.out)
-
-}
+} ##End function

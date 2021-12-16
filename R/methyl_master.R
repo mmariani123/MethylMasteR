@@ -31,6 +31,7 @@
 #' @param sesame.data.cache
 #' @param sesame.data.normal
 #' @param sesame.ref.version
+#' @param hm450.workflow
 #' @param epi.run.gistic
 #' @param compare.name
 #' @param olaps.split.field
@@ -50,7 +51,7 @@
 methyl_master <- function(input.dir            = NULL,
                           output.dir           = NULL,
                           sample.sheet.path    = NULL,
-                          file.sep             = NULL,
+                          file.sep             = "/",
                           r.lib.path           = .libPaths()[1],
                           n.cores              = 1,
                           os.type              = "linux",
@@ -66,6 +67,7 @@ methyl_master <- function(input.dir            = NULL,
                           sesame.data.cache    = "EPIC",
                           sesame.data.normal   = 'EPIC.5.normal',
                           sesame.ref.version   = "hg38",
+                          hm450.workflow       = "B",
                           epi.run.gistic       = FALSE,
                           compare.name         = NULL,
                           save.seg             = FALSE,
@@ -197,12 +199,14 @@ sesame = {
 
 hm450 = {
 
-  seg <- methyl_master_hm450(hm450.input.file.dir     = input.dir,
-                             hm450.output.file.dir    = output.dir,
+  seg <- methyl_master_hm450(hm450.input.dir          = input.dir,
+                             hm450.output.dir         = output.dir,
                              hm450.sample.sheet.path  = sample.sheet.path,
                              hm450.comparison         = comparison,
                              hm450.split.by           = split.by,
+                             hm450.file.sep           = file.sep,
                              hm450.reference          = reference,
+                             hm450.workflow           = hm450.workflow,
                              hm450.sesame.data.cache  = "EPIC",
                              hm450.sesame.data.normal = 'EPIC.5.normal',
                              hm450.sesame.ref.version = "hg38",
@@ -328,6 +332,30 @@ writeLines(c("\nTotal time:\n",
 
 ##gc.output <- capture.output(gc())
 ##print(profvis.out)
+
+####################### Formatting ###########################################
+##############################################################################
+##############################################################################
+##############################################################################
+##############################################################################
+
+if(routine=="sesame"){
+  methyl_master_formatting_sesame()
+}else if(routine=="hm450"){
+  methyl_master_formatting_hm450(hm450.form.output.dir=output.dir,
+                                 hm450.form.sample.sheet.path=sample.sheet.path,
+                                 hm450.form.reference=reference,
+                                 hm450.form.split.by=split.by,
+                                 hm450.form.workflow=hm450.workflow,
+                                 hm450.form.comparison=comparison,
+                                 hm450.form.save.seg=save.seg)
+}else if(routine=="champ"){
+  methyl_master_formatting_champ(seg)
+}else if(routine=="epi"){
+  methyl_master_formatting_epicopy(seg)
+}else{
+  stop(paste0("Error you must select a valid <routine> value"))
+}
 
 ####################### Overlaps and visualize ###############################
 ##############################################################################
