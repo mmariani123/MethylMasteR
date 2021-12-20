@@ -30,7 +30,6 @@
 #' @import profvis
 #' @return A seg object for downstream analysis
 #' @export
-
 methyl_master_sesame <- function(sesame.idat.files.dir       = NULL,
                                  sesame.output.dir           = NULL,
                                  sesame.ref                  = NULL,

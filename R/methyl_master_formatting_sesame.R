@@ -12,36 +12,41 @@
 #' "champ" ,         ##Run ChAMP   CNV calling (get segments)
 #' "epicopy" ,       ##Run EpiCopy CNV calling (get segments)
 #' "compare"         ##Run algorithm comparison functionality
-#' @param sesame.output.dir
-#' @param output.dir
-#' @param sample.sheet.path
-#' @param split.by
-#' @param comparison
-#' @param sesame.save.seg
+#' @param sesame.form.seg
+#' @param sesame.form.output.dir
+#' @param output.form.dir
+#' @param sample.form.sample.sheet.path
+#' @param sesame.form.reference
+#' @param sesame.form.split.by
+#' @param sesame.form.comparison
+#' @param sesame.form.save.seg
 #' @param ...
 #' @import CNVRanger
 #' @import matter
 #' @importFrom magrittr %>%
 #' @return #Formatted seg list object for visualizing
 #' @export
-methyl_master_formatting_sesame <- function(sesame.output.dir,
-                                            sesame.reference,
-                                            sesame.split.by,
-                                            sesame.comparison,
-                                            sesame.save.seg,
+methyl_master_formatting_sesame <- function(sesame.form.seg,
+                                            sesame.form.output.dir,
+                                            sesame.form.sample.sheet.path,
+                                            sesame.form.reference,
+                                            sesame.form.split.by,
+                                            sesame.form.comparison,
+                                            sesame.form.save.seg,
                                             ...){
 
-if(sesame.save.seg==TRUE){
-  save(seg, file =  paste0(sesame.output.dir,
+if(sesame.form.save.seg==TRUE){
+  save(sesame.form.seg, file =  paste0(sesame.form.output.dir,
                            .Platform$file.sep,
                            "seg.RData"))
 }
 
-if(sesame.reference=="internal"){
+if(sesame.form.reference=="internal"){
 
-  if(is.null(sesame.split.by)){
+  if(is.null(sesame.form.split.by)){
 
-    sesame.seg <- seg[[1]]
+    sesame.seg <- sesame.form.seg[[1]]
+    rm(sesame.form.seg)
 
     sesame_seg_treatment.df <- binding_frames_mm(
       sesame.seg)
@@ -61,7 +66,7 @@ if(sesame.reference=="internal"){
 
     seg.out <- list(seg)
 
-    names(seg.out) <- sesame.comparison[1]
+    names(seg.out) <- sesame.form.comparison[1]
 
     ##For sesame we want to omit the "chr"
     ##from chrom for intial plotting
@@ -73,10 +78,13 @@ if(sesame.reference=="internal"){
     ##sesame.sample.sheet.df[sesame.sample.sheet.df$Sample_Group %in%
     ##                         sesame.comparison[1], "Sample_Name"]]
 
-    sesame_seg_treatment <- seg[[1]]
+    sesame_seg_treatment_1 <- sesame.form.seg[[1]]
+    sesame_seg_treatment_2 <- sesame.form.seg[[2]]
 
-    split.by.1 <- unique(sesame.sample.sheet.df[[sesame.split.by]])[1]
-    split.by.2 <- unique(sesame.sample.sheet.df[[sesame.split.by]])[2]
+    rm(sesame.form.seg)
+
+    split.by.1 <- unique(sesame.sample.sheet.df[[sesame.form.split.by]])[1]
+    split.by.2 <- unique(sesame.sample.sheet.df[[sesame.form.split.by]])[2]
 
     ##sesame_seg_treatment.1 <- sesame.seg.treatment[
     ##  names(sesame.seg.treatment) %in%
@@ -86,9 +94,6 @@ if(sesame.reference=="internal"){
     ##sesame_seg_treatment.2 <- sesame.seg[names(sesame.seg) %in%
     ##  sesame.sample.sheet.df[sesame.sample.sheet.df$gender_reported %in%
     ##                           split.by.2, "Sample_Name"]]
-
-    sesame_seg_treatment_1 <- seg[1]
-    sesame_seg_treatment_2 <- seg[2]
 
     sesame_seg_treatment.1.df <- binding_frames_mm(
       sesame_seg_treatment.1)
@@ -125,8 +130,8 @@ if(sesame.reference=="internal"){
     seg.out <- list(seg.1,
                     seg.2)
 
-    names(seg.out) <- c(paste0(sesame.comparison[1],"_1"),
-                        paste0(sesame.comparison[1],"_2"))
+    names(seg.out) <- c(paste0(sesame.form.comparison[1],"_1"),
+                        paste0(sesame.form.comparison[1],"_2"))
 
     ##For sesame we want to omit the "chr"
     ##from chrom for intial plotting
@@ -136,13 +141,14 @@ if(sesame.reference=="internal"){
 
 }else{
 
-  if(is.null(sesame.split.by)){
+  if(is.null(sesame.form.split.by)){
 
     ##sesame_seg_treatment <- sesame.seg[names(sesame.seg) %in%
     ##  sesame.sample.sheet.df[sesame.sample.sheet.df$Sample_Group %in%
     ##                           sesame.comparison[1], "Sample_Name"]]
 
-    sesame_seg_treatment <- seg[[1]]
+    sesame_seg_treatment <- sesame.form.seg
+    rm(sesame.form.seg)
 
     sesame_seg_treatment.df <- binding_frames_mm(
       sesame_seg_treatment)
@@ -162,7 +168,7 @@ if(sesame.reference=="internal"){
 
     seg.out <- list(seg.treatment)
 
-    names(seg.out) <- sesame.comparison[1]
+    names(seg.out) <- sesame.form.comparison[1]
 
     ##For sesame we want to omit the "chr"
     ##from chrom for intial plotting
@@ -170,17 +176,20 @@ if(sesame.reference=="internal"){
 
   }else{
 
-    sesame_seg_treatment_1 <- seg[1]
+    sesame_seg_treatment_1 <- sesame.form.seg[1]
+
     sesame_seg_treatment.df.1 <- binding_frames_mm(
       sesame_seg_treatment_1)
     sesame_seg_treatment.df.1 <- sesame_seg_treatment.df.1[
       sesame_seg_treatment.df.1$pval <= 0.05,]
 
-    sesame_seg_treatment_2 <- seg[2]
+    sesame_seg_treatment_2 <- sesame.form.seg[2]
     sesame_seg_treatment.df.2 <- binding_frames_mm(
       sesame_seg_treatment_2)
     sesame_seg_treatment.df.2 <- sesame_seg_treatment.df.2[
       sesame_seg_treatment.df.2$pval <= 0.05,]
+
+    rm(sesame.form.seg)
 
     ##sesame_seg_treatment <- sesame.seg[names(sesame.seg) %in%
     ##sesame.sample.sheet.df[sesame.sample.sheet.df$Sample_Group %in%
@@ -192,7 +201,7 @@ if(sesame.reference=="internal"){
     ##sesame_seg_treatment.df <- sesame_seg_treatment.df[
     ##    sesame_seg_treatment.df$pval <= 0.05,]
 
-    split.categories <- unique(sesame.sample.sheet.df[[sesame.split.by]])
+    split.categories <- unique(sesame.sample.sheet.df[[sesame.form.split.by]])
 
     ##sesame_seg_treatment.df.1 <- sesame_seg_treatment.df[
     ##    sesame.sample.sheet.df[[sesame.split.by]] %in% split.categories[1],]
@@ -226,8 +235,8 @@ if(sesame.reference=="internal"){
     seg.out <- list(seg.treatment.1,
                     seg.treatment.2)
 
-    names(seg.out) <- c(paste0(sesame.comparison[1],"_1"),
-                        paste0(sesame.comparison[1],"_2"))
+    names(seg.out) <- c(paste0(sesame.form.comparison[1],"_1"),
+                        paste0(sesame.form.comparison[1],"_2"))
 
   }
 

@@ -15,115 +15,42 @@
 #' @param ov.simplify.reduce
 #' @param ov.less.stringent.ra.setting
 #' @param ov.pvalue
+#' @param ov.plot.individual
 #' @param ...
 #' @import pheatmap
 #' @import ggplot2
+#' @importFrom GenomicRanges makeGRangesListFromDataFrame unbox
+#' @importFrom ramify flatten unbox
 #' @return #seg.out
 #' @export
 methyl_master_olaps_and_visualize <- function(ov.seg   = NULL,
                                               ov.name  = NULL,
                                 ov.output.dir          = getwd(),
                                 ov.routine             = NULL,
-                                ov.split.field         = "Sample_ID",
+                                ov.split.field         = NULL,
                                 ov.keep.extra.columns  = TRUE,
                                 ov.overlap.density     = 0.1,
                                 ov.estimate.recurrence = FALSE,
                                 ov.simplify.reduce     = weightedmean,
                                 ov.less.stringent.ra.setting = FALSE,
                                 ov.pvalue              = 0.05,
+                                ov.plot.individual     = FALSE,
                                 ...
                                 ){
 
   seg <- ov.seg
-  grl <- GenomicRanges::makeGRangesListFromDataFrame(seg,
-    split.field=ov.split.field,
-    keep.extra.columns=ov.keep.extra.columns)
 
-  grl <- GenomicRanges::sort(grl)
+  ######################### MY HEATMAPS ######################################
 
-  ##ra  <- RaggedExperiment::RaggedExperiment(grl)
+  seg <- seg[seg$pval <= ov.pvalue,]
 
-  ##Excluding 997367 copy-number neutral regions (CN state = 2, diploid)
-  ##Sign-in-by error below with usual function
-  ##cnvrs <- CNVRanger::populationRanges(grl,
-  ##                                     density=0.1,
-  ##                                     est.recur=TRUE)
-
-  ##RaggedExperiment::assay(ra[1:5,1:5])
-
-  ##Trims low-density areas (usually <10%
-  ##of the total contributing individual
-  ##calls within a summarized region).
-
-  cnvrs <- methyl_master_population_ranges(grl,
-                                      ##density=0.1,
-                                      ##We can also like the density
-                                      ##Jenn likes .01
-                                      density         = ov.overlap.density,
-                                      est.recur       = ov.estimate.recurrence
-                                      )
-  ##cnvrs$type %>% unique()##
-  cnvrs.filt <- subset(cnvrs, pvalue < ov.pvalue)
-
-  ra  <- RaggedExperiment::RaggedExperiment(grl)
-
-  ##RaggedExperiment::assay(ra[1:5,1:5])
-
-  ##below the less filtered ragged experiment
-  if(ov.less.stringent.ra.setting==TRUE){
-    cnvs.matrix <- RaggedExperiment::assay(ra)
-  }else{
-    ##This will likley not work as well with
-    ##fewer samples so can default to the
-    ##above, both return overlaps.
-    cnvs.matrix <-
-      RaggedExperiment::qreduceAssay(ra,
-                                     cnvrs.filt,
-                                     simplifyReduce = ov.simplify.reduce)
+  if(ov.plot.individual==TRUE & ov.routine!="sesame"){
+    print("Individual plots only works for sesmae routine currently")
+  }else if(ov.plot.individual==TRUE){
+    methyl_master_plot_individual(pi.seg = seg,
+                                pi.output.dir = ov.output.dir,
+                                pi.name = ov.routine)
   }
-
-  cnvs.matrix <- cnvs.matrix[order(rownames(cnvs.matrix)),]
-  cnvs.matrix[is.na(cnvs.matrix)] <- 2
-  cnvs.matrix <- round(cnvs.matrix, 0)
-
-  write.table(cnvs.matrix,
-              file = paste0(ov.output.dir,
-                            .Platform$file.sep,
-                            ov.routine,
-                            "_",
-                            ov.name,
-                            "_overlaps.csv"),
-              sep=",",
-              col.names=TRUE,
-              row.names=TRUE,
-              quote=FALSE)
-
-  cluster.cols <- TRUE
-  cluster.rows <- TRUE
-  if(is.null(ncol(cnvs.matrix))){
-    cluster.cols <- FALSE
-  }
-  if(is.null(nrow(cnvs.matrix))){
-    cluster.rows <- FALSE
-  }
-
-  pheatmap.out <- pheatmap::pheatmap(cnvs.matrix,
-                                     cluster_rows = cluster.cols,
-                                     cluster_cols = cluster.rows,
-                                     show_colnames = T)
-
-  ggplot2::ggsave(pheatmap.out,
-         file = paste0(ov.output.dir,
-                       .Platform$file.sep,
-                       ov.routine,
-                       "_",
-                       ov.name,
-                       "_pheatmap.pdf"),
-         device="pdf",
-         width=12,
-         height=8)
-
-  ######################### HEATMAPS ######################################
 
   seg$status <- ifelse(seg$state>2,
                        "gain",
@@ -131,7 +58,10 @@ methyl_master_olaps_and_visualize <- function(ov.seg   = NULL,
                               "loss",
                               "neutral"))
 
-  seg$chrom  <- paste0("chr",seg$chrom)
+  if(!grepl("chr", seg$chrom, perl=TRUE)){
+    seg$chrom  <- paste0("chr", seg$chrom)
+  }
+
   seg$chrom  <- factor(seg$chrom,
                        ##levels=gtools::mixedsort(
                        ##unique(ex.data.in$chrom))
@@ -169,51 +99,189 @@ methyl_master_olaps_and_visualize <- function(ov.seg   = NULL,
                                   "neutral",
                                   "gain"))
 
+  seg$loc.start <- as.numeric(seg$loc.start)
+  seg$loc.end   <- as.numeric(seg$loc.end)
+
   ##floor(seg.vis.total$loc.start + seg.vis.total$loc.end) /2)
   seg.heatmap <- ggplot2::ggplot(seg,
-                  ggplot2::aes(x=as.integer((floor((loc.start + loc.end)/2))),
-                            ##x=chrom,
-                            ##y=seg.mean,
-                            y=0.5,
-                            width=loc.start - loc.end,
-                            fill=status)) +
+                                 ggplot2::aes(
+                                 x=as.integer((floor((loc.start + loc.end)/2))),
+                                              ##x=chrom,
+                                              ##y=seg.mean,
+                                              y=0.5,
+                                              width=loc.start - loc.end,
+                                              fill=status)) +
     ggplot2::geom_tile() +
     ##geom_vline(xintercept=0) +
     ggplot2::facet_grid(rows=vars(Sample_ID),
-               cols=vars(chrom),
-               scales = "free",
-               space = "free",
-               switch = "y") +
+                        cols=vars(chrom),
+                        scales = "free",
+                        space = "free",
+                        switch = "y") +
     ggplot2::theme_bw() +
     ggplot2::theme(panel.spacing = ggplot2::unit(0,"cm"),
-          axis.ticks.x        = ggplot2::element_blank(),
-          axis.ticks.y        = ggplot2::element_blank(),
-          axis.text.x         = ggplot2::element_blank(),
-          axis.text.y         = ggplot2::element_blank(),
-          axis.text.x.bottom  = ggplot2::element_blank(),
-          axis.text.y.left    = ggplot2::element_blank(),
-          axis.title.y.left   = ggplot2::element_blank(),
-          axis.title.x        = ggplot2::element_blank(),
-          panel.grid.minor.x  = ggplot2::element_blank(),
-          panel.grid.major.x  = ggplot2::element_blank(),
-          panel.grid.minor.y  = ggplot2::element_blank(),
-          panel.grid.major.y  = ggplot2::element_blank(),
-          strip.text.y.left   = ggplot2::element_text(angle = 0),
-          strip.text.x.top    = ggplot2::element_text(angle = 90)) +
+                   axis.ticks.x        = ggplot2::element_blank(),
+                   axis.ticks.y        = ggplot2::element_blank(),
+                   axis.text.x         = ggplot2::element_blank(),
+                   axis.text.y         = ggplot2::element_blank(),
+                   axis.text.x.bottom  = ggplot2::element_blank(),
+                   axis.text.y.left    = ggplot2::element_blank(),
+                   axis.title.y.left   = ggplot2::element_blank(),
+                   axis.title.x        = ggplot2::element_blank(),
+                   panel.grid.minor.x  = ggplot2::element_blank(),
+                   panel.grid.major.x  = ggplot2::element_blank(),
+                   panel.grid.minor.y  = ggplot2::element_blank(),
+                   panel.grid.major.y  = ggplot2::element_blank(),
+                   strip.text.y.left   = ggplot2::element_text(angle = 0),
+                   strip.text.x.top    = ggplot2::element_text(angle = 90)) +
     ggplot2::ylim(c(0,1)) +
     ggplot2::scale_fill_manual(values=c("orange",
-                               "white",
-                               "blue"))
+                                        "white",
+                                        "blue"))
 
   ggplot2::ggsave(seg.heatmap,
-         filename = paste0(ov.output.dir,
-                           .Platform$file.sep,
-                           ov.routine,
-                           "_",
+                  filename = paste0(ov.output.dir,
+                                    .Platform$file.sep,
+                                    ov.routine,
+                                    "_",
+                                    ov.name,
+                                    "_mmheatmap.pdf"),
+                  width=12,
+                  height=8,
+                  device="pdf")
+
+############################### PHEATMAP #####################################
+
+  cnvs.matrix <- matrix(data=seg$state,
+                        nrow=nrow(seg)/length(unique(seg$Sample_ID)),
+                        ncol=length(unique(seg$Sample_ID)),
+                        byrow=FALSE)
+  rownames(cnvs.matrix) <- paste0(seg$chrom,
+                                  ":",
+                                  seg$loc.start,
+                                  "-",
+                                  seg$loc.end)[1:(nrow(seg) /
+                                  length(unique(seg$Sample_ID)))]
+  colnames(cnvs.matrix) <- unique(seg$Sample_ID)
+  cluster.cols <- TRUE
+  cluster.rows <- TRUE
+
+  if(length(unique(ramify::flatten(cnvs.matrix,
+                                   across = c("rows", "columns"))))==1){
+
+    print("All the same cnv values in matrix, not creating pheatmap")
+
+  }else{
+
+    if(is.null(ncol(cnvs.matrix))){
+      cluster.cols <- FALSE
+    }
+    if(is.null(nrow(cnvs.matrix))){
+      cluster.rows <- FALSE
+    }
+    pheatmap.out <- pheatmap::pheatmap(cnvs.matrix,
+                                       cluster_rows = cluster.cols,
+                                       cluster_cols = cluster.rows,
+                                       show_colnames = T,
+                                       show_rownames = T)
+    ggplot2::ggsave(pheatmap.out,
+                    file = paste0(ov.output.dir,
+                                  .Platform$file.sep,
+                                  ov.routine,
+                                  "_",
+                                  ov.name,
+                                  "_pheatmap.pdf"),
+                    device="pdf",
+                    width=12,
+                    height=8)
+  }
+
+##############################################################################
+
+  seg <- ov.seg
+  rm(ov.seg)
+
+  grl <- GenomicRanges::makeGRangesListFromDataFrame(seg,
+                              split.field=ov.split.field,
+                 keep.extra.columns=ov.keep.extra.columns)
+
+  grl <- GenomicRanges::sort(grl)
+
+  ##ra  <- RaggedExperiment::RaggedExperiment(grl)
+
+  ##Excluding 997367 copy-number neutral regions (CN state = 2, diploid)
+  ##Sign-in-by error below with usual function
+  ##cnvrs <- CNVRanger::populationRanges(grl,
+  ##                                     density=0.1,
+  ##                                     est.recur=TRUE)
+
+  ##RaggedExperiment::assay(ra[1:5,1:5])
+
+  ##Trims low-density areas (usually <10%
+  ##of the total contributing individual
+  ##calls within a summarized region).
+
+  cnvrs <- methyl_master_population_ranges(grl,
+                                      ##density=0.1,
+                                      ##We can also like the density
+                                      ##Jenn likes .01
+                                      density         = ov.overlap.density,
+                                      est.recur       = ov.estimate.recurrence
+                                      )
+  ##cnvrs$type %>% unique()##
+  cnvrs.filt <- subset(cnvrs, pvalue <= ov.pvalue)
+
+  ra  <- RaggedExperiment::RaggedExperiment(grl)
+
+  ##http://bioconductor.org/packages/release/bioc/vignettes/
+  ##RaggedExperiment/inst/doc/RaggedExperiment.html
+
+  ##The simplifyReduce argument in qreduceAssay allows
+  ##the user to summarize overlapping regions with a custom
+  ##method for the given “query” region of interest.
+  ##We provide one for calculating a weighted average
+  ##score per query range, where the weight is proportional
+  ##to the overlap widths between overlapping ranges and a query range.
+
+  ##Note that there are three arguments to this function.
+  ##See the documentation for additional details.
+
+  ##From Bioconductor manual it appears that RaggedExperiment::Assay()
+  ##defaults to sparseAssay(): A matrix() with dimensions dim(x).
+  ##Elements contain the assay value for the ith range and jth sample.
+  ##Use ’sparse=TRUE’ to obtain a sparseMatrix assay representation.
+
+  ##RaggedExperiment::assay(ra[1:5,1:5])
+
+  ##below the less filtered ragged experiment
+  ##if(ov.less.stringent.ra.setting==TRUE){
+  ##  cnvs.matrix <- RaggedExperiment::assay(x=ra,i="state")
+  ##}else{
+  ##  ##This will likley not work as well with
+  ##  ##fewer samples so can default to the
+  ##  ##above, both return overlaps.
+  ##  cnvs.matrix <-
+  ##    methyl_master_qreduceassay(ra,
+  ##                               cnvrs.filt,
+  ##                               simplifyReduce = ov.simplify.reduce)
+  ##}
+
+  cnvs.matrix <- methyl_master_assay(ra, i="state")
+
+  cnvs.matrix <- cnvs.matrix[order(rownames(cnvs.matrix)),]
+  ##cnvs.matrix[is.na(cnvs.matrix)] <- 2
+  ##cnvs.matrix <- round(cnvs.matrix, 0)
+
+  write.table(cnvs.matrix,
+              file = paste0(ov.output.dir,
+                            .Platform$file.sep,
+                            ov.routine,
+                            "_",
                             ov.name,
-                           "_mmheatmap.pdf"),
-         width=12,
-         height=8,
-         device="pdf")
+                            "_overlaps.csv"),
+              sep=",",
+              col.names=TRUE,
+              row.names=TRUE,
+              quote=FALSE)
 
 }

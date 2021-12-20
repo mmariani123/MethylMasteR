@@ -32,6 +32,11 @@ findSegments2 <-
     print("### Find Segments in CN Data ...")
 
     ##get annotation
+    ##cnAnalysis450k::getAnnoData()
+    ##can be "450k" or "EPIC"
+    ##cnAnalysis450k::determineArrayType()
+    ##Tries to determine the array type (EPIC, 450k)
+
     if (arrayType=="auto") {
       anno <- cnAnalysis450k::getAnnoData(
         cnAnalysis450k::determineArrayType(data))

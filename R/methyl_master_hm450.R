@@ -17,6 +17,7 @@
 #' @param hm450.sesame.ref.version
 #' @param hm450.save.seg
 #' @param ...
+#' @import data.table
 #' @import Biobase
 #' @importFrom ExperimentHub setExperimentHubOption unbox
 #' @importFrom ExperimentHub ExperimentHub unbox
@@ -41,6 +42,46 @@ methyl_master_hm450 <- function(hm450.input.dir=NULL,
                                 ...
                                 ){
 
+  ##load(hm450.anno.file.path)
+  ##load("G:\\My Drive\\dartmouth\\salas_lab_working\\cnv\\cnv_testing\\probe450kfemanno.rda")
+  ##load("G:\\My Drive\\dartmouth\\salas_lab_working\\cnv\\cnv_testing\\hm450.manifest.hg38.rda")
+  ##https://www.bioconductor.org/packages/release/BiocViews.html#___IlluminaChip
+
+  ##candidates_data_treatment_B.1 <-
+  ##readRDS(file="C:\\Users\\Mike\\Desktop\\candidates_data_treatment_B.1.RDS")
+  library(IlluminaHumanMethylation450kanno.ilmn12.hg19)
+  annotation1 <- getAnnotation(IlluminaHumanMethylation450kanno.ilmn12.hg19)
+  annotation1 <- as.data.frame(annotation1)
+
+  reformat_hm450 <- function(df,anno){
+    setDT(anno)
+    anno[strand=="+",startPos:=pos,]
+    anno[strand=="+",endPos:=pos+50,]
+    anno[strand=="-",startPos:=pos,]
+    anno[strand=="-",endPos:=pos-50,]
+    anno.start <- anno[,c("Name","startPos")]
+    anno.end   <- anno[,c("Name","endPos")]
+    ##which(!candidates_data_treatment_B.1$startCG %in% annotation1$Name)
+    ##table(c(1,2,2,3) %in% c(3,2,1))
+    ##table(c(1,2,3) %in% c(3,2,11))
+    ##table(annotation1$Name %in% candidates_data_treatment_B.1$startCG)
+    ##table(candidates_data_treatment_B.1$startCG %in% annotation1$Name)
+    ##table(annotation1$Name %in% candidates_data_treatment_B.1$endCG)
+    ##table(candidates_data_treatment_B.1$endCG %in% annotation1$Name)
+    anno.start$startPos <- as.character(anno.start$startPos)
+    anno.end$endPos     <- as.character(anno.end$endPos)
+    df <- dplyr::inner_join(df,
+                            anno.start,
+                            by=c("startCG"="Name"))
+    df <- dplyr::inner_join(df,
+                            anno.end,
+                            by=c("endCG"="Name"))
+    df <- df[,c(1,9,10,4,5,6,7,8)]
+    return(df)
+  }
+
+  ##df.rf <- reformat_hm450(candidates_data_treatment_B.1, annotation1)
+
   sample.sheet.df <- read.csv(hm450.sample.sheet.path,
                               header=TRUE,
                               stringsAsFactors = FALSE)
@@ -52,47 +93,140 @@ methyl_master_hm450 <- function(hm450.input.dir=NULL,
     sample.sheet.df <- sample.sheet.df[sample.sheet.df$Sample_Group %in%
                                                   hm450.comparison,]
 
-    sesameData::sesameDataCache(sesame.data.cache)
+    sesameData::sesameDataCache(hm450.sesame.data.cache)
 
-    sesame_ssets_normal <- sesameData::sesameDataGet(sesame.data.normal)
+    sesame_ssets_normal <- sesameData::sesameDataGet(hm450.sesame.data.normal)
 
-    ExperimentHub::setExperimentHubOption("CACHE", idat.files.dir)
+    ExperimentHub::setExperimentHubOption("CACHE", hm450.input.dir)
 
     ExperimentHub::ExperimentHub()
 
-    treatment_idat_prefixes <- sesame::searchIDATprefixes(idat.files.dir,
-                                                          recursive=TRUE)
+    idat_prefixes <- sesame::searchIDATprefixes(hm450.input.dir,
+                                                recursive=TRUE)
     sesameData::sesameDataCacheAll()
 
     treatment.names <- sample.sheet.df[
       sample.sheet.df$Sample_Group %in%
         hm450.comparison[1],"Sample_Name"]
 
-    treatment_idat_prefixes <-
-      treatment_idat_prefixes[gsub(paste0(".*",
-                                          hm450.file.sep),
-                                          "",
-                                          treatment_idat_prefixes) %in%
-                                          treatment.names]
+    treatment.paths <-
+      sample.sheet.df[
+        sample.sheet.df$Sample_Group==hm450.comparison[1],
+        "Basename"]
 
-    treatment.platform <- unique(sesame.sesame.sample.sheet.df[
-      sesame.sesame.sample.sheet.df$Sample_Name %in%
+    treatment.platform <- unique(sample.sheet.df[
+      sample.sheet.df$Sample_Name %in%
         treatment.names, "Platform"])
 
-    sesame_sset <- sesame::openSesame(treatment_idat_prefixes,
+    idat_prefixes.treatment <-
+      idat_prefixes[gsub(".*/","",idat_prefixes) %in%
+                      gsub(paste0(".*",hm450.file.sep),
+                           "",treatment.paths)]
+
+    sesame_sset <- sesame::openSesame(idat_prefixes.treatment,
                                       mask = TRUE,
                                       sum.TypeI = TRUE,
                                       platform = treatment.platform,
                                       what="sigset")
 
     hm450_rgset <- sesame::SigSetsToRGChannelSet(sesame_sset)
+    hm450_rgset.control <- sesame::SigSetsToRGChannelSet(sesame_ssets_normal)
 
-    hm450_cn_methylset_treatment <-
+    hm450_cn_methylset.treatment <-
       minfi::getCN(minfi::preprocessRaw(hm450_rgset))
+    names(hm450_cn_methylset.treatment) <- names(sesame_sset)
 
-    names(hm450_cn_methylset_treatment) <- names(sesame_sset)
+    hm450_cn_methylset.control <-
+      minfi::getCN(minfi::preprocessRaw(hm450_rgset.control))
+    names(hm450_cn_methylset.control) <- names(sesame_ssets_normal)
 
-    seg <- list(hm450_cn_methylset_treatment)
+    if(hm450.workflow=="A"){
+
+      proc_treatment_A  <- hm450_cn_methylset.treatment
+      rm(hm450_cn_methylset.treatment)
+
+      proc_control_A <- hm450_cn_methylset.control
+      rm(hm450_cn_methylset.control)
+      med_control_A  <- apply(proc_control_A, 1, "median")
+
+      candidates_data_treatment_A <-
+        findSegments2(proc_treatment_A[, , drop = FALSE],
+                      med_control_A,
+                      proc_control_A) ##Scaled with B but not A
+
+      candidates_data_treatment_A <-
+        reformat_hm450(candidates_data_treatment_A, annotation1)
+
+      seg <- list(candidates_data_treatment_A)
+
+    }else if(hm450.workflow=="B"){
+
+      ## With z-Transformation, illumina
+      proc_control_B  <- hm450_cn_methylset.control
+      rm(hm450_cn_methylset.control)
+      proc_control_B[is.infinite(proc_control_B)] <- NA
+      proc_control_B <- scale(proc_control_B) ##Z transform
+      med_control_B <- apply(proc_control_B, 1, "median")
+
+      proc_treatment_B  <- hm450_cn_methylset.treatment
+      rm(hm450_cn_methylset.treatment)
+      proc_treatment_B[is.infinite(proc_treatment_B)] <- NA
+      proc_treatment_B <- scale(proc_treatment_B)
+      med_treatment_B <- apply(proc_treatment_B, 1, "median")
+
+      candidates_data_treatment_B <-
+        findSegments2(proc_treatment_B[, , drop = FALSE],
+                      med_control_B,
+                      proc_control_B) ##Scaled with B but not A
+
+      candidates_data_treatment_B <-
+        reformat_hm450(candidates_data_treatment_B, annotation1)
+
+      ## candidates_data_treatment_B.2$start <-
+      ##  annotation1[candidates_data_treatment_B.2$startCG %in%
+      ##                annotation$Name, annotation1$startPos]
+
+      ##candidates_data_treatment_B.2$end <-
+      ##  annotation1[candidates_data_treatment_B.2$endCG %in%
+      ##                       annotation$Name, annotation1$endPos]
+
+      seg <- list(candidates_data_treatment_B)
+
+    }else if(hm450.workflow=="C"){
+
+      ## Conumee-path, Illumina
+
+      proc_control_C <- hm450_cn_methylset.control
+      rm(hm450_cn_methylset.control)
+
+      proc_treatment_C <- hm450_cn_methylset.treatment
+      rm(hm450_cn_methylset.treatment)
+
+      ##What was I doing with shared names here:
+      ##proc_treatment_sorted_C.1 <-
+      ##  proc_treatment_sorted_C.1[female_shared_names,]
+      ##proc_treatment_sorted_C.2 <-
+      ##  proc_treatment_sorted_C.2[female_shared_names,]
+      ##proc_control_sorted_C.1   <-
+      ##  proc_control_sorted_C.1[male_shared_names,]
+      ##proc_control_sorted_C.2   <-
+      ##  proc_control_sorted_C.2[male_shared_names,]
+
+      ####################### RUN CONUMEE ##############################
+
+      candidates_data_treatment_C <-
+        cnAnalysis450k::runConumee(proc_treatment_C,
+                                   proc_control_C
+                                   ##proc_treatment_sorted_C.2,
+                                   ##proc_control_sorted_C.2
+        )
+
+      candidates_data_treatment_C <-
+        reformat_hm450(candidates_data_treatment_C, annotation1)
+
+      seg <- list(candidates_data_treatment_C.1)
+
+    } ##End hm450 workflow
 
     }else{
 
@@ -532,10 +666,24 @@ methyl_master_hm450 <- function(hm450.input.dir=NULL,
                       med_control_B.1,
                       proc_control_B.1) ##Scaled with B but not A
 
+        candidates_data_treatment_B.1 <-
+          reformat_hm450(candidates_data_treatment_B.1, annotation1)
+
         candidates_data_treatment_B.2 <-
           findSegments2(proc_treatment_B.2[, , drop = FALSE],
                       med_control_B.2,
                       proc_control_B.2)
+
+        candidates_data_treatment_B.2 <-
+          reformat_hm450(candidates_data_treatment_B.2, annotation1)
+
+       ## candidates_data_treatment_B.2$start <-
+        ##  annotation1[candidates_data_treatment_B.2$startCG %in%
+        ##                annotation$Name, annotation1$startPos]
+
+        ##candidates_data_treatment_B.2$end <-
+        ##  annotation1[candidates_data_treatment_B.2$endCG %in%
+        ##                       annotation$Name, annotation1$endPos]
 
         seg <- list(candidates_data_treatment_B.1,
                     candidates_data_treatment_B.2)

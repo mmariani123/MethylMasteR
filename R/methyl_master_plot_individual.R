@@ -36,6 +36,7 @@ methyl_master_plot_individual <- function(pi.seg = NULL,
 
   }
 
+  ##For others willl need to convert to sesame object or recode graph
   ##visualize individual sesame by sample:
   for(i in 1:length(pi.seg)){
 

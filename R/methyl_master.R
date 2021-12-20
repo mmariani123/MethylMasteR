@@ -290,7 +290,7 @@ epicopy = {
 ##start.time <- Sys.time()
 end.time <- Sys.time()
 
-total.time <<- end.time - start.time
+total.time <<- as.character(end.time - start.time)
 
 }) ##End profmem
 
@@ -340,19 +340,29 @@ writeLines(c("\nTotal time:\n",
 ##############################################################################
 
 if(routine=="sesame"){
-  methyl_master_formatting_sesame()
+  seg <-
+    methyl_master_formatting_sesame(sesame.form.seg=seg,
+              sesame.form.output.dir=output.dir,
+              sesame.form.sample.sheet.path=sample.sheet.path,
+              sesame.form.reference=reference,
+              sesame.form.split.by=split.by,
+              sesame.form.comparison=comparison,
+              sesame.form.save.seg=save.seg,
+              ...)
 }else if(routine=="hm450"){
-  methyl_master_formatting_hm450(hm450.form.output.dir=output.dir,
+  seg <- methyl_master_formatting_hm450(hm450.form.seg=seg,
+                                 hm450.form.output.dir=output.dir,
                                  hm450.form.sample.sheet.path=sample.sheet.path,
                                  hm450.form.reference=reference,
                                  hm450.form.split.by=split.by,
                                  hm450.form.workflow=hm450.workflow,
                                  hm450.form.comparison=comparison,
-                                 hm450.form.save.seg=save.seg)
+                                 hm450.form.save.seg=save.seg,
+                                 hm450.form.anno.file.path=hm450.anno.file.path)
 }else if(routine=="champ"){
-  methyl_master_formatting_champ(seg)
+  seg <- methyl_master_formatting_champ(seg)
 }else if(routine=="epi"){
-  methyl_master_formatting_epicopy(seg)
+  seg <- methyl_master_formatting_epicopy(seg)
 }else{
   stop(paste0("Error you must select a valid <routine> value"))
 }

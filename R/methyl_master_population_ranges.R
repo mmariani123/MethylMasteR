@@ -55,7 +55,8 @@
 #' \item Calculate reciprocal overlap (RO) between all remaining calls.
 #' \item Identify pair of calls with greatest RO. If RO > threshold, merge and
 #'       create a new CNV. If not, exit.
-#' \item Continue adding unclustered calls to the region, in order of best overlap.
+#' \item Continue adding unclustered calls to the region,
+#' in order of best overlap.
 #'       In order to add a call, the new call must have > threshold to all calls
 #'       within the region to be added. When no additional calls may be added,
 #'       move to next step.
@@ -65,8 +66,8 @@
 #' \item  GISTIC procedure (Beroukhim et al., PNAS, 2007) to identify recurrent
 #' CNV regions
 #'
-#' GISTIC scores each CNV region with a G-score that is proportional to the total
-#' magnitude of CNV calls in each CNV region.
+#' GISTIC scores each CNV region with a G-score that is proportional
+#' to the total magnitude of CNV calls in each CNV region.
 #' In addition, by permuting the locations in each sample, GISTIC determines
 #' the frequency with which a given score would be attained if the events were
 #' due to chance and therefore randomly distributed.
@@ -78,9 +79,11 @@
 #' @param mode Character. Should population ranges be computed based on regional
 #' density ("density") or reciprocal overlap ("RO"). See Details.
 #' @param density Numeric. Defaults to 0.1.
-#' @param ro.thresh Numeric. Threshold for reciprocal overlap required for merging
+#' @param ro.thresh Numeric. Threshold for reciprocal overlap required
+#' for merging
 #' two overlapping regions. Defaults to 0.5.
-#' @param multi.assign Logical. Allow regions to be assigned to several region clusters?
+#' @param multi.assign Logical. Allow regions to be assigned to
+#' several region clusters?
 #' Defaults to \code{FALSE}.
 #' @param verbose Logical. Report progress messages? Defaults to \code{FALSE}.
 #' @param min.size Numeric. Minimum size of a summarized region to be included.
@@ -89,11 +92,12 @@
 #' overlapping the region) and CNV type (gain, loss, or both) be annotated?
 #' Defaults to \code{TRUE}.
 #' @param type.thresh Numeric. Required minimum relative frequency of each CNV
-#' type (gain / loss) to be taken into account when assigning CNV type to a region.
+#' type (gain / loss) to be taken into account when assigning CNV type
+#' to a region.
 #' Defaults to 0.1. That means for a region overlapped by individual gain and
-#' loss calls that both types must be present in >10% of the corresponding samples
-#' in order to be typed as 'both'. If gain or loss calls are present below the
-#' threshold they are ignored.
+#' loss calls that both types must be present in >10% of the corresponding
+#' samples in order to be typed as 'both'. If gain or loss calls are present
+#' below the threshold they are ignored.
 #' @param est.recur Logical. Should recurrence of regions be assessed via a
 #' permutation test? Defaults to \code{FALSE}. See Details.
 #' @return A \code{\linkS4class{GRanges}} object containing the summarized
@@ -181,7 +185,8 @@ methyl_master_population_ranges <- function(grl,
   else pranges <- .roPopRanges(grl, ro.thresh, multi.assign, verbose)
 
   pranges <- pranges[BiocGenerics::width(pranges) >= min.size]
-  if(classify.ranges) pranges <- .classifyRegs.mm(pranges, unlist(grl), type.thresh)
+  if(classify.ranges) pranges <- .classifyRegs.mm(pranges, unlist(grl),
+                                                  type.thresh)
   if(est.recur) pranges <- .estimateRecurrence(pranges, grl)
   return(pranges)
 }
@@ -214,9 +219,11 @@ methyl_master_population_ranges <- function(grl,
 #'
 #' @param regs A \code{\linkS4class{GRanges}}. Typically the result of
 #' \code{\link{populationRanges}} with \code{est.recur=TRUE}.
-#' @param genome Character. A valid UCSC genome assembly ID such as 'hg19' or 'bosTau6'.
+#' @param genome Character. A valid UCSC genome assembly ID such as 'hg19'
+#' or 'bosTau6'.
 #' @param chr Character. A UCSC-style chromosome name such as 'chr1'.
-#' @param pthresh Numeric. Significance threshold for recurrence. Defaults to 0.05.
+#' @param pthresh Numeric. Significance threshold for recurrence. Defaults
+#' to 0.05.
 #' @return None. Plots to a graphics device.
 #'
 #' @author Ludwig Geistlinger
@@ -262,7 +269,7 @@ plotRecurrentRegions <- function(regs, genome, chr, pthresh=0.05)
   if(length(gain.regs))
   {
     gain.track <- Gviz::DataTrack(gain.regs, data=gain.regs$freq,
-                                  type="h", groups=factor("gain", levels=tlevels),
+                                type="h", groups=factor("gain", levels=tlevels),
                                   name="#samples", cex.title=1, cex.axis=1,
                                   font.axis=2, col.title=colM, col.axis=colM,
                                   background.title=colB, legend=TRUE)
@@ -273,7 +280,7 @@ plotRecurrentRegions <- function(regs, genome, chr, pthresh=0.05)
   if(length(loss.regs))
   {
     loss.track <- Gviz::DataTrack(loss.regs, data=loss.regs$freq,
-                                  type="h", groups=factor("loss", levels=tlevels),
+                                type="h", groups=factor("loss", levels=tlevels),
                                   name="#samples", cex.title=1, cex.axis=1,
                                   font.axis=2, col.title=colM, col.axis=colM,
                                   background.title=colB, legend=TRUE)
@@ -284,7 +291,7 @@ plotRecurrentRegions <- function(regs, genome, chr, pthresh=0.05)
   if(length(both.regs))
   {
     both.track <- Gviz::DataTrack(both.regs, data=both.regs$freq,
-                                  type="h", groups=factor("both", levels=tlevels),
+                                type="h", groups=factor("both", levels=tlevels),
                                   name="#samples", cex.title=1, cex.axis=1,
                                   font.axis=2, col.title=colM, col.axis=colM,
                                   background.title=colB, legend=TRUE)
@@ -367,15 +374,21 @@ cnvOncoPrint <- function(calls, features, multi.calls=.largest,
 {
   if (!requireNamespace("ComplexHeatmap", quietly = TRUE))
     stop(paste("Required package \'ComplexHeatmap\' not found.",
-               "Use \'BiocManager::install(\"ComplexHeatmap\") to install it."))
+               "Use \'BiocManager::install(\"ComplexHeatmap\") ",
+               "to install it."))
 
   # summarize CNV calls in feature regions
   calls <- as(calls, "RaggedExperiment")
-  qassay <- RaggedExperiment::qreduceAssay(calls, features,
-                                           simplifyReduce=multi.calls, background=2)
+  qassay <- RaggedExperiment::qreduceAssay(calls,
+                                           features,
+                                           simplifyReduce=multi.calls,
+                                           background=2)
 
-  if("symbol" %in% colnames(S4Vectors::mcols(features))) rownames(qassay) <- features$symbol
-  else rownames(qassay) <- names(features)
+  if("symbol" %in% colnames(S4Vectors::mcols(features))){
+    rownames(qassay) <- features$symbol
+  }else{
+    rownames(qassay) <- names(features)
+  }
 
   qassay <- qassay[rownames(qassay) != "",]
   qassay <- qassay[!duplicated(rownames(qassay)),]
@@ -513,7 +526,9 @@ cnvOncoPrint <- function(calls, features, multi.calls=.largest,
 # @param verbose logical
 # @return GenomicRanges::GRanges
 .roPopRanges <- function(grl,
-                         ro.thresh=0.5, multi.assign=FALSE, verbose=FALSE)
+                         ro.thresh=0.5,
+                         multi.assign=FALSE,
+                         verbose=FALSE)
 {
   gr <- unlist(grl)
   S4Vectors::mcols(gr) <- NULL
@@ -535,11 +550,15 @@ cnvOncoPrint <- function(calls, features, multi.calls=.largest,
                             ind <- sh[qh==i]
                             ccalls <- gr[ind]
                             if(length(ccalls) < 2) return(ccalls)
-                            clusters <- .clusterCalls(ccalls, ro.thresh, multi.assign)
+                            clusters <- .clusterCalls(ccalls,
+                                                      ro.thresh,
+                                                      multi.assign)
                             if(is.list(clusters))
                               clusters <- IRanges::extractList(ccalls, clusters)
                             clusters <- range(clusters)
-                            if(is(clusters, "GRangesList")) clusters <- sort(unlist(clusters))
+                            if(is(clusters, "GRangesList")){
+                              clusters <- sort(unlist(clusters))
+                            }
                             return(clusters)
                           })
   ro.ranges <- unname(unlist(GenomicRanges::GRangesList(cl.per.iclust)))
@@ -616,7 +635,9 @@ cnvOncoPrint <- function(calls, features, multi.calls=.largest,
 .getROHits <- function(calls, ro.thresh=0.5)
 {
   # calculate pairwise ro
-  hits <- GenomicRanges::findOverlaps(calls, drop.self=TRUE, drop.redundant=TRUE)
+  hits <- GenomicRanges::findOverlaps(calls,
+                                      drop.self=TRUE,
+                                      drop.redundant=TRUE)
 
   x <- calls[S4Vectors::queryHits(hits)]
   y <- calls[S4Vectors::subjectHits(hits)]
@@ -641,7 +662,8 @@ cnvOncoPrint <- function(calls, features, multi.calls=.largest,
   qh <- S4Vectors::queryHits(hits)
   sh <- S4Vectors::subjectHits(hits)
   hits <- S4Vectors::Hits(qh[ind], sh[ind],
-                          S4Vectors::queryLength(hits), S4Vectors::subjectLength(hits))
+                          S4Vectors::queryLength(hits),
+                          S4Vectors::subjectLength(hits))
   S4Vectors::mcols(hits)$RO1 <- rovlp1[ind]
   S4Vectors::mcols(hits)$RO2 <- rovlp2[ind]
 
