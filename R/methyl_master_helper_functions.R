@@ -67,7 +67,7 @@ weightedmean.epicopy <- function(scores, ranges, qranges){
 binding_frames_mm <- function(x){
   binding.list <- list()
   for(i in 1:length(names(x))){
-    binding.list[[i]] <- x[[1]]$seg.signals
+    binding.list[[i]] <- x[[i]]$seg.signals
     binding.list[[i]]$ID <- names(x)[i]
   }
   seg.out <- do.call(rbind,binding.list)

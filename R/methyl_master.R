@@ -76,7 +76,7 @@ methyl_master <- function(input.dir            = NULL,
                           ov.less.stringent.ra.setting = ov.less.stringent.ra.setting,
                           ov.pvalue            = ov.pvalue,
                           ov.keep.extra.columns = TRUE,
-                          ov.simplify.reduce  = weightedmean,
+                          ov.simplify.reduce    = weightedmean,
                           create.dir           = FALSE,
                           ...
                           ){
@@ -417,7 +417,8 @@ mapply(x=seg,y=names(seg),
            estimate.recurrence1=estimate.recurrence,
            ov.simplify.reduce1=ov.simplify.reduce,
            ov.less.stringent.ra.setting1=ov.less.stringent.ra.setting,
-           ov.pvalue1=ov.pvalue){
+           ov.pvalue1=ov.pvalue,
+           ov.plot.individual1=visualize.individual){
     methyl_master_olaps_and_visualize(
        ov.seg                       = x,
        ov.name                      = y,
@@ -429,7 +430,8 @@ mapply(x=seg,y=names(seg),
        ov.estimate.recurrence       = estimate.recurrence1,
        ov.simplify.reduce           = ov.simplify.reduce1,
        ov.less.stringent.ra.setting = ov.less.stringent.ra.setting1,
-       ov.pvalue                    = ov.pvalue1
+       ov.pvalue                    = ov.pvalue1,
+       ov.plot.individual           = ov.plot.individual1
        )})
 
 if(visualize.individual==TRUE){

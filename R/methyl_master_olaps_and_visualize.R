@@ -19,6 +19,8 @@
 #' @param ...
 #' @import pheatmap
 #' @import ggplot2
+#' @importFrom gtools mixedorder unbox
+#' @importFrom GenomicRanges as.data.frame unbox
 #' @importFrom GenomicRanges makeGRangesListFromDataFrame unbox
 #' @importFrom ramify flatten unbox
 #' @return #seg.out
@@ -45,7 +47,9 @@ methyl_master_olaps_and_visualize <- function(ov.seg   = NULL,
   seg <- seg[seg$pval <= ov.pvalue,]
 
   if(ov.plot.individual==TRUE & ov.routine!="sesame"){
+
     print("Individual plots only works for sesmae routine currently")
+
   }else if(ov.plot.individual==TRUE){
     methyl_master_plot_individual(pi.seg = seg,
                                 pi.output.dir = ov.output.dir,
@@ -152,17 +156,18 @@ methyl_master_olaps_and_visualize <- function(ov.seg   = NULL,
 
 ############################### PHEATMAP #####################################
 
-  cnvs.matrix <- matrix(data=seg$state,
-                        nrow=nrow(seg)/length(unique(seg$Sample_ID)),
-                        ncol=length(unique(seg$Sample_ID)),
-                        byrow=FALSE)
-  rownames(cnvs.matrix) <- paste0(seg$chrom,
-                                  ":",
-                                  seg$loc.start,
-                                  "-",
-                                  seg$loc.end)[1:(nrow(seg) /
-                                  length(unique(seg$Sample_ID)))]
-  colnames(cnvs.matrix) <- unique(seg$Sample_ID)
+  cnvs.matrix <- reshape2::dcast(seg,
+                         paste0(chrom,
+                         ":",
+                         as.integer(loc.start),
+                         "-",
+                         as.integer(loc.end)
+                         )~Sample_ID, value.var = "state")
+  cnvs.rownames <- cnvs.matrix[,1]
+  cnvs.matrix <- cnvs.matrix[,-1]
+  rownames(cnvs.matrix) <- cnvs.rownames
+  cnvs.matrix[is.na(cnvs.matrix)] <- 2
+
   cluster.cols <- TRUE
   cluster.rows <- TRUE
 
@@ -196,7 +201,22 @@ methyl_master_olaps_and_visualize <- function(ov.seg   = NULL,
                     height=8)
   }
 
-##############################################################################
+  cnvs.matrix <- cnvs.matrix[gtools::mixedorder(rownames(cnvs.matrix)),]
+
+  write.table(GenomicRanges::as.data.frame(cnvs.matrix),
+              file = paste0(ov.output.dir,
+                            .Platform$file.sep,
+                            ov.routine,
+                            "_",
+                            ov.name,
+                            "_pheatmap_table.csv"),
+              sep=",",
+              col.names=NA,
+              row.names=TRUE,
+              quote=FALSE)
+
+
+########################### OVERLAPS ##########################################
 
   seg <- ov.seg
   rm(ov.seg)
@@ -208,15 +228,12 @@ methyl_master_olaps_and_visualize <- function(ov.seg   = NULL,
   grl <- GenomicRanges::sort(grl)
 
   ##ra  <- RaggedExperiment::RaggedExperiment(grl)
-
   ##Excluding 997367 copy-number neutral regions (CN state = 2, diploid)
   ##Sign-in-by error below with usual function
   ##cnvrs <- CNVRanger::populationRanges(grl,
   ##                                     density=0.1,
   ##                                     est.recur=TRUE)
-
   ##RaggedExperiment::assay(ra[1:5,1:5])
-
   ##Trims low-density areas (usually <10%
   ##of the total contributing individual
   ##calls within a summarized region).
@@ -229,10 +246,10 @@ methyl_master_olaps_and_visualize <- function(ov.seg   = NULL,
                                       est.recur       = ov.estimate.recurrence
                                       )
   ##cnvrs$type %>% unique()##
+
   cnvrs.filt <- subset(cnvrs, pvalue <= ov.pvalue)
 
-  ra  <- RaggedExperiment::RaggedExperiment(grl)
-
+  ##ra  <- RaggedExperiment::RaggedExperiment(grl)
   ##http://bioconductor.org/packages/release/bioc/vignettes/
   ##RaggedExperiment/inst/doc/RaggedExperiment.html
 
@@ -266,13 +283,13 @@ methyl_master_olaps_and_visualize <- function(ov.seg   = NULL,
   ##                               simplifyReduce = ov.simplify.reduce)
   ##}
 
-  cnvs.matrix <- methyl_master_assay(ra, i="state")
+  ##cnvs.matrix <- methyl_master_assay(ra, i="state")
 
-  cnvs.matrix <- cnvs.matrix[order(rownames(cnvs.matrix)),]
+  ##cnvs.matrix <- cnvs.matrix[order(rownames(cnvs.matrix)),]
   ##cnvs.matrix[is.na(cnvs.matrix)] <- 2
   ##cnvs.matrix <- round(cnvs.matrix, 0)
 
-  write.table(cnvs.matrix,
+  write.table(GenomicRanges::as.data.frame(cnvrs),
               file = paste0(ov.output.dir,
                             .Platform$file.sep,
                             ov.routine,
@@ -280,7 +297,19 @@ methyl_master_olaps_and_visualize <- function(ov.seg   = NULL,
                             ov.name,
                             "_overlaps.csv"),
               sep=",",
-              col.names=TRUE,
+              col.names=NA,
+              row.names=TRUE,
+              quote=FALSE)
+
+  write.table(GenomicRanges::as.data.frame(cnvrs.filt),
+              file = paste0(ov.output.dir,
+                            .Platform$file.sep,
+                            ov.routine,
+                            "_",
+                            ov.name,
+                            "_overlaps_filt.csv"),
+              sep=",",
+              col.names=NA,
               row.names=TRUE,
               quote=FALSE)
 
