@@ -47,7 +47,8 @@ methyl_master_champ <- function(champ.directory,
                                 champ.padj=0.05,
                                 champ.ncores=n.cores,
                                 champ.control=TRUE,
-                                champ.control.group="normal", ##champ.contol.group="champCtls"
+                                champ.control.group="normal",
+                                ##champ.contol.group="champCtls"
                                 champ.runimpute=TRUE,
                                 champ.runQC=TRUE,
                                 champ.runnorm=TRUE,
@@ -61,7 +62,7 @@ methyl_master_champ <- function(champ.directory,
                                 ...
                                 ){
 
-champ_results <- ChAMP::champ.process(directory    = idat.pooled.files.dir,
+champ_results <- ChAMP::champ.process(directory    = champ.directory,
                                       arraytype    = champ.array.type,
                                       batchname    = champ.batch.name,
                                       adjPVal      = champ.padj,

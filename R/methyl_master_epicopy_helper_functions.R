@@ -1,30 +1,30 @@
 #!/usr/bin/env Rscripts
 
-#' This will fix the issue with LRR2
-#'
+#' @title .coerce.pData.mm
+#' @description This will fix the issue with LRR2
 #'
 #' @param pdat Path to the input file
-#' @return compatable pData data frame
+#' @return compatible pData data frame
 #' @export
 .coerce.pData.mm <- function(pdat){
   pDat <- apply(pdat, 2, as.character)
   dimnames(pDat) <- dimnames(pdat)
   pDat <- as(pDat,
-             "DataFrame",
+             "DataFrame"##,
              ##stringsAsFactors = FALSE ##Will cause error
   )
   return(pDat)
 }
 
-#' Epciopy modified convert log r ratio data to cna calls:
-#'
-#' Same as LucasLRRtoCNA2 function
-#'
+#' @title LRRtoCNA.mm
+#' @desciption Epicopy modified convert log r ratio data to cna calls:
+#' Same as Lucas Salas' modified LRRtoCNA2 function
 #' @param LRR
 #' @param sampID
 #' @param ncores
 #' @param seg.undo.splits
 #' @param seg.undo.SD
+#' @param epic.manifest.path
 #' @param platform
 #' @import minfi
 #' @return returns segments
@@ -34,12 +34,11 @@ LRRtoCNA.mm <- function(LRR,
                       ncores = 1L,
                       seg.undo.splits = "sdundo",
                       seg.undo.SD = 2,
+                      epic.manifest.path = getwd(),
                       platform=c("hm450","EPIC"),
                       ...) {
   if(platform=="EPIC"){
-    load(file=paste0(work.dir,
-                     file.sep,
-                     "EPIC.manifest.hg38.rda"))
+    load(file=epic.manifest.path) ##"EPIC.manifest.hg38.rda"
     EPIC.manifest.hg38$probeTarget <-
       GenomicRanges::start(EPIC.manifest.hg38)
     hm450 <- EPIC.manifest.hg38
@@ -156,6 +155,7 @@ LRRtoCNA.mm <- function(LRR,
 #' @param autosomal
 #' @param filterProbes
 #' @param ...
+#' @param import EpicopyData
 #' @import stats
 #' @import minfi
 #' @return return final LRR values
@@ -174,8 +174,8 @@ getLRR.mm <- function(rgSet = rgset,
                       filterProbes = FALSE,
                       keep_fnobj = FALSE,
                      ...
-                     )
-debug: {
+                     ){
+##debug: {
   if (!inherits(rgSet, "RGChannelSet")) {
     stop("rgset has to be RGChannelSet.")
   }
@@ -196,8 +196,13 @@ debug: {
       normal.cnv <- TRUE
     }
   if (inherits(Normals, c("numeric", "logical"))) {
+    ##if (nrow(rgSet) != nrow(Normals)){
+    ##  stop("Features in normal and tumor set do not match.")
+    ##}else{
     rgset <- rgSet
     Normals <- Normals
+    multi.platform <- FALSE
+    ##}
   }
   if (inherits(Normals, "RGChannelSet")) {
     if (nrow(rgSet) != nrow(Normals)){
@@ -506,9 +511,11 @@ read.metharray.mm <- function(basenames,
   if (any(these.dont.exists)) {
     G.files[these.dont.exists] <- paste0(G.files[these.dont.exists],
                                          ".gz")
+    ##G.files[these.dont.exists] <- G.files[these.dont.exists]
   }
   if (!all(file.exists(G.files))) {
     noexits <- sub("\\.gz", "", G.files[!file.exists(G.files)])
+    ##noexits <- G.files[!file.exists(G.files)]
     stop("The following specified files do not exist:",
          paste(noexits, collapse = ", "))
   }
@@ -623,6 +630,86 @@ read.metharray.mm <- function(basenames,
   return(out)
 }
 
+#' Modified readSheet from minfi
+#'
+#'
+#' @param file
+#' @param recursive
+#' @return formatted csv as df
+#' @export
+readSheet.mm <- function(file,
+                      recursive=TRUE
+                      ){
+  dataheader <- grep("^\\[DATA\\]", readLines(file),
+                     ignore.case = TRUE)
+  if (length(dataheader) == 0)
+    dataheader <- 0
+  df <- read.csv(file, stringsAsFactor = FALSE, skip = dataheader)
+  nam <- grep(pattern = "Sentrix_Position", x = names(df),
+              ignore.case = TRUE, value = TRUE)
+  if (length(nam) == 1) {
+    df$Array <- as.character(df[, nam])
+    df[, nam] <- NULL
+  }
+  nam <- grep(pattern = "Array[\\._]ID", x = names(df),
+              ignore.case = TRUE, value = TRUE)
+  if (length(nam) == 1) {
+    df$Array <- as.character(df[, nam])
+    df[, nam] <- NULL
+  }
+  if (!"Array" %in% names(df)) {
+    warning(sprintf("Could not infer array name for file: %s",
+                    file))
+  }
+  nam <- grep("Sentrix_ID", names(df), ignore.case = TRUE,
+              value = TRUE)
+  if (length(nam) == 1) {
+    df$Slide <- as.character(df[, nam])
+    df[, nam] <- NULL
+  }
+  nam <- grep(pattern = "Slide[\\._]ID", x = names(df),
+              ignore.case = TRUE, value = TRUE)
+  if (length(nam) == 1) {
+    df$Slide <- as.character(df[, nam])
+    df[, nam] <- NULL
+  }
+  if (!"Slide" %in% names(df)) {
+    warning(sprintf("Could not infer slide name for file: %s",
+                    file))
+  }
+  else {
+    df[, "Slide"] <- as.character(df[, "Slide"])
+  }
+  nam <- grep(pattern = "Plate[\\._]ID", x = names(df),
+              ignore.case = TRUE, value = TRUE)
+  if (length(nam) == 1) {
+    df$Plate <- as.character(df[, nam])
+    df[, nam] <- NULL
+  }
+  for (nam in c("Pool_ID", "Sample_Plate",
+                "Sample_Well")) {
+    if (nam %in% names(df)) {
+      df[[nam]] <- as.character(df[[nam]])
+    }
+  }
+  if (!is.null(df$Array)) {
+    patterns <- sprintf("%s_%s_Grn.idat", df$Slide,
+                        df$Array)
+    allfiles <- list.files(##path = dirname(file),
+                           path = unique(dirname(df$Basename)),
+                           recursive = recursive,
+                           full.names = TRUE)
+    basenames <- sapply(X = patterns, FUN = function(xx) grep(xx,
+                              allfiles, value = TRUE))
+    names(basenames) <- NULL
+    basenames <- sub("_Grn\\.idat.*", "",
+                     basenames,
+                     ignore.case = TRUE)
+    df$Basename <- basenames
+  }
+  df
+}
+
 #' Modified read.metharray.sheet from minfi
 #'
 #'
@@ -644,73 +731,6 @@ read.metharray.sheet.mm <- function(base,
                                     single.file.path = NULL,
                                     verbose = TRUE)
 {
-  readSheet <- function(file) {
-    dataheader <- grep("^\\[DATA\\]", readLines(file),
-                       ignore.case = TRUE)
-    if (length(dataheader) == 0)
-      dataheader <- 0
-    df <- read.csv(file, stringsAsFactor = FALSE, skip = dataheader)
-    nam <- grep(pattern = "Sentrix_Position", x = names(df),
-                ignore.case = TRUE, value = TRUE)
-    if (length(nam) == 1) {
-      df$Array <- as.character(df[, nam])
-      df[, nam] <- NULL
-    }
-    nam <- grep(pattern = "Array[\\._]ID", x = names(df),
-                ignore.case = TRUE, value = TRUE)
-    if (length(nam) == 1) {
-      df$Array <- as.character(df[, nam])
-      df[, nam] <- NULL
-    }
-    if (!"Array" %in% names(df)) {
-      warning(sprintf("Could not infer array name for file: %s",
-                      file))
-    }
-    nam <- grep("Sentrix_ID", names(df), ignore.case = TRUE,
-                value = TRUE)
-    if (length(nam) == 1) {
-      df$Slide <- as.character(df[, nam])
-      df[, nam] <- NULL
-    }
-    nam <- grep(pattern = "Slide[\\._]ID", x = names(df),
-                ignore.case = TRUE, value = TRUE)
-    if (length(nam) == 1) {
-      df$Slide <- as.character(df[, nam])
-      df[, nam] <- NULL
-    }
-    if (!"Slide" %in% names(df)) {
-      warning(sprintf("Could not infer slide name for file: %s",
-                      file))
-    }
-    else {
-      df[, "Slide"] <- as.character(df[, "Slide"])
-    }
-    nam <- grep(pattern = "Plate[\\._]ID", x = names(df),
-                ignore.case = TRUE, value = TRUE)
-    if (length(nam) == 1) {
-      df$Plate <- as.character(df[, nam])
-      df[, nam] <- NULL
-    }
-    for (nam in c("Pool_ID", "Sample_Plate",
-                  "Sample_Well")) {
-      if (nam %in% names(df)) {
-        df[[nam]] <- as.character(df[[nam]])
-      }
-    }
-    if (!is.null(df$Array)) {
-      patterns <- sprintf("%s_%s_Grn.idat", df$Slide,
-                          df$Array)
-      allfiles <- list.files(path = dirname(file), recursive = recursive,
-                             full.names = TRUE)
-      basenames <- sapply(X = patterns, FUN = function(xx) grep(xx,
-                                                                allfiles, value = TRUE))
-      names(basenames) <- NULL
-      basenames <- sub("_Grn\\.idat.*", "",
-                       basenames, ignore.case = TRUE)
-      df$Basename <- basenames
-    }
-    df
-  }
   if(single.file==TRUE){
     if(is.null (single.file.path) | !file.exists(single.file.path))
       stop("'single.file.path' does not exist or is set to NULL")
@@ -721,17 +741,22 @@ read.metharray.sheet.mm <- function(base,
   if (!all(info$isdir) && !all(!info$isdir)) {
     stop("'base needs to be either directories or files")
   }
-  if (all(info$isdir)) {
-    csvfiles <- list.files(path = base, recursive = recursive,
-                           pattern = pattern, ignore.case = ignore.case, full.names = TRUE)
-    if (verbose) {
-      message("[read.metharray.sheet] Found the following CSV files:")
-      print(csvfiles)
+  if(!exists("csvfiles")){
+    if (all(info$isdir)) {
+      csvfiles <- list.files(path = base,
+                           recursive = recursive,
+                           pattern = pattern,
+                           ignore.case = ignore.case,
+                           full.names = TRUE)
+      if (verbose) {
+        message("[read.metharray.sheet] Found the following CSV files:")
+        print(csvfiles)
+      }
+    }else {
+      csvfiles <- list.files(base, full.names = TRUE)
     }
-  }else {
-    csvfiles <- list.files(base, full.names = TRUE)
   }
-  dfs <- lapply(csvfiles, readSheet)
+  dfs <- lapply(csvfiles, readSheet.mm)
   namesUnion <- Reduce(union, lapply(dfs, names))
   df <- do.call(what = rbind, args = lapply(dfs, function(df) {
     newnames <- setdiff(namesUnion, names(df))
@@ -742,13 +767,18 @@ read.metharray.sheet.mm <- function(base,
   return(df)
 }
 
-#' Modified epicopy function from Epicopy
-#'
+#' @title epicopy.mm
+#' @description Modified epicopy() function from Epicopy
 #' I updated the read.metharray.sheet function
 #' and incorporated it here
-#'
 #' @param target_dir
 #' @param output_dir
+#' @param single.file
+#' @param single.file.path
+#' @param epic.manifest.path
+#' @param comparison
+#' @param reference_group
+#' @param split.by
 #' @param project_name
 #' @param Normals
 #' @param sampNames
@@ -774,34 +804,36 @@ read.metharray.sheet.mm <- function(base,
 #' @import iterators
 #' @import doParallel
 #' @import minfi
-#' @return return a CNV frame
+#' @return return a cna list containing CNV frame(s)
 #' @export
 epicopy.mm <- function(target_dir,
-                    output_dir = NULL,
-                    single.file = TRUE,
-                    single.file.path = NULL,
-                    comparisons = NULL,
-                    reference_group = "normal",
-                    project_name = NULL,
-                    Normals = NULL,
-                    sampNames = NULL,
-                    QN = FALSE,
-                    Ref = "mode",
-                    mode.bw = 0.1,
-                    mode.method = "naive",
-                    normal.cnv = NULL,
-                    mean.center = TRUE,
-                    filterProbes = FALSE,
-                    retainedProbes = NULL,
-                    ncores = 1L,
-                    seg.undo.splits = "sdundo",
-                    seg.undo.SD = 2,
-                    filterbycount = TRUE,
-                    min_probes = 50,
-                    verbose = TRUE,
-                    keep_fnobj = FALSE,
-                    fn_output = NULL,
-                    ...)
+                       output_dir = NULL,
+                       single.file = TRUE,
+                       single.file.path = NULL,
+                       epic.manifest.path = getwd(),
+                       comparison = NULL,
+                       reference_group = "internal", ##comparison
+                       split.by = NULL,
+                       project_name = NULL,
+                       Normals = NULL,
+                       sampNames = NULL,
+                       QN = FALSE,
+                       Ref = "mode",
+                       mode.bw = 0.1,
+                       mode.method = "naive",
+                       normal.cnv = NULL,
+                       mean.center = TRUE,
+                       filterProbes = FALSE,
+                       retainedProbes = NULL,
+                       ncores = 1L,
+                       seg.undo.splits = "sdundo",
+                       seg.undo.SD = 2,
+                       filterbycount = TRUE,
+                       min_probes = 50,
+                       verbose = TRUE,
+                       keep_fnobj = FALSE,
+                       fn_output = NULL,
+                       ...)
 {
   if (is.null(output_dir)) {
     cat("Using current directory as output directory.\n")
@@ -810,7 +842,24 @@ epicopy.mm <- function(target_dir,
   target_sheet <- read.metharray.sheet.mm(target_dir,
                                           single.file = single.file,
                                           single.file.path = single.file.path)
-  target_sheet <- target_sheet[target_sheet$Sample_Group %in% comparisons,]
+
+  if(!is.null(split.by)){
+    split.groups <- unique(target_sheet[[split.by]])
+  }
+
+  #########################################################################
+  cnas.out <- list() ##Final list of cnas to be output
+  final.list.length <- ifelse(is.null(split.by),1,2)
+  for(i in 1:final.list.length){
+    if(!is.null(split.by)){
+    target_sheet <- target_sheet[target_sheet[[split.by]] %in% split.groups[i],]
+    }
+  if(reference_group=="internal"){
+    target_sheet <- target_sheet[target_sheet$Sample_Group %in% comparison[1],]
+  }else{
+    target_sheet <- target_sheet[target_sheet$Sample_Group %in% comparison,]
+  }
+
   if (!is.null(Normals)) {
     if (!Normals %in% c("breast", "lung", "thyroid",
                         "all")) {
@@ -819,11 +868,14 @@ epicopy.mm <- function(target_dir,
       cat("Looking for normal annotation under",
           Normals, "column in samplesheet.\n")
       normal_index <- tolower(target_sheet[, Normals])
-      if (!any(normal_index %in% "normal"))
+      ##if (!any(normal_index %in% "normal"))
+      if (!any(normal_index %in% comparison[2]))
         stop("No normal sample found in annotation.\n")
-      nnormals <- table(normal_index %in% "normal")["TRUE"]
+      ##nnormals <- table(normal_index %in% "normal")["TRUE"]
+      nnormals <- table(normal_index %in% comparison[2])["TRUE"]
       cat("Found", nnormals, "normal samples.\n")
-      Normals <- normal_index %in% "normal"
+      ##Normals <- normal_index %in% "normal"
+      Normals <- normal_index %in% comparison[2]
       if (is.null(normal.cnv))
         normal.cnv <- TRUE
     }
@@ -838,11 +890,18 @@ epicopy.mm <- function(target_dir,
   }
 
   platforms <- unique(target_sheet$Platform)
-  if(length(platforms)>1){
+
+  treatment.platform <- unique(target_sheet[target_sheet$Sample_Group %in%
+                                       comparison[1],"Platform"])
+
+  control.platform   <- unique(target_sheet[target_sheet$Sample_Group %in%
+                                       comparison[2],"Platform"])
+
+  if(length(unique(platforms))>1){
   rgsets <- list()
-  foreach(i=1:length(comparisons),.combine=rbind, .packages=c("foreach",
+  foreach(i=1:length(comparison),.combine=rbind, .packages=c("foreach",
                                                               "minfi")) %do% {
-    sub.target.sheet <- target_sheet[target_sheet$Sample_Group==comparisons[i],]
+    sub.target.sheet <- target_sheet[target_sheet$Sample_Group==comparison[i],]
     rgset <-
       read.metharray.exp(targets = sub.target.sheet,
                            verbose = verbose)
@@ -852,13 +911,13 @@ epicopy.mm <- function(target_dir,
     ##"IlluminaHumanMethylationEPIC
     rgset <- minfi::combineArrays(rgsets[[1]],
                                   rgsets[[2]],
-                            outType = ifelse(platforms[1]=="EPIC",
+                            outType = ifelse(control.platform=="EPIC",
                                       "IlluminaHumanMethylationEPIC",
                                       "IlluminaHumanMethylation450k"),
                                   verbose=TRUE)
 
-    lrr <- getLRR.mm(rgSet = rgset[,rgset$Sample_Group %in% comparisons[1]],
-                     Normals = rgset[,rgset$Sample_Group %in% comparisons[2]],
+    lrr <- getLRR.mm(rgSet = rgset[,rgset$Sample_Group %in% comparison[1]],
+                     Normals = rgset[,rgset$Sample_Group %in% comparison[2]],
                      sampNames = sampNames,
                      QN = QN,
                      Ref = Ref,
@@ -874,16 +933,17 @@ epicopy.mm <- function(target_dir,
                        ncores = ncores,
                        seg.undo.splits = seg.undo.splits,
                        seg.undo.SD = seg.undo.SD,
-          platform = target_sheet[
-            target_sheet$Sample_Group==comparisons[1],"Platform"][1]
+                       epic.manifest.path = epic.manifest.path,
+                       platform = control.platform
     )
 
-    return(cna)
+    ##return(cna)
 
   }else{
 
   rgset <- read.metharray.exp(targets = target_sheet,
                               verbose = verbose)
+
   lrr <- getLRR.mm(rgSet = rgset,
                 Normals = Normals,
                 sampNames = sampNames,
@@ -900,10 +960,18 @@ epicopy.mm <- function(target_dir,
   cna <- LRRtoCNA.mm(lrr,
                      ncores = ncores,
                      seg.undo.splits = seg.undo.splits,
-                     seg.undo.SD = seg.undo.SD
-                     )
+                     seg.undo.SD = seg.undo.SD,
+                     epic.manifest.path = epic.manifest.path,
+                     platform = control.platform)
 
-  return(cna)
+  ##return(cna)
 
   }
+
+  cnas.out[[i]] <- cna
+
+  } ##end for loop
+
+  return(cnas.out)
+
 }

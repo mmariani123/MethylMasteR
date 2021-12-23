@@ -1,5 +1,1050 @@
 #!/usr/bin/env Rscript
 
+##Michael Mariani PhD Dartmouth College 2021
+
+#' @title champ.process.mm
+#' @description champ.process function modified by
+#' Michael Mariani PhD Dartmouth College 2021
+#' @param runload
+#' @param directory
+#' @param resultsDir
+#' @param sample.sheet
+#' @param arraytype
+#' @param filters
+#' @param runimpute
+#' @param imputemethod
+#' @param runQC
+#' @param QCplots
+#' @param runnorm
+#' @param normalizationmethod
+#' @param runSVD
+#' @param RGEffect
+#' @param runCombat
+#' @param batchname
+#' @param runDMP
+#' @param runDMR
+#' @param DMRmethod
+#' @param runBlock
+#' @param runGSEA
+#' @param runEpiMod
+#' @param runCNA
+#' @param control
+#' @param controlGroup
+#' @param runRefBase
+#' @param compare.group
+#' @param adjPVal
+#' @param resultsDir
+#' @param PDFplot
+#' @param Rplot
+#' @param cores
+#' @param saveStepresults
+#' @import ChAMP
+#' @import ChAMPdata
+#' @importFrom dendextend labels_colors unbox
+#' @return Return a champ.result object
+#' @export
+champ.process.mm <- function(runload = TRUE,
+                             directory = getwd(),
+                             resultsDir = "./CHAMP_RESULT/",
+                             sample.sheet = NULL,
+                             arraytype = "450K",
+                             controlGroup = "champCtls",
+                             filters = c("XY",
+                                         "DetP",
+                                         "Beads",
+                                         "NoCG",
+                                         "SNP",
+                                         "MultiHit"),
+                             runimpute = TRUE,
+                             imputemethod = "Combine",
+                             runQC = TRUE,
+                             QCplots = c("mdsPlot",
+                                         "densityPlot",
+                                         "dendrogram"),
+                             runnorm = TRUE,
+                             normalizationmethod = "BMIQ",
+                             runSVD              = TRUE,
+                             RGEffect            = FALSE,
+                             runCombat           = TRUE,
+                             batchname           = c("Slide"),
+                             runDMP              = TRUE,
+                             runDMR              = TRUE,
+                             DMRmethod           = "Bumphunter",
+                             runBlock            = TRUE,
+                             runGSEA             = TRUE,
+                             runEpiMod           = TRUE,
+                             runCNA              = TRUE,
+                             control             = TRUE,
+                             runRefBase          = FALSE,
+                             compare.group       = NULL,
+                             adjPVal             = 0.05,
+                             PDFplot             = TRUE,
+                             Rplot               = TRUE,
+                             cores               = 1,
+                             saveStepresults     = TRUE
+                             ){
+  message("[===========================]")
+  message("[<<< ChAMP.PROCESS START >>>]")
+  message("-----------------------------")
+  message("This is champ.process() function, ",
+          "which would run ALL analysis ChAMP ",
+          "package can be done on your package. ",
+          "But sometimes it's not always very ",
+          "smoothly to conduct all function ",
+          "because of mistake in dataset or ",
+          "unsignificant results. ",
+          "This if you encounter problem in ",
+          "champ.proces(), you shall try run ",
+          "champ step by step.^_^")
+  if (!file.exists(resultsDir)) {
+    dir.create(resultsDir)
+    message("Creating results directory. All Results will be saved in ",
+            resultsDir)
+  }
+  CHAMP.RESULT <- list()
+  if (runload) {
+    myfilter <- rep(FALSE, 6)
+    names(myfilter) <- c("XY", "DetP", "Beads", "NoCG",
+                         "SNP", "MultiHit")
+    myfilter[filters] <- TRUE
+    message("\nRunning champ.load()...")
+    myLoad <- ChAMP::champ.load(directory = directory,
+                         sample.sheet = sample.sheet,
+                         compare.group = compare.group,
+                         control = FALSE,
+                         methValue = "B",
+                         autoimpute = TRUE,
+                         filterXY = myfilter["XY"],
+                         filterDetP = myfilter["DetP"],
+                         ProbeCutoff = 0,
+                         SampleCutoff = 0.1,
+                         detPcut = 0.01,
+                         filterBeads = myfilter["Beads"],
+                         beadCutoff = 0.05,
+                         filterNoCG = myfilter["NoCG"],
+                         filterSNPs = myfilter["SNP"],
+                         filterMultiHit = myfilter["MultiHit"],
+                         arraytype = arraytype)
+    if (saveStepresults) {
+      save(myLoad, file = paste(resultsDir, "/myLoad.rda",
+                                sep = ""))
+      message("champ.load()'s result \"myLoad\" has been saved in ",
+              resultsDir, " as \"myLoad.rda.\"")
+    }
+    message("Run champ.load() Over!\n")
+    gc()
+    CHAMP.RESULT[["champ.load"]] <- myLoad
+  }
+  tmpbeta <- myLoad$beta
+  tmppd <- myLoad$pd
+  if (runimpute) {
+    message("\nRunning champ.impute()...")
+    myImpute <- ChAMP::champ.impute(beta = myLoad$beta,
+                             pd = myLoad$pd,
+                             method = imputemethod,
+                             k = 5,
+                             ProbeCutoff = 0.2,
+                             SampleCutoff = 0.1)
+    if (saveStepresults) {
+      save(myImpute, file = paste(resultsDir, "/myImpute.rda",
+                                  sep = ""))
+      message("champ.impute()'s result \"myImpute\" has been saved in ",
+              resultsDir, " as \"myImpute.rda.\"")
+    }
+    gc()
+    CHAMP.RESULT[["champ.impute"]] <- myImpute
+    message("Run champ.impute() Over!\n")
+  }
+  tmppd <- myImpute$pd
+  if (runQC) {
+    message("\nRunning champ.QC()...")
+    myQCplots <- rep(FALSE, 3)
+    names(myQCplots) <- c("mdsPlot", "densityPlot", "dendrogram")
+    myQCplots[QCplots] <- TRUE
+    ChAMP::champ.QC(beta = tmpbeta, pheno = tmppd$Sample_Group,
+             mdsPlot = myQCplots["mdsPlot"],
+             densityPlot = myQCplots["densityPlot"],
+             dendrogram = myQCplots["dendrogram"],
+             PDFplot = PDFplot,
+             Rplot = Rplot, Feature.sel = "None",
+             resultsDir = paste(resultsDir,
+                                "/CHAMP_QCimages/", sep = ""))
+    if (PDFplot) {
+      message("Plots of champ.QC() has been saved in ",
+              paste(resultsDir, "/CHAMP_QCimages/", sep = ""))
+    }
+    gc()
+    message("Run champ.QC() Over!\n")
+  }
+  if (runnorm) {
+    message("\nRunning champ.norm()...")
+    myNorm <- ChAMP::champ.norm(beta = tmpbeta, rgSet = myLoad$rgSet,
+                         mset = myLoad$mset,
+                         resultsDir = paste(resultsDir,
+                          "/CHAMP_Normalization/", sep = ""),
+                         method = normalizationmethod,
+                         plotBMIQ = PDFplot,
+                         arraytype = arraytype,
+                         cores = cores)
+    if (saveStepresults) {
+      save(myNorm, file = paste(resultsDir, "/myNorm.rda",
+                                sep = ""))
+      message("champ.norm()'s result \"myNorm\" has been saved in ",
+              resultsDir, " as \"myNorm.rda.\"")
+      if (normalizationmethod == "BMIQ" & PDFplot == TRUE)
+        message("Plots of champ.norm() has been saved in ",
+                paste(resultsDir, "/CHAMP_Normalization/",
+                      sep = ""))
+    }
+    gc()
+    CHAMP.RESULT[["champ.norm"]] <- myNorm
+    message("Run champ.norm() Over!\n")
+  }
+  if (runSVD) {
+    message("\nRunning champ.SVD()...")
+    ChAMP::champ.SVD(beta = myNorm, rgSet = myLoad$rgSet, pd = tmppd,
+              RGEffect = RGEffect, PDFplot = PDFplot, Rplot = Rplot,
+              resultsDir = paste(resultsDir, "/CHAMP_SVDimages/",
+                                 sep = ""))
+    if (PDFplot) {
+      message("Plots of champ.SVD() has been saved in ",
+              paste(resultsDir, "/CHAMP_SVDimages/", sep = ""))
+    }
+    gc()
+    message("Run champ.SVD() Over!\n")
+  }
+  if (runCombat) {
+    message("\nRunning champ.runCombat()...")
+    myCombat <- ChAMP::champ.runCombat(beta = myNorm, pd = tmppd,
+                                batchname = batchname, logitTrans = TRUE)
+    if (saveStepresults) {
+      save(myCombat, file = paste(resultsDir, "/myCombat.rda",
+                                  sep = ""))
+      message("champ.runCombat()'s result \"myCombat\" has been saved in ",
+              resultsDir, " as \"myCombat.rda.\"")
+    }
+    gc()
+    CHAMP.RESULT[["champ.runCombat"]] <- myCombat
+    message("Run champ.runCombat() Over!\n")
+  }
+  if (runDMP) {
+    message("\nRunning champ.DMP()...")
+    myDMP <- ChAMP::champ.DMP(beta = myNorm,
+                       pheno = tmppd$Sample_Group,
+                       adjPVal = adjPVal,
+                       adjust.method = "BH",
+                       compare.group = compare.group,
+                       arraytype = arraytype)
+    if (saveStepresults) {
+      save(myDMP, file = paste(resultsDir, "/myDMP.rda",
+                               sep = ""))
+      message("champ.DMP()'s result \"myDMP\" has been saved in ",
+              resultsDir, " as \"myDMP.rda.\"")
+    }
+    gc()
+    CHAMP.RESULT[["champ.DMP"]] <- myDMP
+    message("Run champ.DMP() Over!\n")
+  }
+  if (runDMR) {
+    message("\nRunning champ.DMR()...")
+    myDMR <- ChAMP::champ.DMR(beta = myNorm,
+                       pheno = tmppd$Sample_Group,
+                       arraytype = arraytype,
+                       method = DMRmethod,
+                       minProbes = 7,
+                       adjPvalDmr = adjPVal,
+                       maxGap = 300,
+                       cutoff = NULL,
+                       pickCutoff = TRUE,
+                       smooth = TRUE,
+                       smoothFunction = loessByCluster,
+                       useWeights = FALSE,
+                       permutations = NULL,
+                       B = 250,
+                       nullMethod = "bootstrap",
+                       cores = cores,
+                       meanLassoRadius = 375,
+                       minDmrSep = 1000,
+                       minDmrSize = 50,
+                       adjPvalProbe = adjPVal,
+                       Rplot = Rplot,
+                       PDFplot = PDFplot,
+                       resultsDir = paste(resultsDir,
+                        "/CHAMP_ProbeLasso/", sep = ""),
+                        rmSNPCH = T,
+                       dist = 2, mafcut = 0.05)
+    if (saveStepresults) {
+      save(myDMR, file = paste(resultsDir, "/myDMR.rda",
+                               sep = ""))
+      message("champ.DMR()'s result \"myDMR\" has been saved in ",
+              resultsDir, " as \"myDMR.rda.\"")
+      if (DMRmethod == "ProbeLasso" & PDFplot == TRUE)
+        message("Plots of champ.DMR() have been saved in ",
+                paste(resultsDir, "/CHAMP_ProbeLasso/", sep = ""))
+    }
+    gc()
+    CHAMP.RESULT[["champ.DMR"]] <- myDMR
+    message("Run champ.DMR() Over!\n")
+  }
+  if (runBlock) {
+    message("\nRunning champ.Block()...")
+    myBlock <- ChAMP::champ.Block(beta = myNorm,
+                           pheno = tmppd$Sample_Group,
+                           arraytype = arraytype,
+                           maxClusterGap = 250000,
+                           B = 500,
+                           bpSpan = 250000,
+                           minNum = 10,
+                           cores = cores)
+    if (saveStepresults) {
+      save(myBlock, file = paste(resultsDir, "/myBlock.rda",
+                                 sep = ""))
+      message("champ.Block()'s result \"myBlock\" has been saved in ",
+              resultsDir, " as \"myBlock.rda.\"")
+    }
+    gc()
+    CHAMP.RESULT[["champ.Block"]] <- myBlock
+    message("Run champ.Block() Over!\n")
+  }
+  if (runGSEA) {
+    message("\nRunning champ.GSEA()...")
+    myGSEA <- ChAMP::champ.GSEA(beta = myNorm, DMP = myDMP, DMR = myDMR,
+                         CpGlist = NULL, Genelist = NULL, arraytype = arraytype,
+                         adjPval = adjPVal)
+    if (saveStepresults) {
+      save(myGSEA, file = paste(resultsDir, "/myGSEA.rda",
+                                sep = ""))
+      message("champ.GSEA()'s result \"myGSEA\" has been saved in ",
+              resultsDir, " as \"myGSEA.rda.\"")
+    }
+    gc()
+    CHAMP.RESULT[["champ.GSEA"]] <- myGSEA
+    message("Run champ.GSEA() Over!\n")
+  }
+  if (runEpiMod) {
+    message("\nRunning champ.EpiMod()...")
+    myEpiMod <- champ.EpiMod(beta = myNorm,
+                             pheno = tmppd$Sample_Group,
+                             nseeds = 100,
+                             gamma = 0.5,
+                             nMC = 1000,
+                             sizeR.v = c(1, 100),
+                             minsizeOUT = 10,
+                             resultsDir = paste(resultsDir,
+                                                                                                                          "/CHAMP_EpiMod/", sep = ""), PDFplot = PDFplot,
+                             arraytype = arraytype)
+    if (saveStepresults) {
+      save(myEpiMod, file = paste(resultsDir, "/myEpiMod.rda",
+                                  sep = ""))
+      message("champ.EpiMod()'s result \"myEpiMod\" has been saved in ",
+              resultsDir, " as \"myEpiMod.rda.\"")
+      if (PDFplot == TRUE)
+        message("Plots of champ.EpiMod() have been saved in ",
+                paste(resultsDir, "/CHAMP_EpiMod/", sep = ""))
+    }
+    gc()
+    CHAMP.RESULT[["champ.EpiMod"]] <- myEpiMod
+    message("Run champ.EpiMod() Over!\n")
+  }
+  if (runCNA) {
+    message("\nRunning champ.CNA()...")
+    myCNA <- ChAMP::champ.CNA(intensity = myLoad$intensity,
+                       pheno = myLoad$pd$Sample_Group,
+                       resultsDir = "./CHAMP_CNA",
+                       control = TRUE,
+                       controlGroup = "champCtls",
+                       sampleCNA = TRUE,
+                       groupFreqPlots = TRUE,
+                       Rplot = Rplot,
+                       PDFplot = PDFplot,
+                       freqThreshold = 0.3,
+                       arraytype = arraytype)
+    if (saveStepresults) {
+      save(myCNA, file = paste(resultsDir, "/myCNA.rda",
+                               sep = ""))
+      message("champ.CNA()'s result \"myCNA\" has been saved in ",
+              resultsDir, " as \"myCNA.rda.\"")
+    }
+    gc()
+    CHAMP.RESULT[["champ.CNA"]] <- myCNA
+    message("Run champ.CNA() Over!\n")
+  }
+  if (runRefBase) {
+    message("\nRunning champ.refbase()...")
+    myRefbase <- ChAMP::champ.refbase(beta = myNorm, arraytype = arraytype)
+    if (saveStepresults) {
+      save(myRefbase, file = paste(resultsDir, "/myRefbase.rda",
+                                   sep = ""))
+      message("champ.refbase()'s result \"myRefbase\" has been saved in ",
+              resultsDir, " as \"myRefbase.rda.\"")
+    }
+    gc()
+    CHAMP.RESULT[["champ.refbase"]] <- myRefbase
+    message("Run champ.refbase() Over!\n")
+  }
+  message("[<<<< ChAMP.PROCESS END >>>>]")
+  message("[===========================]")
+  return(CHAMP.RESULT)
+}
+
+#' @title champ.import.mm
+#' @description champ.import function modified by Michael Mariani
+#' This function loads a file as a matrix. It assumes that the first column
+#' contains the rownames and the subsequent columns are the sample identifiers.
+#' Any rows with duplicated row names will be dropped with the first one being
+#' kept.
+#' @param infile Path to the input file
+#' @param directory
+#' @param sample.sheet
+#' @param offset
+#' @param control
+#' @param compare.group
+#' @param arraytype
+#' @importFrom illuminaio readIDAT unbox
+#' @return Return a list
+#' @export
+champ.import.mm <- function(directory = getwd(),
+                            sample.sheet = NULL,
+                            offset = 100,
+                            control = TRUE,
+                            compare.group = compare.group,
+                            arraytype = "450K"
+                         ){
+
+  message("[===========================]")
+  message("[<<<< ChAMP.IMPORT START >>>>>]")
+  message("-----------------------------")
+  message("\n[ Section 1: Read PD Files Start ]")
+  if (!file.exists(directory) || is.na(file.info(directory)$isdir) ||
+      file.info(directory)$isdir == FALSE) {
+    stop(paste0("  Your 'directory' for loading does not exists, ",
+    "please assign a correct directory."))
+  }
+  ##MM
+  if(!is.null(sample.sheet)){
+    csvfile <- sample.sheet
+  }
+  else{
+    csvfile <- list.files(directory,
+                        recursive = TRUE,
+                        pattern = "csv$",
+                        full.names = TRUE)
+  }
+  if (length(csvfile) == 0) {
+    stop(paste("  champ.import can not find any csv file in ",
+               directory, ". Please check your folder."))
+  }
+  else if (length(csvfile) >= 2) {
+    stop(paste("  champ.import finds more than one csv file in ",
+               directory, ". Please check your folder."))
+  }
+  message("  CSV Directory: ", csvfile)
+  message("  Find CSV Success")
+  message("  Reading CSV File")
+  skipline <- which(substr(readLines(csvfile), 1, 6) == "[Data]")
+  if (length(skipline) == 0)
+    suppressWarnings(pd <- read.csv(csvfile, stringsAsFactor = FALSE,
+                                    header = TRUE))
+  else suppressWarnings(pd <- read.csv(csvfile, skip = skipline,
+                                       stringsAsFactor = FALSE, header = TRUE))
+
+  #######################################################################
+
+  if(control==TRUE){
+
+    pd <- pd[pd$Sample_Group %in% compare.group,]
+
+  }else{
+
+    pd <- pd[pd$Sample_Group %in% compare.group[1],]
+
+  }
+
+  #######################################################################
+
+  if ("Sentrix_Position" %in% colnames(pd)) {
+    colnames(pd)[which(colnames(pd) == "Sentrix_Position")] <- "Array"
+    message("  Replace Sentrix_Position into Array")
+  }
+  else {
+    message("  Your pd file contains NO Array(Sentrix_Position) information.")
+  }
+  if ("Sentrix_ID" %in% colnames(pd)) {
+    colnames(pd)[which(colnames(pd) == "Sentrix_ID")] <- "Slide"
+    message("  Replace Sentrix_ID into Slide")
+  }
+  else {
+    message("  Your pd file contains NO Slide(Sentrix_ID) information.")
+  }
+  sapply(c("Pool_ID", "Sample_Plate", "Sample_Well"),
+         function(x) if (x %in% colnames(pd))
+           pd[, x] <- as.character(pd[, x])
+         else message("  There is NO ", x, " in your pd file."))
+
+  GrnPath <- unlist(sapply(paste(pd$Slide, pd$Array, "Grn.idat",
+                                 sep = "_"),
+                           function(x) grep(x,
+                              list.files(directory,
+                              recursive = T, full.names = TRUE), value = TRUE)))
+
+  RedPath <- unlist(sapply(paste(pd$Slide, pd$Array, "Red.idat",
+                                 sep = "_"),
+                           function(x) grep(x,
+                                            list.files(directory,
+                              recursive = T, full.names = TRUE), value = TRUE)))
+
+  if (!identical(names(GrnPath), paste(pd$Slide, pd$Array,
+                                       "Grn.idat", sep = "_")))
+    stop("  Error Match between pd file and Green Channel IDAT file.")
+  if (!identical(names(RedPath), paste(pd$Slide, pd$Array,
+                                       "Red.idat", sep = "_")))
+    stop("  Error Match between pd file and Red Channel IDAT file.")
+  message("[ Section 1: Read PD file Done ]")
+  message("\n\n[ Section 2: Read IDAT files Start ]")
+  count <- 1
+  G.idats <- lapply(GrnPath, function(x) {
+    message("  Loading:", x, " ---- (", which(GrnPath ==
+                                                x), "/", length(GrnPath), ")")
+    illuminaio::readIDAT(x)
+  })
+  count <- 1
+  R.idats <- lapply(RedPath, function(x) {
+    message("  Loading:", x, " ---- (", which(RedPath ==
+                                                x), "/", length(RedPath), ")")
+    illuminaio::readIDAT(x)
+  })
+  names(G.idats) <- pd$Sample_Name
+  names(R.idats) <- pd$Sample_Name
+  checkunique <- unique(c(sapply(G.idats, function(x) nrow(x$Quants)),
+                          sapply(R.idats, function(x) nrow(x$Quants))))
+  if (length(checkunique) > 1) {
+
+    message("\n  !!! Important !!! ")
+
+    message(paste0("  Seems your IDAT files not from one Array, ",
+                   "because they have different numbers of probe."))
+
+    message(paste0("  ChAMP wil continue analysis with only COMMON ",
+                   "CpGs exist across all your IDAt files. ",
+                   "However we still suggest you to check your ",
+                   "source of data.\n"))
+  }
+  CombineIDAT <- append(G.idats, R.idats)
+  commonAddresses <- as.character(Reduce("intersect",
+                                         lapply(CombineIDAT,
+                                          function(x) rownames(x$Quants))))
+  message("\n  Extract Mean value for Green and Red Channel Success")
+  GreenMean <- do.call(cbind, lapply(G.idats,
+                                     function(xx) xx$Quants[commonAddresses,
+                                                                     "Mean"]))
+  RedMean <- do.call(cbind, lapply(R.idats,
+                                   function(xx) xx$Quants[commonAddresses,
+                                                                   "Mean"]))
+  message("    Your Red Green Channel contains ", nrow(GreenMean),
+          " probes.")
+  G.Load <- do.call(cbind, lapply(G.idats,
+                                  function(x) x$Quants[commonAddresses,
+                                                                "Mean"]))
+  R.Load <- do.call(cbind, lapply(R.idats,
+                                  function(x) x$Quants[commonAddresses,
+                                                                "Mean"]))
+  message("[ Section 2: Read IDAT Files Done ]")
+  message("\n\n[ Section 3: Use Annotation Start ]")
+  message("\n  Reading ", arraytype, " Annotation >>")
+  ##########################################################################
+  if(arraytype == "EPIC"){
+    data(AnnoEPIC)
+  }else{
+    data(Anno450K)
+  }
+  ##########################################################################
+  message("\n  Fetching NEGATIVE ControlProbe.")
+  control_probe <- rownames(Anno$ControlProbe)[
+    which(Anno$ControlProbe[, 1] == "NEGATIVE")]
+
+  message("    Totally, there are ", length(control_probe),
+          " control probes in Annotation.")
+
+  control_probe <- control_probe[control_probe %in% rownames(R.Load)]
+
+  message("    Your data set contains ", length(control_probe),
+          " control probes.")
+
+  rMu <- matrixStats::colMedians(R.Load[control_probe, ])
+  rSd <- matrixStats::colMads(R.Load[control_probe, ])
+  gMu <- matrixStats::colMedians(G.Load[control_probe, ])
+  gSd <- matrixStats::colMads(G.Load[control_probe, ])
+  rownames(G.Load) <- paste("G", rownames(G.Load), sep = "-")
+  rownames(R.Load) <- paste("R", rownames(R.Load), sep = "-")
+  IDAT <- rbind(G.Load, R.Load)
+  message("\n  Generating Meth and UnMeth Matrix")
+  message("    Extracting Meth Matrix...")
+  M.check <- Anno$Annotation[, "M.index"] %in% rownames(IDAT)
+  message("      Totally there are ", nrow(Anno$Annotation),
+          " Meth probes in ", arraytype, " Annotation.")
+  message("      Your data set contains ", length(M.check),
+          " Meth probes.")
+  M <- IDAT[Anno$Annotation[, "M.index"][M.check], ]
+  message("    Extracting UnMeth Matrix...")
+  U.check <- Anno$Annotation[, "U.index"] %in% rownames(IDAT)
+  message("      Totally there are ", nrow(Anno$Annotation),
+          " UnMeth probes in ", arraytype, " Annotation.")
+  message("      Your data set contains ", length(U.check),
+          " UnMeth probes.")
+  U <- IDAT[Anno$Annotation[, "U.index"][U.check], ]
+  if (!identical(M.check, U.check)) {
+    stop("  Meth Matrix and UnMeth Matrix seems not paried correctly.")
+  }
+  else {
+    CpG.index <- Anno$Annotation[, "CpG"][M.check]
+  }
+  rownames(M) <- CpG.index
+  rownames(U) <- CpG.index
+  message("\n  Generating beta Matrix")
+  BetaValue <- M/(M + U + offset)
+  message("  Generating M Matrix")
+  MValue <- log2(M/U)
+  message("  Generating intensity Matrix")
+  intensity <- M + U
+  message("  Calculating Detect P value")
+  detP <- matrix(NA, nrow = nrow(intensity), ncol = ncol(intensity))
+  rownames(detP) <- rownames(intensity)
+  colnames(detP) <- colnames(intensity)
+  type_II <- rownames(Anno$Annotation)[Anno$Annotation[, "Channel"] ==
+                                         "g+r"]
+  type_II <- type_II[type_II %in% rownames(detP)]
+  type_I.red <- rownames(Anno$Annotation)[Anno$Annotation[,
+                                                          "Channel"] == "r"]
+  type_I.red <- type_I.red[type_I.red %in% rownames(detP)]
+  type_I.grn <- rownames(Anno$Annotation)[Anno$Annotation[,
+                                                          "Channel"] == "g"]
+  type_I.grn <- type_I.grn[type_I.grn %in% rownames(detP)]
+  for (i in 1:ncol(detP)) {
+    detP[type_II, i] <- 1 - pnorm(intensity[type_II, i],
+                                  mean = rMu[i] + gMu[i], sd = rSd[i] + gSd[i])
+    detP[type_I.red, i] <- 1 - pnorm(intensity[type_I.red,
+                          i], mean = rMu[i] * 2, sd = rSd[i] * 2)
+    detP[type_I.grn, i] <- 1 - pnorm(intensity[type_I.grn,
+                          i], mean = gMu[i] * 2, sd = gSd[i] * 2)
+  }
+  if (sum(is.na(detP)))
+    message("    !!! There are NA values in your detP matrix.\n")
+  message("  Counting Beads")
+  NBeads <- do.call(cbind, lapply(R.idats, function(x) x$Quants[commonAddresses,
+                                                                "NBeads"]))
+  Mbead <- NBeads[substr(Anno$Annotation$M.index[M.check],
+                         3, 100), ]
+  Ubead <- NBeads[substr(Anno$Annotation$U.index[U.check],
+                         3, 100), ]
+  Ubead[Ubead < 3 | Mbead < 3] <- NA
+  rownames(Ubead) <- rownames(intensity)
+  message("[ Section 3: Use Annotation Done ]")
+  message("\n[<<<<< ChAMP.IMPORT END >>>>>>]")
+  message("[===========================]")
+  message("[You may want to process champ.filter() next.]\n")
+  return(list(beta = BetaValue, M = MValue, pd = pd, intensity = intensity,
+              detP = detP, beadcount = Ubead, Meth = M, UnMeth = U))
+}
+
+#' @title champ.load.mm
+#' @description champ.load function modified by Michael Mariani
+#' This function loads a file as a matrix. It assumes that the first column
+#' contains the rownames and the subsequent columns are the sample identifiers.
+#' Any rows with duplicated row names will be dropped with the first one being
+#' kept.
+#' @param directory
+#' @param sample.sheet
+#' @param compare.group
+#' @param control
+#' @param method
+#' @param methValue
+#' @param autoimpute
+#' @param filterDetP
+#' @param ProbeCutoff
+#' @param SampleCutoff
+#' @param detPcut
+#' @param filterBeads
+#' @param beadCutoff
+#' @param filterNoCG
+#' @param filterSNPs
+#' @param population
+#' @param filterMultiHit
+#' @param filterXY
+#' @param force
+#' @param arraytype
+#' @importFrom ChAMP champ.filter unbox
+#' @return Return a list of loaded data
+#' @export
+champ.load.mm <- function(directory   = getwd(),
+                       sample.sheet   = NULL,
+                       compare.group  = compare.group,
+                       control        = FALSE,
+                       method         = "ChAMP",
+                       methValue      = "B",
+                       autoimpute     = TRUE,
+                       filterDetP     = TRUE,
+                       ProbeCutoff    = 0,
+                       SampleCutoff   = 0.1,
+                       detPcut        = 0.01,
+                       filterBeads    = TRUE,
+                       beadCutoff     = 0.05,
+                       filterNoCG     = TRUE,
+                       filterSNPs     = TRUE,
+                       population     = NULL,
+                       filterMultiHit = TRUE,
+                       filterXY       = TRUE,
+                       force          = FALSE,
+                       arraytype      = "450K")
+{
+  message("[===========================]")
+  message("[<<<< ChAMP.LOAD START >>>>>]")
+  message("-----------------------------")
+  mybeadcount <- function(x) {
+    nb <- getNBeads(x)
+    typeIadd <- getProbeInfo(x, type = "I")
+    typeImatchA <- match(typeIadd$AddressA, rownames(nb))
+    typeImatchB <- match(typeIadd$AddressB, rownames(nb))
+    typeIIadd <- getProbeInfo(x, type = "II")
+    typeIImatch <- match(typeIIadd$Address, rownames(nb))
+    nbcg <- nb
+    locusNames <- getManifestInfo(x, "locusNames")
+    bc_temp <- matrix(NA_real_, ncol = ncol(x), nrow = length(locusNames),
+                      dimnames = list(locusNames, sampleNames(x)))
+    TypeII.Name <- getProbeInfo(x, type = "II")$Name
+    bc_temp[TypeII.Name, ] <- nbcg[getProbeInfo(x, type = "II")$AddressA,
+    ]
+    TypeI <- getProbeInfo(x, type = "I")
+    bcB <- bc_temp
+    bcA <- bc_temp
+    bcB[TypeI$Name, ] <- nbcg[TypeI$AddressB, ]
+    bcA[TypeI$Name, ] <- nbcg[TypeI$AddressA, ]
+    bcB3 <- which(bcB < 3)
+    bcA3 <- which(bcA < 3)
+    bcA2 <- bcA
+    bcB2 <- bcB
+    bcA2[bcA3] <- NA
+    bcA2[bcB3] <- NA
+    bc <- data.frame(bcA2)
+    bc
+  }
+  if (method == "minfi") {
+    message("\n[ Loading Data with Minfi Method ]")
+    message("----------------------------------")
+    message("Loading data from ", directory)
+    myDir <- directory
+    suppressWarnings(targets <- read.metharray.sheet(myDir))
+    rgSet <- read.metharray.exp(targets = targets,
+                                extended = TRUE,
+                                force = force)
+    if (arraytype == "EPIC")
+      rgSet@annotation <- c(array = "IlluminaHumanMethylationEPIC",
+                            annotation = "ilm10b4.hg19")
+    sampleNames(rgSet) = rgSet[[1]]
+    pd <- pData(rgSet)
+    mset <- preprocessRaw(rgSet)
+    detP <- detectionP(rgSet)
+    message("<< Read DataSet Success. >>\n")
+    if (methValue == "B")
+      tmp = getBeta(mset, "Illumina")
+    else tmp = getM(mset)
+    tmp[detP >= detPcut] <- NA
+    message(paste0("The fraction of failed positions per sample\n",
+                   "\n(You may need to delete samples with high proportion",
+                   "of failed probes\n): "))
+    numfail <- matrix(colMeans(is.na(tmp)))
+    rownames(numfail) <- colnames(detP)
+    colnames(numfail) <- "Failed CpG Fraction."
+    print(numfail)
+    RemainSample <- which(numfail < SampleCutoff)
+    if (any(numfail >= SampleCutoff))
+      message("The detSamplecut parameter is : ",
+              SampleCutoff, "\nSamples : ",
+              paste(rownames(numfail)[which(numfail >=
+                SampleCutoff)], collapse = ","), " will be deleted.\n",
+              "There are ", length(RemainSample),
+              " samples left for analysis.\n")
+    rgSet <- rgSet[, RemainSample]
+    detP <- detP[, RemainSample]
+    mset <- mset[, RemainSample]
+    pd <- pd[RemainSample, ]
+    tmp <- tmp[, RemainSample]
+    if (filterDetP) {
+      mset.f = mset[rowSums(is.na(tmp)) <= ProbeCutoff *
+                      ncol(detP), ]
+      if (ProbeCutoff == 0) {
+        message("Filtering probes with a detection p-value above ",
+                detPcut, " in one or more samples has removed ",
+                dim(mset)[1] - dim(mset.f)[1],
+                paste0(" probes from the analysis. ",
+                "If a large number of probes have been removed,",
+                "ChAMP suggests you to identify potentially bad samples."))
+      }
+      else {
+        message("Filtering probes with a detection p-value above ",
+                detPcut, " in at least ", ProbeCutoff *
+                  100, "% of samples has removed ", dim(mset)[1] -
+                  dim(mset.f)[1], paste0(" probes from the analysis. ",
+                  "If a large number of probes have been removed, ",
+                  "ChAMP suggests you look at the failedSample file ",
+                  "to identify potentially bad samples."))
+      }
+      mset = mset.f
+      tmp <- tmp[rowSums(is.na(tmp)) <= ProbeCutoff * ncol(detP),
+      ]
+      message("<< Filter DetP Done. >>\n")
+    }
+    if (sum(is.na(tmp)) == 0) {
+      message(paste0("\nThere is no NA values in your matrix, ",
+                     "there is no need to imputation.\n"))
+    }
+    else {
+      message("\nThere are ", sum(is.na(tmp)), paste0(" NA remain in filtered ",
+      "Data Set. Impute can be done for remain NAs, but not suitable ",
+      "for small number samples. For small Data Set (like only 20 samples), ",
+      "we suggest you set parameter ProbeCutoff as 0 in champ.load() ",
+      "here, which would remove all NA involved probe no matter how ",
+      "many samples of those probes are NA.\n"))
+    }
+    if (autoimpute & sum(is.na(tmp)) > 0) {
+      message("Impute will be conducted here for remain ",
+              sum(is.na(tmp)), paste0("  NAs. Note that if you don't do this, ",
+              "NA values would be kept in your data set. ",
+              "You may use champ.impute() function to do more ",
+              "complex imputation as well."))
+      message("\nImpute function is working now, it may need couple minutes...")
+      zz <- file("ImputeMessage.Rout", open = "wt")
+      sink(zz)
+      sink(zz, type = "message")
+      tmp <- impute.knn(tmp, k = 5)$data
+      sink(type = "message")
+      sink()
+      message("<< Imputation Done. >>\n")
+    }
+    if (filterBeads) {
+      bc = mybeadcount(rgSet)
+      bc2 = bc[rowSums(is.na(bc)) < beadCutoff * (ncol(bc)),
+      ]
+      mset.f2 = mset[featureNames(mset) %in% row.names(bc2),
+      ]
+      tmp <- tmp[rownames(tmp) %in% row.names(bc2), ]
+      message("Filtering probes with a beadcount <3 in at least ",
+              beadCutoff * 100, "% of samples, has removed ",
+              dim(mset)[1] - dim(mset.f2)[1], " from the analysis.")
+      mset = mset.f2
+      message("<< Filter Beads Done. >>\n")
+    }
+    if (filterNoCG) {
+      mset.f2 = dropMethylationLoci(mset, dropCH = T)
+      tmp <- tmp[rownames(tmp) %in% featureNames(mset.f2),
+      ]
+      message("Filtering non-cg probes, has removed ",
+              dim(mset)[1] - dim(mset.f2)[1], " from the analysis.")
+      mset <- mset.f2
+      message("<< Filter NoCG Done. >>\n")
+    }
+    if (filterSNPs) {
+      if (arraytype == "450K") {
+        if (is.null(population)) {
+          message("Using general 450K SNP list for filtering.")
+          data(hm450.manifest.hg19)
+          maskname <- rownames(hm450.manifest.hg19)[
+            which(hm450.manifest.hg19$MASK_general == TRUE)]
+        }
+        else if (!population %in% c("AFR", "EAS",
+                                    "EUR", "SAS", "AMR", "GWD",
+                                    "YRI", "TSI", "IBS", "CHS",
+                                    "PUR", "JPT", "GIH", "CHB",
+                                    "STU", "ITU", "LWK", "KHV",
+                                    "FIN", "ESN", "CEU", "PJL",
+                                    "ACB", "CLM", "CDX", "GBR",
+                                    "BEB", "PEL", "MSL", "MXL",
+                                    "ASW")) {
+          message("Using general 450K SNP list for filtering.")
+          data(hm450.manifest.hg19)
+          maskname <- rownames(hm450.manifest.hg19)[
+            which(hm450.manifest.hg19$MASK_general == TRUE)]
+        }
+        else {
+          message("Using ",
+                  population,
+                  " specific 450K SNP list for filtering.")
+          data(hm450.manifest.pop.hg19)
+          maskname <- rownames(hm450.manifest.pop.hg19)[
+            which(hm450.manifest.pop.hg19[,
+                                    paste("MASK_general_", population,
+                                    sep = "")] == TRUE)]
+        }
+      }
+      else {
+        if (is.null(population)) {
+          message("Using general EPIC SNP list for filtering.")
+          data(EPIC.manifest.hg19)
+          maskname <- rownames(EPIC.manifest.hg19)[
+            which(EPIC.manifest.hg19$MASK_general == TRUE)]
+        }
+        else if (!population %in% c("AFR", "EAS",
+                                    "EUR", "SAS", "AMR", "GWD",
+                                    "YRI", "TSI", "IBS", "CHS",
+                                    "PUR", "JPT", "GIH", "CHB",
+                                    "STU", "ITU", "LWK", "KHV",
+                                    "FIN", "ESN", "CEU", "PJL",
+                                    "ACB", "CLM", "CDX", "GBR",
+                                    "BEB", "PEL", "MSL", "MXL",
+                                    "ASW")) {
+          message("Using general EPIC SNP list for filtering.")
+          data(EPIC.manifest.hg19)
+          maskname <- rownames(EPIC.manifest.hg19)[
+            which(EPIC.manifest.hg19$MASK_general == TRUE)]
+        }
+        else {
+          message("Using ",
+                  population,
+                  " specific EPIC SNP list for filtering.")
+          data(EPIC.manifest.pop.hg19)
+          maskname <- rownames(EPIC.manifest.pop.hg19)[
+            which(EPIC.manifest.pop.hg19[,
+              paste("MASK_general_", population, sep = "")] == TRUE)]
+        }
+      }
+      mset.f2 = mset[!featureNames(mset) %in% maskname,
+      ]
+      tmp <- tmp[!rownames(tmp) %in% maskname, ]
+      message(paste0("Filtering probes with SNPs as identified in ",
+      "Zhou's Nucleic Acids Research Paper, 2016, has removed "),
+              dim(mset)[1] - dim(mset.f2)[1], " from the analysis.")
+      mset = mset.f2
+      message("<< Filter SNP Done. >>\n")
+    }
+    if (filterMultiHit) {
+      data(multi.hit)
+      mset.f2 = mset[!featureNames(mset) %in% multi.hit$TargetID,
+      ]
+      tmp <- tmp[!rownames(tmp) %in% multi.hit$TargetID,
+      ]
+      message(paste0("Filtering probes that align to multiple ",
+      "locations as identified in Nordlund et al, has removed "),
+              dim(mset)[1] - dim(mset.f2)[1], " from the analysis.")
+      mset = mset.f2
+      message("<< Filter MultiHit Done. >>\n")
+    }
+    if (filterXY) {
+      if (arraytype == "EPIC")
+        data(probe.features.epic)
+      else data(probe.features)
+      autosomes = probe.features[!probe.features$CHR %in%
+                                   c("X", "Y"), ]
+      mset.f2 = mset[featureNames(mset) %in% row.names(autosomes),
+      ]
+      tmp <- tmp[rownames(tmp) %in% row.names(autosomes),
+      ]
+      message("Filtering probes on the X or Y chromosome has removed ",
+              dim(mset)[1] - dim(mset.f2)[1], " from the analysis.")
+      mset = mset.f2
+      message("<< Filter XY chromosome Done. >>\n")
+    }
+    message(paste(if (methValue == "B")
+      "[Beta"
+      else "[M", "value is selected as output.]\n"))
+    beta.raw <- tmp
+    intensity <- minfi::getMeth(mset) + minfi::getUnmeth(mset)
+    detP <- detP[which(row.names(detP) %in% row.names(beta.raw)),
+    ]
+    if (min(beta.raw, na.rm = TRUE) <= 0)
+      beta.raw[beta.raw <= 0] <- min(beta.raw[beta.raw >
+                                                0])
+    message(paste0("Zeros in your dataset have been replaced ",
+      "with smallest positive value.\n"))
+    if (max(beta.raw, na.rm = TRUE) >= 0)
+      beta.raw[beta.raw >= 1] <- max(beta.raw[beta.raw <
+                                                1])
+    message(paste0("One in your dataset have been replaced ",
+      "with largest value below 1.\n"))
+    message("The analysis will be proceed with ", dim(beta.raw)[1],
+            " probes and ", dim(beta.raw)[2], " samples.\n")
+    message("Current Data Set contains ", sum(is.na(beta.raw)),
+            " NA in ", if (methValue == "B")
+              "[Beta]"
+            else "[M]", " Matrix.\n")
+    message("[<<<<< ChAMP.LOAD END >>>>>>]")
+    message("[===========================]")
+    message("[You may want to process champ.QC() next.]\n")
+    return(list(mset = mset,
+                rgSet = rgSet,
+                pd = pd,
+                intensity = intensity,
+                beta = beta.raw,
+                detP = detP))
+  }
+  else {
+    message("\n[ Loading Data with ChAMP Method ]")
+    message("----------------------------------")
+    message(paste0("Note that ChAMP method will NOT return rgSet or mset, ",
+    "they object defined by minfi. Which means, ",
+    "if you use ChAMP method to load data, ",
+    "you can not use SWAN or FunctionNormliazation method ",
+    "in champ.norm() (you can use BMIQ or PBC still). ",
+    "But All other function should not be influenced.\n"))
+
+    myImport <- ChAMP::champ.import(directory,
+                             arraytype = arraytype,
+                             compare.group = compare.group,
+                             control = FALSE,
+                             sample.sheet=sample.sheet
+                             )
+
+    if (methValue == "B")
+      myLoad <- ChAMP::champ.filter(beta = myImport$beta,
+                             M = NULL,
+                      pd = myImport$pd,
+                      intensity = myImport$intensity,
+                      Meth = NULL,
+                      UnMeth = NULL,
+                      detP = myImport$detP,
+                      beadcount = myImport$beadcount,
+                      autoimpute = autoimpute,
+                      filterDetP = filterDetP,
+                      ProbeCutoff = ProbeCutoff,
+                      SampleCutoff = SampleCutoff,
+                      detPcut = detPcut,
+                      filterBeads = filterBeads,
+                      beadCutoff = beadCutoff,
+                      filterNoCG = filterNoCG,
+                      filterSNPs = filterSNPs,
+                      population = population,
+                      filterMultiHit = filterMultiHit,
+                      filterXY = filterXY,
+                      arraytype = arraytype)
+
+    else myLoad <- ChAMP::champ.filter(beta = NULL,
+                                M = myImport$M,
+                      pd = myImport$pd,
+                      intensity = myImport$intensity,
+                      Meth = NULL,
+                      UnMeth = NULL,
+                      detP = myImport$detP,
+                      beadcount = myImport$beadcount,
+                      autoimpute = autoimpute,
+                      filterDetP = filterDetP,
+                      ProbeCutoff = ProbeCutoff,
+                      SampleCutoff = SampleCutoff,
+                      detPcut = detPcut,
+                      filterBeads = filterBeads,
+                      beadCutoff = beadCutoff,
+                      filterNoCG = filterNoCG,
+                      filterSNPs = filterSNPs,
+                      population = population,
+                      filterMultiHit = filterMultiHit,
+                      filterXY = filterXY,
+                      arraytype = arraytype)
+
+    message("[<<<<< ChAMP.LOAD END >>>>>>]")
+    message("[===========================]")
+    message("[You may want to process champ.QC() next.]\n")
+    return(myLoad)
+
+  }
+}
+
 #' # Extra ChAMP functions
 #'
 #' This function loads a file as a matrix. It assumes that the first column
@@ -17,6 +1062,7 @@
 #' @param champ.rplot
 #' @param champ.feature.sel
 #' @param champ.results.dir
+#' @import dendextend
 #' @return A matrix of the infile
 #' @export
 champ.QC <- function(beta        = NULL,
@@ -122,13 +1168,14 @@ champ.QC <- function(beta        = NULL,
         dend <- as.dendrogram(hc)
         MyColor <- rainbow(length(table(pheno)))
         names(MyColor) <- names(table(pheno))
-        labels_colors(dend) <- MyColor[pheno[order.dendrogram(dend)]]
-        dend <- dend %>% set("labels_cex", 0.8)
+        dendextend::labels_colors(dend) <-
+          MyColor[pheno[order.dendrogram(dend)]]
+        dend <- dend %>% dendextend::set("labels_cex", 0.8)
         ##MM change below
         dend <- dend %>%
-            set("leaves_pch", 19) %>%
-            set("leaves_cex", 0.6) %>%
-            set("leaves_col",
+          dendextend::set("leaves_pch", 19) %>%
+          dendextend::set("leaves_cex", 0.6) %>%
+          dendextend::set("leaves_col",
                 MyColor[pheno[order.dendrogram(dend)]][1])
         if(Rplot){
             plot(dend,
@@ -167,6 +1214,10 @@ champ.QC <- function(beta        = NULL,
 #' @param dnaM.m
 #' @param pheno.v
 #' @param chiptype
+#' @importFrom limma lmFit unbox
+#' @importFrom limma contrasts.fit unbox
+#' @importFrom limma eBayes unbox
+#' @importFrom limma  topTable unbox
 #' @return A matrix of the infile
 #' @export
 GenStatM <- function(dnaM.m,
@@ -218,7 +1269,7 @@ GenStatM <- function(dnaM.m,
     design.sample <- model.matrix(~0 + sampletype.f)
     colnames(design.sample) <- levels(sampletype.f)
     sampletypes.v <- levels(sampletype.f)
-    lmf.o <- lmFit(data.m, design.sample)
+    lmf.o <- limma::lmFit(data.m, design.sample)
     ntypes <- length(levels(sampletype.f))
     ncomp <- 0.5 * ntypes * (ntypes - 1)
     cont.m <- matrix(0, nrow = ncol(design.sample), ncol = ncomp)
@@ -235,11 +1286,13 @@ GenStatM <- function(dnaM.m,
     }
     rownames(cont.m) <- sampletypes.v
     colnames(cont.m) <- tmp.v
-    lmf2.o <- contrasts.fit(lmf.o, cont.m)
-    bay.o <- eBayes(lmf2.o)
+    lmf2.o <- limma::contrasts.fit(lmf.o, cont.m)
+    bay.o  <- limma::eBayes(lmf2.o)
     top.lm <- list()
     for (c in 1:ncol(cont.m)) {
-        top.lm[[c]] <- topTable(bay.o, coef = c, adjust.method = "fdr",
+        top.lm[[c]] <- limma::topTable(bay.o,
+                                coef = c,
+                                adjust.method = "fdr",
                                 number = nrow(data.m))
     }
 
@@ -256,6 +1309,9 @@ GenStatM <- function(dnaM.m,
 #' @param adj.m
 #' @param c
 #' @param dmaMode
+#' @importFrom igraph graph.adjacency unbox
+#' @importFrom igraph get.edgelist unbox
+#' @importFrom igraph clusters unbox
 #' @return A matrix of the infile
 #' @export
 DoIntEpi450k <-
@@ -279,16 +1335,16 @@ DoIntEpi450k <-
             mapM.idx <- match(commonEID.v,rownames(avbeta.m));
             tmpM.m <- avbeta.m[mapM.idx,];
 
-            gr.o <- graph.adjacency(tmpA.m,mode="undirected");
-            comp.l <- clusters(gr.o);
+            gr.o <- igraph::graph.adjacency(tmpA.m,mode="undirected");
+            comp.l <- igraph::clusters(gr.o);
             ngpc.v <- summary(factor(comp.l$member));
             maxCLid <- as.numeric(names(ngpc.v)[which.max(ngpc.v)]);
             maxc.idx <- which(comp.l$member==maxCLid);
 
             ##get the max connected network
             tmpA.m <- tmpA.m[maxc.idx,maxc.idx];
-            gr.o <-  graph.adjacency(tmpA.m,mode="undirected");
-            tmpE.m <- get.edgelist(gr.o);
+            gr.o <-  igraph::graph.adjacency(tmpA.m,mode="undirected");
+            tmpE.m <- igraph::get.edgelist(gr.o);
             tmpM.m <- tmpM.m[maxc.idx,];
 
             #### now extract statistics
@@ -312,16 +1368,16 @@ DoIntEpi450k <-
             mapM.idx <- match(commonEID.v,names(probeID.v));
             tmpM.v <- probeID.v[mapM.idx];
 
-            gr.o <- graph.adjacency(tmpA.m,mode="undirected");
-            comp.l <- clusters(gr.o);
+            gr.o <- igraph::graph.adjacency(tmpA.m,mode="undirected");
+            comp.l <- igraph::clusters(gr.o);
             ngpc.v <- summary(factor(comp.l$member));
             maxCLid <- as.numeric(names(ngpc.v)[which.max(ngpc.v)]);
             maxc.idx <- which(comp.l$member==maxCLid);
 
             #get the max connected network
             tmpA.m <- tmpA.m[maxc.idx,maxc.idx];
-            gr.o <-  graph.adjacency(tmpA.m,mode="undirected");
-            tmpE.m <- get.edgelist(gr.o);
+            gr.o <-  igraph::graph.adjacency(tmpA.m,mode="undirected");
+            tmpE.m <- igraph::get.edgelist(gr.o);
             tmpM.v <- tmpM.v[maxc.idx];
 
             #### now extract statistics
@@ -339,7 +1395,6 @@ DoIntEpi450k <-
         else{print("Please indicate correct mode for statM.o object!"); break}
     }
 
-
 #' DoEpiMod
 #'
 #' https://rdrr.io/bioc/FEM/src/R/DoEpiMod.R
@@ -354,6 +1409,9 @@ DoIntEpi450k <-
 #' @param writeOUT
 #' @param nameSTUDY
 #' @param ew.v
+#' @import igraph
+#' @importFrom AnnotationDbi mappedkeys unbox
+#' @importFrom org.Hs.eg.db org.Hs.egSYMBOL unbox
 #' @return A matrix of the infile
 #' @export
 DoEpiMod <-
@@ -419,12 +1477,12 @@ DoEpiMod <-
         statI.v <- abs(statM.v);
         names(statI.v) <- rownames(statM.m);
 
-        x <- org.Hs.egSYMBOL;
-        mapped_genes <- mappedkeys(x)
+        x <- org.Hs.eg.db::org.Hs.egSYMBOL;
+        mapped_genes <- AnnotationDbi::mappedkeys(x)
         xx <- as.list(x[mapped_genes])
         mapEIDtoSYM.v <- unlist(xx);
-        map.idx <- match(rownames(adj.m),names(mapEIDtoSYM.v));
-        anno.m <- cbind(rownames(adj.m),mapEIDtoSYM.v[map.idx]);
+        map.idx <- match(rownames(adj.m), names(mapEIDtoSYM.v));
+        anno.m <- cbind(rownames(adj.m), mapEIDtoSYM.v[map.idx]);
         colnames(anno.m) <- c("EntrezID","Symbol");
 
         ### find subnetworks around seeds
@@ -437,8 +1495,8 @@ DoEpiMod <-
         ### now define weights on network
         print("Constructing weighted network");
         tmpA.m <- adj.m;
-        gr.o <-  graph.adjacency(tmpA.m,mode="undirected");
-        tmpE.m <- get.edgelist(gr.o);
+        gr.o <-  igraph::graph.adjacency(tmpA.m,mode="undirected");
+        tmpE.m <- igraph::get.edgelist(gr.o);
         if(is.null(ew.v)){
             tmpW.v <- vector(length=nrow(tmpE.m));
             for(e in 1:nrow(tmpE.m)){
@@ -458,15 +1516,15 @@ DoEpiMod <-
         tmpW.v[tmpW.v==0] <- minval;
 
         ### defined weighted graph and adjacency matrix
-        grW.o <- set.edge.attribute(gr.o,"weight",value=tmpW.v);
-        adjW.m <- get.adjacency(grW.o,attr="weight")
+        grW.o <- igraph::set.edge.attribute(gr.o,"weight",value=tmpW.v);
+        adjW.m <- igraph::get.adjacency(grW.o,attr="weight")
 
         ### Run Spin-Glass algorithm
         print("Running Spin-Glass algorithm");
         sizeN.v <- vector();
         sgcN.lo <- list();
         for(v in 1:ntop){
-            sgcN.o <- spinglass.community(gr.o,
+            sgcN.o <- igraph::spinglass.community(gr.o,
                                           weights=tmpW.v,
                                           spins=25,
                                           start.temp=1,
@@ -485,8 +1543,8 @@ DoEpiMod <-
         ### compute modularities
         modN.v <- vector();
         for(v in 1:ntop){
-            subgr.o <- induced.subgraph(grW.o,sgcN.lo[[v]]$comm);
-            modN.v[v] <- mean(get.edge.attribute(subgr.o,name="weight"))
+            subgr.o <- igraph::induced.subgraph(grW.o,sgcN.lo[[v]]$comm);
+            modN.v[v] <- mean(igraph::get.edge.attribute(subgr.o,name="weight"))
         }
         names(modN.v) <- seedsN.v;
         print("Modularity values=");
@@ -496,10 +1554,10 @@ DoEpiMod <-
         print("Starting Monte Carlo Runs");
         modNmc.m <- matrix(nrow=ntop,ncol=nMC);
         for(m in 1:ntop){
-            subgr.o <- induced.subgraph(gr.o,sgcN.lo[[m]]$comm);
+            subgr.o <- igraph::induced.subgraph(gr.o,sgcN.lo[[m]]$comm);
             nN <- sizeN.v[m];
             if( (nN> sizeR.v[1]) && (nN< sizeR.v[2])){
-                tmpEL.m <- get.edgelist(subgr.o);
+                tmpEL.m <- igraph::get.edgelist(subgr.o);
                 for(run in 1:nMC){
                     permN.idx <-
                       sample(1:nrow(tmpA.m),nrow(tmpA.m),replace=FALSE);
@@ -510,9 +1568,9 @@ DoEpiMod <-
                         tmpEW.v[e] <- mean(statI.v[map.idx]);
                     }
                     subgrW.o <-
-                      set.edge.attribute(subgr.o,"weight",value=tmpEW.v)
+                      igraph::set.edge.attribute(subgr.o,"weight",value=tmpEW.v)
                     modNmc.m[m,run] <-
-                      mean(get.edge.attribute(subgrW.o,name="weight"));
+                      mean(igraph::get.edge.attribute(subgrW.o,name="weight"));
                 }
             }
             print(paste("Done for seed/module ",m,sep=""));
@@ -644,6 +1702,9 @@ DoEpiMod <-
 #' @param name
 #' @param fem.o
 #' @param mode
+#' @import igraph
+#' @importFrom shape colorlegend unbox
+#' @importFrom marray maPalette unbox
 #' @return A matrix of the infile
 #' @export
 FemModShow <-
@@ -659,25 +1720,29 @@ FemModShow <-
         ###############add shape to the vertex of igraph
 
         mycircle <- function(coords, v=NULL, params) {
-            vertex.color <- params("vertex", "color")
+            vertex.color <- S4Vectors::params("vertex", "color")
             if (length(vertex.color) != 1 && !is.null(v)) {
                 vertex.color <- vertex.color[v]
             }
-            vertex.size  <- 1/200 * params("vertex", "size")
+            vertex.size  <- 1/200 * S4Vectors::params("vertex", "size")
             if (length(vertex.size) != 1 && !is.null(v)) {
                 vertex.size <- vertex.size[v]
             }
-            vertex.frame.color <- params("vertex", "frame.color")
+            vertex.frame.color <- S4Vectors::params("vertex", "frame.color")
             if (length(vertex.frame.color) != 1 && !is.null(v)) {
                 vertex.frame.color <- vertex.frame.color[v]
             }
-            vertex.frame.width <- params("vertex", "frame.width")
+            vertex.frame.width <- S4Vectors::params("vertex", "frame.width")
             if (length(vertex.frame.width) != 1 && !is.null(v)) {
                 vertex.frame.width <- vertex.frame.width[v]
             }
 
-            mapply(coords[,1], coords[,2], vertex.color, vertex.frame.color,
-                   vertex.size, vertex.frame.width,
+            mapply(coords[,1],
+                   coords[,2],
+                   vertex.color,
+                   vertex.frame.color,
+                   vertex.size,
+                   vertex.frame.width,
                    FUN=function(x, y, bg, fg, size, lwd) {
                        symbols(x=x, y=y, bg=bg, fg=fg, lwd=lwd,
                                circles=size, add=TRUE, inches=FALSE)
@@ -692,15 +1757,15 @@ FemModShow <-
         #realgraph. then subgraph
         #the HAND2 mod
 
-        realgraph=graph.adjacency(adjacency,mode="undirected")
+        realgraph = igraph::graph.adjacency(adjacency,mode="undirected")
 
         #add the values
-        E(realgraph)$weight= edgeweight #give the weight to the edges
+        igraph::E(realgraph)$weight = edgeweight #give the weight to the edges
 
         ############################################################
         # 1 edge width size
 
-        edge.width.v=E(realgraph)$weight
+        edge.width.v = igraph::E(realgraph)$weight
 
         idxbw02=which(edge.width.v<=2 && edge.width.v>0)
         idxbw25=which(edge.width.v>2 && edge.width.v<5)
@@ -717,7 +1782,7 @@ FemModShow <-
         # if the edgewidth is less than 0.25,
         # it's too narrow to see. So fix the them with 0.25
 
-        E(realgraph)$edgewidth=edge.width.v
+        igraph::E(realgraph)$edgewidth=edge.width.v
 
         ##################################################################
         # 2 and 3  transform methylation value to node color, rna expression
@@ -736,28 +1801,28 @@ FemModShow <-
         # "stat(mRNA)"
         # which is useful
         mtval.v=vector()
-        for(i in V(mod.graph)$name){
+        for(i in igraph::V(mod.graph)$name){
             mtval.v=c(mtval.v,(as.vector(mod[i,"stat(DNAm)"])))}
         # add the mtval to the mod graph one by one
         # according to the squence of mod graph name
-        V(mod.graph)$mtval=mtval.v;
+        igraph::V(mod.graph)$mtval=mtval.v;
 
         rtval.v=vector()
-        for(i in V(mod.graph)$name){
+        for(i in igraph::V(mod.graph)$name){
             rtval.v=c(rtval.v,(as.vector(mod[i,"stat(mRNA)"])))}
         # add the
-        V(mod.graph)$rtval=rtval.v;
+        igraph::V(mod.graph)$rtval=rtval.v;
         print(rtval.v)
 
         # add the vm.color, vr.color
-        vm.color=rep(0,length(V(mod.graph)));
-        vr.color=rep(0,length(V(mod.graph)));
+        vm.color=rep(0,length(igraph::V(mod.graph)));
+        vr.color=rep(0,length(igraph::V(mod.graph)));
         # color scheme generate 100 colors
-        tmcolor.scheme<-maPalette(low = "yellow",
+        tmcolor.scheme<-marray::maPalette(low = "yellow",
                                   high ="blue",
                                   mid="grey",
                                   k =100);
-        trcolor.scheme<-maPalette(low = "green",
+        trcolor.scheme<-marray::maPalette(low = "green",
                                   high ="red",
                                   mid="grey",
                                   k =100);
@@ -766,46 +1831,47 @@ FemModShow <-
         #( floor(-1.5/0.04)+51,floor(1.5/0.04)+51)
         #which is [13,88] is grey "#BEBEBE". 1.5 is
         #the thresh hold for the t values
-        tmcolor.scheme[1:12]=maPalette(low = "yellow",
+        tmcolor.scheme[1:12]=marray::maPalette(low = "yellow",
                                        high="lightyellow",
                                        k =12);
-        tmcolor.scheme[89:100]=maPalette(low = "lightblue",
+        tmcolor.scheme[89:100]=marray::maPalette(low = "lightblue",
                                          high="blue",
                                          k =12);
         trcolor.scheme[13:88]="#BEBEBE";
         #[ floor(-1.5/0.04)+51,floor(1.5/0.04)+51]
         #which is [13,88] is grey "#BEBEBE". 1.5 is
         #the thresh hold for the t values
-        trcolor.scheme[1:12]=maPalette(low = "green",
+        trcolor.scheme[1:12]=marray::maPalette(low = "green",
                                        high="lightgreen",
                                        k =12);
-        trcolor.scheme[89:100]=maPalette(low = "#DC6868",
+        trcolor.scheme[89:100]=marray::maPalette(low = "#DC6868",
                                          high="red",
                                          k =12);
         # give the color according the mtval.
         # (-2,2),floor get the integer mod on 0.04 + 51
         # then get the according color.
-        tmcolor.position=floor(as.numeric(V(mod.graph)$mtval)/0.04)+51;
+        tmcolor.position=floor(as.numeric(igraph::V(mod.graph)$mtval)/0.04)+51;
         tmcolor.position[which(tmcolor.position<1)]<-1;
         tmcolor.position[which(tmcolor.position>100)]<-100;
+        igraph::V(mod.graph)$vmcolor<-vm.color
+        ##add the vm.color to the vertex value
         vm.color=tmcolor.scheme[tmcolor.position];
-        V(mod.graph)$vmcolor<-vm.color ##add he vm.color to the vertex value
         print(vm.color)
 
         # add the frame color idea: get the tr color position then get
         # the color from trcolor.scheme
-        trcolor.position=floor(as.numeric(V(mod.graph)$rtval)/0.04)+51;
+        trcolor.position=floor(as.numeric(igraph::V(mod.graph)$rtval)/0.04)+51;
         print(trcolor.position)
         trcolor.position[which(trcolor.position<1)]<-1;
         trcolor.position[which(trcolor.position>100)]<-100;
         vr.color=trcolor.scheme[trcolor.position];
 
-        V(mod.graph)$vrcolor<-vr.color  ## the rna expression color
+        igraph::V(mod.graph)$vrcolor<-vr.color  ## the rna expression color
 
         if(mode=="Exp"){
-            V(mod.graph)$color<-V(mod.graph)$vrcolor;
+            igraph::V(mod.graph)$color<-igraph::V(mod.graph)$vrcolor;
         }else{
-            V(mod.graph)$color<-V(mod.graph)$vmcolor
+            igraph::V(mod.graph)$color<-igraph::V(mod.graph)$vmcolor
             #use the vmcolor as the vertex color but if the mod is Exp
             #them the vertex color is vrcolor
         }
@@ -814,26 +1880,27 @@ FemModShow <-
         #add the mod label value
 
         label.v=vector()
-        for(i in V(mod.graph)$name){
+        for(i in igraph::V(mod.graph)$name){
             label.v=c(label.v,(as.vector(mod[i,"Symbol"])))}
         #add the V(mod.graph)$name's
         #labels one by one from mod["$name","Symbol"]
 
         #####################################################################
         #create subgraph label.cex value
-        V(mod.graph)$label.cex=rep(0.5,length(as.vector(V(mod.graph))));
+        igraph::V(mod.graph)$label.cex=rep(0.5,
+                                      length(as.vector(igraph::V(mod.graph))));
 
         #all the cex first set as 0.7
-        V(mod.graph)$label.cex[which(
-            as.vector(V(mod.graph)$name)==as.vector(mod[1,1]))]=0.8
+        igraph::V(mod.graph)$label.cex[which(
+            as.vector(igraph::V(mod.graph)$name)==as.vector(mod[1,1]))]=0.8
         #only the firt mod name was set as 1
 
         ####################################################################
         #generate the plot
         #when you want to plot the vertex shape,
         #and its frame width first you should load the api script api bellow
-        add.vertex.shape("fcircle",
-                         clip=igraph.shape.noclip,
+        igraph::add.vertex.shape("fcircle",
+                         clip=igraph::igraph.shape.noclip,
                          plot=mycircle,
                          parameters=list(vertex.frame.color=1,
                                          vertex.frame.width=1))
@@ -842,19 +1909,19 @@ FemModShow <-
         if(mode =="Integration"){
 
             plot(mod.graph,
-                 layout=layout.fruchterman.reingold,
+                 layout=igraph::layout.fruchterman.reingold,
                  vertex.shape="fcircle",
-                 vertex.frame.color=V(mod.graph)$vrcolor,
+                 vertex.frame.color=igraph::V(mod.graph)$vrcolor,
                  vertex.frame.width=4,
                  vertex.size=10,
                  vertex.label=label.v,
                  vertex.label.dist=0.6,
-                 vertex.label.cex=V(mod.graph)$label.cex,
+                 vertex.label.cex=igraph::V(mod.graph)$label.cex,
                  vertex.label.font=3,
                  edge.color="grey",
-                 edge.width=E(mod.graph)$edgewidth)
+                 edge.width=igraph::E(mod.graph)$edgewidth)
 
-            colorlegend(trcolor.scheme,
+            shape::colorlegend(trcolor.scheme,
                         seq(-2,2,0.5),
                         ratio.colbar=0.3,
                         xlim=c(-1.55,-1.4),
@@ -862,7 +1929,7 @@ FemModShow <-
                         align="r",
                         cex=0.5)
 
-            colorlegend(tmcolor.scheme,
+            shape::colorlegend(tmcolor.scheme,
                         seq(-2,2,0.5),
                         ratio.colbar=0.3,
                         xlim=c(-1.55,-1.4),
@@ -877,17 +1944,17 @@ FemModShow <-
         else if(mode =="Epi"){
             # if the mode is Epi the frame need not to show
             plot(mod.graph,
-                 layout=layout.fruchterman.reingold,
+                 layout=igraph::layout.fruchterman.reingold,
                  vertex.frame.color=NA,
                  vertex.size=10,
                  vertex.label=label.v,
                  vertex.label.dist=0.6,
-                 vertex.label.cex=V(mod.graph)$label.cex,
+                 vertex.label.cex=igraph::V(mod.graph)$label.cex,
                  vertex.label.font=3,
                  edge.color="grey",
-                 edge.width=E(mod.graph)$edgewidth)
+                 edge.width=igraph::E(mod.graph)$edgewidth)
 
-            colorlegend(tmcolor.scheme,
+            shape::colorlegend(tmcolor.scheme,
                         seq(-2,2,0.5),
                         ratio.colbar=0.3,
                         xlim=c(-1.55,-1.4),
@@ -900,17 +1967,17 @@ FemModShow <-
         else if(mode =="Exp"){
 
             plot(mod.graph,
-                 layout=layout.fruchterman.reingold,
+                 layout=igraph::layout.fruchterman.reingold,
                  vertex.frame.color=NA,
                  vertex.size=10,
                  vertex.label=label.v,
                  vertex.label.dist=0.6,
-                 vertex.label.cex=V(mod.graph)$label.cex,
+                 vertex.label.cex=igraph::V(mod.graph)$label.cex,
                  vertex.label.font=3,
                  edge.color="grey",
-                 edge.width=E(mod.graph)$edgewidth)
+                 edge.width=igraph::E(mod.graph)$edgewidth)
 
-            colorlegend(trcolor.scheme,
+            shape::colorlegend(trcolor.scheme,
                         seq(-2,2,0.5),
                         ratio.colbar=0.3,
                         xlim=c(-1.55,-1.4),
@@ -922,12 +1989,13 @@ FemModShow <-
 
         }
         dev.off()
-        return(igraph.to.graphNEL(mod.graph));
+        return(igraph::igraph.to.graphNEL(mod.graph));
 
 }
 
-#' champ.EpiMod
-#'
+#' @title champ.EpiMod
+#' @description champ.EpiMod functionality
+
 #' BiocManager::install("FEM")
 #' https://rdrr.io/github/gaberosser/ChAMP/src/R/champ.EpiMod.R
 #'

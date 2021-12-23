@@ -22,9 +22,10 @@
 #' @param proj
 #' @param visualize
 #' @param visualize.individual
-#' @param weighted.mean
+#' @param simplify.reduce
 #' @param routine
 #' @param reference
+#' @param reference.name
 #' @param split.by
 #' @param comparison
 #' @param overlap.density
@@ -32,6 +33,14 @@
 #' @param sesame.data.normal
 #' @param sesame.ref.version
 #' @param hm450.workflow
+#' @param hm450.anno.file.path
+#' @param champ.control
+#' @param champ.run.combat
+#' @param champ.run.dmp
+#' @param champ.run.dmr
+#' @param champ.run.block
+#' @param champ.run.gsea
+#' @param champ.run.epimod
 #' @param epi.run.gistic
 #' @param compare.name
 #' @param olaps.split.field
@@ -58,9 +67,10 @@ methyl_master <- function(input.dir            = NULL,
                           proj                 = "TCGA-BLCA",
                           visualize            = FALSE,
                           visualize.individual = FALSE,
-                          weighted.mean        = "normal",
+                          simplify.reduce      = weightedmean,
                           routine              = "test",
                           reference            = NULL,
+                          reference.name       = "all",
                           split.by             = NULL,
                           comparison           = NULL,
                           overlap.density      = 0.1,
@@ -68,6 +78,14 @@ methyl_master <- function(input.dir            = NULL,
                           sesame.data.normal   = 'EPIC.5.normal',
                           sesame.ref.version   = "hg38",
                           hm450.workflow       = "B",
+                          hm450.anno.file.path = NULL,
+                          champ.control        = FALSE,
+                          champ.run.combat     = TRUE,
+                          champ.run.dmp        = TRUE,
+                          champ.run.dmr        = TRUE,
+                          champ.run.block      = TRUE,
+                          champ.run.gsea       = TRUE,
+                          champ.run.epimod     = TRUE,
                           epi.run.gistic       = FALSE,
                           compare.name         = NULL,
                           save.seg             = FALSE,
@@ -223,24 +241,26 @@ hm450 = {
 
 champ = {
 
-  seg <- methyl_master_champ(champ.directory=input.file.dir,
+  seg <- methyl_master_champ(champ.input.dir=input.dir,
+                             champ.sample.sheet = sample.sheet.path,
                              champ.array.type="450K",
                              champ.batch.name=c("batch"),
                              champ.padj=0.05,
                              champ.ncores=n.cores,
-                             champ.control=TRUE,
+                             champ.control=champ.control,
                              champ.control.group="normal",
+                             champ.comparison=comparison,
                              ##champ.contol.group="champCtls"
                              champ.runimpute=TRUE,
                              champ.runQC=TRUE,
                              champ.runnorm=TRUE,
                              champ.runSVD=TRUE,
-                             champ.runCombat=TRUE,
-                             champ.runDMP=TRUE,
-                             champ.runDMR=TRUE,
-                             champ.runBlock=TRUE,
-                             champ.runGSEA=TRUE,
-                             champ.save.seg=save.seg,
+                             champ.runCombat=champ.run.combat,
+                             champ.runDMP=champ.run.dmp,
+                             champ.runDMR=champ.run.dmr,
+                             champ.runBlock=champ.run.block,
+                             champ.runGSEA=champ.run.gsea,
+                             champ.runEpiMod=champ.run.epimod,
                              ...
                              )
 
@@ -254,15 +274,17 @@ champ = {
 
 epicopy = {
 
-  seg <- methyl_master_epicopy(epi.target.dir=input.file.dir,
+  seg <- methyl_master_epicopy(epi.input.dir=input.dir,
                                epi.output.dir=output.dir,
                                epi.single.file=TRUE,
                                epi.single.file.path=sample.sheet.path,
+                               epi.reference.group = reference,
                                epi.run.gistic=epi.run.gistic,
                                epi.comparison=comparison,
                                epi.ncores=n.cores,
+                               epi.split.by=split.by,
                                epi.ref="median",
-                               epi.normals="Sample_Group",
+                               epi.normals=reference.name,
                                epi.samp.names=NULL,
                                epi.qn=FALSE,
                                epi.mode.bw=0.1,
@@ -360,7 +382,10 @@ if(routine=="sesame"){
                                  hm450.form.save.seg=save.seg,
                                  hm450.form.anno.file.path=hm450.anno.file.path)
 }else if(routine=="champ"){
-  seg <- methyl_master_formatting_champ(seg)
+  seg <- methyl_master_formatting_champ(champ.form.seg=seg,
+                                        champ.form.output.dir=output.dir,
+                                        champ.form.save.seg=save.seg,
+                                        champ.form.comparison=comparison)
 }else if(routine=="epi"){
   seg <- methyl_master_formatting_epicopy(seg)
 }else{
