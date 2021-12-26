@@ -34,6 +34,7 @@
 #' @param sesame.ref.version
 #' @param hm450.workflow
 #' @param hm450.anno.file.path
+#' @param champ.padj
 #' @param champ.control
 #' @param champ.run.combat
 #' @param champ.run.dmp
@@ -79,6 +80,7 @@ methyl_master <- function(input.dir            = NULL,
                           sesame.ref.version   = "hg38",
                           hm450.workflow       = "B",
                           hm450.anno.file.path = NULL,
+                          champ.padj           = 0.05,
                           champ.control        = FALSE,
                           champ.run.combat     = TRUE,
                           champ.run.dmp        = TRUE,
@@ -242,10 +244,11 @@ hm450 = {
 champ = {
 
   seg <- methyl_master_champ(champ.input.dir=input.dir,
+                             champ.output.dir=output.dir,
                              champ.sample.sheet = sample.sheet.path,
                              champ.array.type="450K",
                              champ.batch.name=c("batch"),
-                             champ.padj=0.05,
+                             champ.padj=champ.padj,
                              champ.ncores=n.cores,
                              champ.control=champ.control,
                              champ.control.group="normal",
@@ -273,6 +276,10 @@ champ = {
 ##############################################################################
 
 epicopy = {
+
+  if(reference=="internal"){
+    stop("ERROR: epicopy internal .rda object no longer works, built ~ 2016")
+  }
 
   seg <- methyl_master_epicopy(epi.input.dir=input.dir,
                                epi.output.dir=output.dir,
@@ -385,7 +392,8 @@ if(routine=="sesame"){
   seg <- methyl_master_formatting_champ(champ.form.seg=seg,
                                         champ.form.output.dir=output.dir,
                                         champ.form.save.seg=save.seg,
-                                        champ.form.comparison=comparison)
+                                        champ.form.comparison=comparison,
+                                        champ.form.padj=champ.padj)
 }else if(routine=="epi"){
   seg <- methyl_master_formatting_epicopy(seg)
 }else{

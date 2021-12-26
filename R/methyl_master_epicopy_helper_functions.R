@@ -247,9 +247,11 @@ getLRR.mm <- function(rgSet = rgset,
     .Normals <- Normals
     if (Normals == "all") {
       library(EpicopyData)
-      if (!"all.normals" %in% ls(globalenv()))
-        data("allNormals")
+      if (!"all.normals" %in% ls(globalenv())){
+      ##data("allNormals")
+      all.normals <- updateObject(data("allNormals"))
       Normals <- all.normals
+      }
     }
     else if (Normals == "thyroid") {
       library(EpicopyData)

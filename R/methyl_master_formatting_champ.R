@@ -8,6 +8,7 @@
 #' @param champ.form.output.dir
 #' @param champ.form.save.seg
 #' @param champ.form.comparison
+#' @param champ.form.padj
 #' @param ...
 #' @import CNVRanger
 #' @import matter
@@ -18,7 +19,8 @@
 methyl_master_formatting_champ <- function(champ.form.seg=NULL,
                                            champ.form.output.dir=getwd(),
                                            champ.form.save.seg=FALSE,
-                                           champ.form.comparison=NULL
+                                           champ.form.comparison=NULL,
+                                           champ.form.padj=NULL
                                            ){
 
   ##For testing:
@@ -73,7 +75,7 @@ methyl_master_formatting_champ <- function(champ.form.seg=NULL,
 
   seg$seg.median <- NA
   seg$bstat      <- NA
-  seg$pval       <- NA
+  seg$pval       <- champ.form.padj
   seg$state <- round(2^seg$seg.mean * 2)
   seg$state[seg$state > 4] <- 4
   seg$treatment  <- champ.form.comparison[1]

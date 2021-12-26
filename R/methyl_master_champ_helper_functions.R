@@ -400,6 +400,7 @@ champ.process.mm <- function(runload = TRUE,
 #' @param control
 #' @param compare.group
 #' @param arraytype
+#' @import ChAMPdata
 #' @importFrom illuminaio readIDAT unbox
 #' @return Return a list
 #' @export
