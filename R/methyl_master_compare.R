@@ -1,30 +1,45 @@
 #!/usr/bin/env Rscript
 
-##Michael Mariani PhD Dartmouth College 2021
-
-#' @title methyl_naster_compare
+#' @title methyl_master_compare
 #' @description compare results from different routine outputs
-#' @param compare.input.dir = NULL,
-#' @param compare.output.dir = NULL,
-#' @param compare.output.name = NULL,
+#' Michael Mariani PhD Dartmouth College 2021
+#' @param compare.list.files
+#' @param compare.files.in
+#' @param compare.input.dir
+#' @param compare.output.dir
 #' @param ...
 #' @import ggplot2
-#' @importFrom cowplot plotgrid
 #' @import foreach
-#' @import profvis
-#' @return #saves a plot to <output.dir> with <compare.output.name>
+#' @importFrom GenomicRanges GRangesList unbox
+#' @importFrom GenomicRanges makeGRangesFromDataFrame unbox
+#' @importFrom cowplot plotgrid
+#' @importFrom S4Vectors mcols unbox
+#' @importFrom seqsetvis ssvOverlapIntervalSets unbox
+#' @importFrom seqsetvis ssvFeatureUpset unbox
+#' @importFrom rlist list.append unbox
+#' @return #outputs a comparison plot to <compare.output.dir>
 #' @export
-methyl_master_compare <- function(
-                                compare.input.dir = NULL,
-                                compare.output.dir = NULL,
-                                compare.output.name = NULL,
-                                ...
+methyl_master_compare <- function(compare.list.files=FALSE,
+                                  compare.files.in=NULL,
+                                  compare.input.dir=NULL,
+                                  compare.output.dir=NULL,
+                                  ...
 ){
+
+############################# Time-Mem ######################################
+
+if(compare.list.files==TRUE){
+
+files.in <- compare.files.in
+
+}else{
 
 files.in <- list.files(path=compare.input.dir,
                        pattern="time_mem",
                        full.names = TRUE,
                        recursive = TRUE)
+
+}
 
 items <- list()
 foreach(i = files.in) %do% {
@@ -35,7 +50,7 @@ foreach(i = files.in) %do% {
     if(grepl("Total time:",lines,perl=TRUE) |
         grepl("Profmem max output \\(bytes\\):",lines)){
       lines <- readLines(con,n=2)
-      items <- list.append(items,lines)
+      items <- rlist::list.append(items,lines)
     }
   }
   close(con)
@@ -50,24 +65,34 @@ time.mem.df <- data.frame(sample=c("1","2","3","4"),
                           max.mem=max.mem,
                           stringsAsFactors = FALSE)
 
-time.plot <- ggplot(time.mem.df, aes(x=sample,y=time,fill=sample)) +
-         geom_col() +
-         theme_bw() +
-         ylab("Max mem. (MB)") +
-         xlab("Sample")
+time.plot <- ggplot2::ggplot(time.mem.df,
+                             ggplot2::aes(x=sample,y=time,fill=sample)) +
+         ggplot2::geom_col() +
+         ggplot2::theme_bw() +
+         ggplot2::ylab("Max mem. (MB)") +
+         ggplot2::xlab("Sample")
 
-mem.plot <- ggplot(time.mem.df, aes(x=sample,y=max.mem, fill=sample)) +
-         geom_col() +
-         theme_bw() +
-         ylab("Max mem. (MB)") +
-         xlab("Sample")
+mem.plot <- ggplot2::ggplot(time.mem.df,
+                            ggplot2::aes(x=sample,y=max.mem, fill=sample)) +
+         ggplot2::geom_col() +
+         ggplot2::theme_bw() +
+         ggplot2::ylab("Max mem. (MB)") +
+         ggplot2::xlab("Sample")
 
-##Overlaps
+############################# Overlaps #######################################
 
-olaps.in <- list.files(path=compare.input.dir,
-                       pattern="overlaps.csv$",
-                       full.names = TRUE,
-                       recursive = TRUE)
+if(compare.list.files==TRUE){
+
+  olaps.in <- compare.files.in
+
+}else{
+
+  olaps.in <- list.files(path=compare.input.dir,
+                         pattern="overlaps.csv$",
+                         full.names = TRUE,
+                         recursive = TRUE)
+
+}
 
 olaps.df.list <- foreach(i = olaps.in) %do% {
   olaps.df <- read.csv(i,
@@ -78,7 +103,7 @@ olaps.df.list <- foreach(i = olaps.in) %do% {
    olaps.df$chr   <- splitted[c(TRUE,FALSE,FALSE)]
    olaps.df$start <- splitted[c(FALSE,TRUE,FALSE)]
    olaps.df$end   <- splitted[c(FALSE,FALSE,TRUE)]
-   olaps.gr <- makeGRangesFromDataFrame(olaps.df.list[[1]],
+   olaps.gr <- GenomicRanges::makeGRangesFromDataFrame(olaps.df.list[[1]],
                                         keep.extra.columns = TRUE)
    return(olaps.gr)
 
@@ -86,7 +111,7 @@ olaps.df.list <- foreach(i = olaps.in) %do% {
 
 names(olaps.df.list) <- c("sample 1", "sample 2", "sample 3" , "sample 4")
 ##olaps.out <- findOverlaps(olaps.gr.list)
-olaps.gr.list <- GRangesList(olaps.df.list)
+olaps.gr.list <- GenomicRanges::GRangesList(olaps.df.list)
 ssv.out <- S4Vectors::mcols(seqsetvis::ssvOverlapIntervalSets(olaps.gr.list))
 colnames(ssv.out) <- c("sample 1", "sample 2", "sample 3" , "sample 4")
 olaps.plot <- seqsetvis::ssvFeatureUpset(ssv.out)
@@ -105,9 +130,9 @@ final.plot <- cowplot::plot_grid(time.plot,
                                  axis="lr",
                                  rel_widths = c(1,1,10))
 
-ggsave(final.plot,
+ggplot2::ggsave(final.plot,
        filename = paste0(compare.output.dir,
-                         compare.file.sep,
+                         .Platform$file.sep,
                          "sample.comparison.plots.pdf"),
        height=8,
        width=6,

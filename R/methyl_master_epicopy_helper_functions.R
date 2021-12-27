@@ -862,44 +862,51 @@ epicopy.mm <- function(target_dir,
     target_sheet <- target_sheet[target_sheet$Sample_Group %in% comparison,]
   }
 
-  if (!is.null(Normals)) {
-    if (!Normals %in% c("breast", "lung", "thyroid",
-                        "all")) {
-      if (!inherits(Normals, "character"))
-        stop("Normals input not recognized. Please review and see ?epicopy.\n")
+  if (!is.null(Normals) & !is.na(Normals)){
+    if(!Normals %in% c("breast", "lung", "thyroid",
+                        "all")){
+      if(!inherits(Normals, "character")){
+        stop(paste0("Normals input not recognized.
+                    Please review and see ?epicopy.\n"))
+      }
       cat("Looking for normal annotation under",
           Normals, "column in samplesheet.\n")
       normal_index <- tolower(target_sheet[, Normals])
       ##if (!any(normal_index %in% "normal"))
-      if (!any(normal_index %in% comparison[2]))
+      if(!any(normal_index %in% comparison[2])){
         stop("No normal sample found in annotation.\n")
+      }
       ##nnormals <- table(normal_index %in% "normal")["TRUE"]
       nnormals <- table(normal_index %in% comparison[2])["TRUE"]
       cat("Found", nnormals, "normal samples.\n")
       ##Normals <- normal_index %in% "normal"
       Normals <- normal_index %in% comparison[2]
-      if (is.null(normal.cnv))
+      if(is.null(normal.cnv)){
         normal.cnv <- TRUE
+      }
     }
-    else {
-      if (is.null(normal.cnv))
+    else{
+      if(is.null(normal.cnv)){
         normal.cnv <- FALSE
+      }
     }
   }
-  else {
-    if (is.null(normal.cnv))
+  else{
+    if(is.null(normal.cnv)){
       normal.cnv <- FALSE
+    }
   }
 
   platforms <- unique(target_sheet$Platform)
 
+  if(length(unique(platforms))>1){
+
   treatment.platform <- unique(target_sheet[target_sheet$Sample_Group %in%
-                                       comparison[1],"Platform"])
+                                                comparison[1],"Platform"])
 
   control.platform   <- unique(target_sheet[target_sheet$Sample_Group %in%
-                                       comparison[2],"Platform"])
+                                                comparison[2],"Platform"])
 
-  if(length(unique(platforms))>1){
   rgsets <- list()
   foreach(i=1:length(comparison),.combine=rbind, .packages=c("foreach",
                                                               "minfi")) %do% {
@@ -919,7 +926,10 @@ epicopy.mm <- function(target_dir,
                                   verbose=TRUE)
 
     lrr <- getLRR.mm(rgSet = rgset[,rgset$Sample_Group %in% comparison[1]],
-                     Normals = rgset[,rgset$Sample_Group %in% comparison[2]],
+                     ifelse(is.na(Normals),
+                            Normals = NA,
+                            Normals = rgset[,rgset$Sample_Group %in%
+                                              comparison[2]]),
                      sampNames = sampNames,
                      QN = QN,
                      Ref = Ref,
@@ -943,11 +953,16 @@ epicopy.mm <- function(target_dir,
 
   }else{
 
+  control.platform <- unique(target_sheet$Platform)
+
   rgset <- read.metharray.exp(targets = target_sheet,
                               verbose = verbose)
 
-  lrr <- getLRR.mm(rgSet = rgset,
-                Normals = Normals,
+  lrr <- getLRR.mm(rgSet = rgset[,rgset$Sample_Group %in% comparison[1]],
+                   Normals = ifelse(is.na(Normals),
+                                    NA,
+                                    rgset[,rgset$Sample_Group %in%
+                                            comparison[2]]),
                 sampNames = sampNames,
                 QN = QN,
                 Ref = Ref,

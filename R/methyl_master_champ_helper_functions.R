@@ -554,8 +554,10 @@ champ.import.mm <- function(directory = getwd(),
   message("\n  Reading ", arraytype, " Annotation >>")
   ##########################################################################
   if(arraytype == "EPIC"){
+    library(ChAMPdata)
     data(AnnoEPIC)
   }else{
+    library(ChAMPdata)
     data(Anno450K)
   }
   ##########################################################################

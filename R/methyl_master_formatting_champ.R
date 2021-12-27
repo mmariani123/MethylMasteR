@@ -79,7 +79,7 @@ methyl_master_formatting_champ <- function(champ.form.seg=NULL,
   seg$state <- round(2^seg$seg.mean * 2)
   seg$state[seg$state > 4] <- 4
   seg$treatment  <- champ.form.comparison[1]
-  seg$method <- "hm450"
+  seg$method <- "champ"
   seg$sub.method <- NA
   row.names(seg) <- NULL
 
@@ -107,10 +107,10 @@ methyl_master_formatting_champ <- function(champ.form.seg=NULL,
   names(seg.out) <- champ.form.comparison[1]
 
   if(champ.form.save.seg==TRUE){
-    save(seg,
+    save(seg.out,
          file=paste0(champ.form.output.dir,
                      .Platform$file.sep,
-                     "seg.RData"))
+                     "seg.out.RData"))
   }
 
   return(seg.out)

@@ -62,7 +62,7 @@ methyl_master_olaps_and_visualize <- function(ov.seg   = NULL,
                               "loss",
                               "neutral"))
 
-  if(!grepl("chr", seg$chrom, perl=TRUE)){
+  if(!grepl("chr", seg$chrom[1], perl=TRUE)){
     seg$chrom  <- paste0("chr", seg$chrom)
   }
 

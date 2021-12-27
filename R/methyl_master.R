@@ -52,6 +52,8 @@
 #' @param ov.simplify.reduce
 #' @param save.seg
 #' @param create.dir
+#' @param compare.list.files
+#' @param compare.files.in
 #' @param ...
 #' @import CNVRanger
 #' @import matter
@@ -93,11 +95,14 @@ methyl_master <- function(input.dir            = NULL,
                           save.seg             = FALSE,
                           olaps.split.field    = "Sample_ID",
                           estimate.recurrence  = FALSE,
-                          ov.less.stringent.ra.setting = ov.less.stringent.ra.setting,
+                          ov.less.stringent.ra.setting =
+                            ov.less.stringent.ra.setting,
                           ov.pvalue            = ov.pvalue,
                           ov.keep.extra.columns = TRUE,
                           ov.simplify.reduce    = weightedmean,
                           create.dir           = FALSE,
+                          compare.list.files   = FALSE,
+                          compare.files.in     = NULL,
                           ...
                           ){
 
@@ -158,6 +163,18 @@ if(visualize.individual==TRUE){
   }
 }
 
+######################## Check any flags ###########################
+
+if(reference=="internal" &
+   routine=="epicopy" &
+   !is.na(reference.name)){
+  stop(paste0("ERROR: epicopy internal .rda object ",
+              "no longer works, built ~ 2016. ",
+              "must set <reference.name> to NA and epicopy ",
+              "will use median, otherwise set <reference> ",
+              "to 'comparison' etc."))
+}
+
 ######################## Run Pipeline ##############################
 ####################################################################
 ####################################################################
@@ -168,7 +185,8 @@ if(routine!="compare"){
 
 ##profvis.out <- profvis({
 
-profmem.out <- matter::profmem({
+##profmem.out <- matter::profmem({
+peakram.out <- peakRAM::peakRAM({
 
 start.time <- Sys.time()
 
@@ -277,10 +295,6 @@ champ = {
 
 epicopy = {
 
-  if(reference=="internal"){
-    stop("ERROR: epicopy internal .rda object no longer works, built ~ 2016")
-  }
-
   seg <- methyl_master_epicopy(epi.input.dir=input.dir,
                                epi.output.dir=output.dir,
                                epi.single.file=TRUE,
@@ -319,20 +333,26 @@ epicopy = {
 ##start.time <- Sys.time()
 end.time <- Sys.time()
 
-total.time <<- as.character(end.time - start.time)
+##total.time <<- as.character(end.time - start.time)
+total.time <- as.character(end.time - start.time)
 
-}) ##End profmem
+##}) ##End profmem
+
+}) ##End peakRAM
 
 ##}) ##End profvis
 
+##print(profmem.out[3])
 print(total.time)
+print(peakram.out$Peak_RAM_Used_MiB)
 
 writeLines(c("\nTotal time:\n",
              total.time,
              "\nGC output: \n",
              capture.output(gc()),
-             "\nProfmem max output (bytes): \n",
-             profmem.out[3]
+             "\npeakRAM::peakRAM() max output (bytes): \n",
+             peakram.out$Peak_RAM_Used_MiB,
+             "Mebibytes"
              ##{profmem.out$bytes[!is.na(profmem.out$bytes)] %>%
              ##     max()}
              ),
@@ -394,8 +414,11 @@ if(routine=="sesame"){
                                         champ.form.save.seg=save.seg,
                                         champ.form.comparison=comparison,
                                         champ.form.padj=champ.padj)
-}else if(routine=="epi"){
-  seg <- methyl_master_formatting_epicopy(seg)
+}else if(routine=="epicopy"){
+  seg <- methyl_master_formatting_epicopy(epi.form.seg=seg,
+                                          epi.form.output.dir=output.dir,
+                                          epi.form.save.seg=save.seg,
+                                          epi.form.comparison=comparison)
 }else{
   stop(paste0("Error you must select a valid <routine> value"))
 }
@@ -496,9 +519,10 @@ writeLines(capture.output(sessionInfo()),
 
 }else{
 
-  methyl_master_compare(compare.input.dir = NULL,
-                        compare.output.dir = NULL,
-                        compare.output.name = NULL)
+  methyl_master_compare(compare.list.files=compare.list.files,
+                        compare.files.in=compare.files.in,
+                        compare.input.dir=input.dir,
+                        compare.output.dir=output.dir)
 
 }
 

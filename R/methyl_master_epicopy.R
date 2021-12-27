@@ -115,7 +115,7 @@ epicopy_results <- Epicopy::epicopy(target_dir = epi.input.dir,
     dir.create(gistic.output.dir)
   }
     message("Running export_gistic() ...")
-    Epicopy::export_gistic(epicopy_results,
+    Epicopy::export_gistic(epicopy_results[[1]],
                           output_dir = gistic.output.dir,
                           filterbycount = TRUE,
                           min_probes = 50)
