@@ -21,6 +21,7 @@ champ.EpiMod(
 A matrix of the infile
 }
 \description{
+champ.EpiMod functionality
 BiocManager::install("FEM")
 https://rdrr.io/github/gaberosser/ChAMP/src/R/champ.EpiMod.R
 }

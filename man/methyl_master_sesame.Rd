@@ -2,27 +2,29 @@
 % Please edit documentation in R/methyl_master_sesame.R
 \name{methyl_master_sesame}
 \alias{methyl_master_sesame}
-\title{##Methyl MasteR Sesame}
+\title{##methyl_master_Sesame}
 \usage{
 methyl_master_sesame(
-  sesame.idat.files.dir = getwd(),
-  sesame.samples = NULL,
-  sesame.platform = "HM450",
+  sesame.idat.files.dir = NULL,
+  sesame.output.dir = NULL,
+  sesame.ref = NULL,
+  sesame.sample.sheet.path = NULL,
+  sesame.comparison = NULL,
+  sesame.file.sep = NULL,
   sesame.data.cache = "EPIC",
   sesame.data.normal = "EPIC.5.normal",
   sesame.ref.version = "hg38",
-  sesame.calc.betas = FALSE,
-  sesame.infer.sex.karyotypes = FALSE,
-  sesamle.ref = NULL,
-  sesame.output.dir,
   sesame.reference = "internal",
-  sesame.reference.names = c("tumor", "normal"),
-  split.by = NULL,
+  sesame.split.by = NULL,
+  sesame.save.seg = FALSE,
   ...
 )
 }
+\value{
+A seg object for downstream analysis
+}
 \description{
-MethylMasteR SeSAMe run
+MethylMasteR run SeSAMe function
 
 First part:: Very similar to PROCESS SESAME
 command to prepare for segementation

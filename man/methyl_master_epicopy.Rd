@@ -2,55 +2,37 @@
 % Please edit documentation in R/methyl_master_epicopy.R
 \name{methyl_master_epicopy}
 \alias{methyl_master_epicopy}
-\title{MethylMasteR Epicopy() version}
+\title{methyl_master_epicopy}
 \usage{
 methyl_master_epicopy(
-  epi.target.dir = NULL,
-  epi.output.dir = NULL,
-  epi.single.file = TRUE,
-  epi.single.file.path = NULL,
-  epi.comparisons = NULL,
+  epi.input.dir,
+  epi.output.dir,
+  epi.single.file,
+  epi.single.file.path,
+  epic.manifest.path,
+  epi.reference.group,
+  epi.comparison,
+  epi.split.by,
+  epi.ncores,
+  epi.ref,
+  epi.normals,
+  epi.samp.names,
+  epi.qn,
+  epi.mode.bw,
+  epi.mode.method,
+  epi.normal.cnv,
+  epi.mean.center,
+  epi.filter.probes,
+  epi.retained.probes,
+  epi.keepfnobj,
+  epi.fn.output,
   epi.run.gistic = FALSE,
-  epi.ncores = n.cores,
-  epi.ref = "median",
-  epi.less.stringent.ra = FALSE,
-  epi.normals = "Sample_Group",
-  epi.samp.names = NULL,
-  epi.qn = FALSE,
-  epi.mode.bw = 0.1,
-  epi.mode.method = "naive",
-  epi.normal.cnv = TRUE,
-  epi.mean.center = TRUE,
-  epi.filter.probes = FALSE,
-  epi.retained.probes = NULL,
-  epi.keepfnobj = FALSE,
-  epi.fn.output = NULL,
   ...
 )
 }
-\description{
-MethylMasteR Epicopy() version
-
-Lock updated epicopy functions in the environment:
-load(paste0(work.dir,
-file.sep,
-"sesame_rgset_tumor.RData"))
-load(paste0(work.dir,
-file.sep,
-"sesame_rgset_normal.RData"))
-if(use.epi.normal==TRUE){
-rgnormal <- sesame::SigSetsToRGChannelSet(sesame_ssets_normal)
-}else{
-load(paste0(work.dir,
-file.sep,
-"sesame_rgset_normal.RData"))
-rgnormal <- rgset_normal
-rm(rgset_normal)
+\value{
+epicopy results data frame
 }
-Not run:
-Run epicopy on included example TCGA data
-input_loc <- system.file('extdata',
-'raw_idat',
-package = 'Epicopy')
-No output directory, returns only local R object
+\description{
+my modfiied epicopy function for MethylMaster
 }

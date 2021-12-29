@@ -2,7 +2,7 @@
 % Please edit documentation in R/methyl_master_epicopy_helper_functions.R
 \name{.coerce.pData.mm}
 \alias{.coerce.pData.mm}
-\title{This will fix the issue with LRR2}
+\title{.coerce.pData.mm}
 \usage{
 .coerce.pData.mm(pdat)
 }
@@ -10,7 +10,7 @@
 \item{pdat}{Path to the input file}
 }
 \value{
-compatable pData data frame
+compatible pData data frame
 }
 \description{
 This will fix the issue with LRR2

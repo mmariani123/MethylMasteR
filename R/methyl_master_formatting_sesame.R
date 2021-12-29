@@ -20,6 +20,7 @@
 #' @param sesame.form.split.by
 #' @param sesame.form.comparison
 #' @param sesame.form.save.seg
+#' @param sesame.form.plot.individual
 #' @param ...
 #' @import CNVRanger
 #' @import matter
@@ -33,12 +34,24 @@ methyl_master_formatting_sesame <- function(sesame.form.seg,
                                             sesame.form.split.by,
                                             sesame.form.comparison,
                                             sesame.form.save.seg,
+                                            sesame.form.plot.individual,
                                             ...){
 
-if(sesame.form.save.seg==TRUE){
-  save(sesame.form.seg, file =  paste0(sesame.form.output.dir,
-                           .Platform$file.sep,
-                           "seg.RData"))
+##if(sesame.form.save.seg==TRUE){
+##  save(sesame.form.seg, file =  paste0(sesame.form.output.dir,
+##                                       .Platform$file.sep,
+##                                       "seg.RData"))
+##}
+
+if(sesame.form.plot.individual==TRUE){
+
+  for(i in 1:length(sesame.form.seg)){
+    methyl_master_plot_individual(pi.seg = sesame.form.seg[[i]],
+                                  pi.output.dir = sesame.form.output.dir,
+                                  pi.name = as.character(i)
+                                  )
+  }
+
 }
 
 if(sesame.form.reference=="internal"){
@@ -52,25 +65,61 @@ if(sesame.form.reference=="internal"){
       sesame.seg)
 
     sesame_seg_treatment.df <- sesame_seg_treatment.df[
-      sesame_seg_treatment.df$pval <= 0.05,]
+      sesame_seg_treatment.df$pval <= 0.05 &
+        !is.na(sesame_seg_treatment.df$pval),]
 
-    colnames(sesame_seg_treatment.df)[1] <- "Sample_ID"
-    seg <- sesame_seg_treatment.df [,c(1,2,3,4,5,6,10)]
-    seg$state <- round(2^seg$seg.mean * 2)
-    seg$state[seg$state > 4] <- 4
-    seg$method <- "sesame"
-    row.names(seg) <- NULL
-    seg <- na.omit(seg)
+    ##sesame_seg_treatment.df %>% colnames
+    ##"ID"
+    ##"chrom"
+    ##"loc.start"
+    ##"loc.end"
+    ##"num.mark"
+    ##"seg.mean"
+    ##"seg.sd"
+    ##"seg.median"
+    ##"seg.mad"
+    ##"pval"
+    ##"lcl"
+    ##"ucl"
+
+    seg <- sesame_seg_treatment.df
+    rm(sesame_seg_treatment.df)
+
+    colnames(seg)[1] <- "Sample_ID"
+
     seg$chrom <-
       unlist(strsplit(seg$chrom,split="chr"))[c(FALSE,TRUE)]
+
+    seg$bstat      <- NA
+    seg$state <- round(2^seg$seg.mean * 2)
+    seg$state[seg$state > 4] <- 4
+    seg$treatment  <- sesame.form.comparison[1]
+    seg$method <- "sesame"
+    seg$sub.method <- NA
+    row.names(seg) <- NULL
+
+    ##seg <- na.omit(seg) ##Workflow C ends up with some NA rows
+    ##Above will remove rows with ANY NAs present!
+
+    preferred.column.names <- c("Sample_ID",
+                                "chrom",
+                                "loc.start",
+                                "loc.end",
+                                "num.mark",
+                                "bstat",
+                                "seg.mean",
+                                "seg.median",
+                                "pval",
+                                "state",
+                                "treatment",
+                                "method",
+                                "sub.method")
+
+    seg <- seg[,preferred.column.names]
 
     seg.out <- list(seg)
 
     names(seg.out) <- sesame.form.comparison[1]
-
-    ##For sesame we want to omit the "chr"
-    ##from chrom for intial plotting
-    ##then add back in downstream for ggplot
 
   }else{
 
@@ -241,6 +290,13 @@ if(sesame.form.reference=="internal"){
   }
 
 } ##End formating
+
+if(sesame.form.save.seg==TRUE){
+  save(seg.out,
+       file=paste0(sesame.form.output.dir,
+                   .Platform$file.sep,
+                   "seg.out.RData"))
+}
 
 return(seg.out)
 

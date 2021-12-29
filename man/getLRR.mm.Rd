@@ -21,6 +21,9 @@ getLRR.mm(
   ...
 )
 }
+\arguments{
+\item{import}{EpicopyData}
+}
 \value{
 return final LRR values
 }

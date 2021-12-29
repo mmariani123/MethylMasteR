@@ -2,7 +2,7 @@
 % Please edit documentation in R/methyl_master_epicopy_helper_functions.R
 \name{LRRtoCNA.mm}
 \alias{LRRtoCNA.mm}
-\title{Epciopy modified convert log r ratio data to cna calls:}
+\title{LRRtoCNA.mm}
 \usage{
 LRRtoCNA.mm(
   LRR,
@@ -10,6 +10,7 @@ LRRtoCNA.mm(
   ncores = 1L,
   seg.undo.splits = "sdundo",
   seg.undo.SD = 2,
+  epic.manifest.path = getwd(),
   platform = c("hm450", "EPIC"),
   ...
 )
@@ -18,5 +19,5 @@ LRRtoCNA.mm(
 returns segments
 }
 \description{
-Same as LucasLRRtoCNA2 function
+LRRtoCNA.mm
 }

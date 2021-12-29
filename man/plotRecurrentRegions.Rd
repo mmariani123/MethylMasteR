@@ -10,11 +10,13 @@ plotRecurrentRegions(regs, genome, chr, pthresh = 0.05)
 \item{regs}{A \code{\linkS4class{GRanges}}. Typically the result of
 \code{\link{populationRanges}} with \code{est.recur=TRUE}.}
 
-\item{genome}{Character. A valid UCSC genome assembly ID such as 'hg19' or 'bosTau6'.}
+\item{genome}{Character. A valid UCSC genome assembly ID such as 'hg19'
+or 'bosTau6'.}
 
 \item{chr}{Character. A UCSC-style chromosome name such as 'chr1'.}
 
-\item{pthresh}{Numeric. Significance threshold for recurrence. Defaults to 0.05.}
+\item{pthresh}{Numeric. Significance threshold for recurrence. Defaults
+to 0.05.}
 }
 \value{
 None. Plots to a graphics device.

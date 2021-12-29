@@ -46,15 +46,16 @@ methyl_master_olaps_and_visualize <- function(ov.seg   = NULL,
 
   seg <- seg[seg$pval <= ov.pvalue,]
 
-  if(ov.plot.individual==TRUE & ov.routine!="sesame"){
-
-    print("Individual plots only works for sesmae routine currently")
-
-  }else if(ov.plot.individual==TRUE){
-    methyl_master_plot_individual(pi.seg = seg,
-                                pi.output.dir = ov.output.dir,
-                                pi.name = ov.routine)
-  }
+  ##Below has been moved to methyl_master_formatting_sesame
+  ##if(ov.plot.individual==TRUE & ov.routine!="sesame"){
+  ##
+  ##  print("Individual plots only works for sesmae routine currently")
+  ##
+  ##}else if(ov.plot.individual==TRUE){
+  ##  methyl_master_plot_individual(pi.seg = seg,
+  ##                              pi.output.dir = ov.output.dir,
+  ##                              pi.name = ov.routine)
+  ##}
 
   seg$status <- ifelse(seg$state>2,
                        "gain",
@@ -297,8 +298,8 @@ methyl_master_olaps_and_visualize <- function(ov.seg   = NULL,
                             ov.name,
                             "_overlaps.csv"),
               sep=",",
-              col.names=NA,
-              row.names=TRUE,
+              col.names=TRUE,
+              row.names=FALSE,
               quote=FALSE)
 
   write.table(GenomicRanges::as.data.frame(cnvrs.filt),
@@ -309,8 +310,8 @@ methyl_master_olaps_and_visualize <- function(ov.seg   = NULL,
                             ov.name,
                             "_overlaps_filt.csv"),
               sep=",",
-              col.names=NA,
-              row.names=TRUE,
+              col.names=TRUE,
+              row.names=FALSE,
               quote=FALSE)
 
 }

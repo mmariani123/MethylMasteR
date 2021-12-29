@@ -147,21 +147,23 @@ if(create.dir==TRUE){
   }
 }
 
-if(visualize.individual==TRUE){
-  individual.plots.dir=paste0(output.dir,
-                              file.sep,
-                              "individual_plots")
-  if(!dir.exists(individual.plots.dir)){
-    dir.create(individual.plots.dir)
-  }else{
-    print("<individual.plots.dir> exists, overwriting")
-    message("<individual.plots.dir> exists, overwriting")
-    unlink(individual.plots.dir,
-           recursive=TRUE,
-           force=TRUE)
-    dir.create(individual.plots.dir)
-  }
-}
+##Individual plotting functionality has been moved to
+##methyl_master_formatting_sesame for the time being
+##if(visualize.individual==TRUE){
+##  individual.plots.dir=paste0(output.dir,
+##                              file.sep,
+##                              "individual_plots")
+##  if(!dir.exists(individual.plots.dir)){
+##    dir.create(individual.plots.dir)
+##  }else{
+##    print("<individual.plots.dir> exists, overwriting")
+##    message("<individual.plots.dir> exists, overwriting")
+##    unlink(individual.plots.dir,
+##           recursive=TRUE,
+##           force=TRUE)
+##    dir.create(individual.plots.dir)
+##  }
+##}
 
 ######################## Check any flags ###########################
 
@@ -397,6 +399,7 @@ if(routine=="sesame"){
               sesame.form.split.by=split.by,
               sesame.form.comparison=comparison,
               sesame.form.save.seg=save.seg,
+              sesame.form.plot.individual=visualize.individual,
               ...)
 }else if(routine=="hm450"){
   seg <- methyl_master_formatting_hm450(hm450.form.seg=seg,
@@ -490,20 +493,22 @@ mapply(x=seg,y=names(seg),
        ov.plot.individual           = ov.plot.individual1
        )})
 
-if(visualize.individual==TRUE){
-  ##load(paste0(output.dir,.Platform$file.sep,"seg.RData"))
-  mapply(x=seg,y=names(seg),
-         function(x=x,
-                  y=y,
-                  output.dir1=output.dir
-                  ){
-                 methyl_master_plot_individual(
-                   pi.seg=x,
-                   pi.name=y,
-                   pi.output.dir=output.dir1
-                 )})
-
-}##End visualize individual
+##The visualize individual functionality has been moved to
+##methyl_master_formatting_sesame for the time being
+##if(visualize.individual==TRUE){
+##  ##load(paste0(output.dir,.Platform$file.sep,"seg.RData"))
+##  mapply(x=seg,y=names(seg),
+##         function(x=x,
+##                  y=y,
+##                  output.dir1=output.dir
+##                  ){
+##                 methyl_master_plot_individual(
+##                   pi.seg=x,
+##                   pi.name=y,
+##                   pi.output.dir=output.dir1
+##                 )})
+##
+##}##End visualize individual
 
 ##################### Write Session Info #####################################
 

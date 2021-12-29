@@ -2,15 +2,17 @@
 % Please edit documentation in R/methyl_master_epicopy_helper_functions.R
 \name{epicopy.mm}
 \alias{epicopy.mm}
-\title{Modified epicopy function from Epicopy}
+\title{epicopy.mm}
 \usage{
 epicopy.mm(
   target_dir,
   output_dir = NULL,
   single.file = TRUE,
   single.file.path = NULL,
-  comparisons = NULL,
-  reference_group = "normal",
+  epic.manifest.path = getwd(),
+  comparison = NULL,
+  reference_group = "internal",
+  split.by = NULL,
   project_name = NULL,
   Normals = NULL,
   sampNames = NULL,
@@ -34,9 +36,10 @@ epicopy.mm(
 )
 }
 \value{
-return a CNV frame
+return a cna list containing CNV frame(s)
 }
 \description{
+Modified epicopy() function from Epicopy
 I updated the read.metharray.sheet function
 and incorporated it here
 }

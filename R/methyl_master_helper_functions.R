@@ -69,6 +69,10 @@ binding_frames_mm <- function(x){
   for(i in 1:length(names(x))){
     binding.list[[i]] <- x[[i]]$seg.signals
     binding.list[[i]]$ID <- names(x)[i]
+    if(any(is.na(binding.list[[i]]$chrom))){
+      stop(paste0("ERROR one or more entries in the 'chrom' ",
+      "field in the sesame seg output are NA"))
+    }
   }
   seg.out <- do.call(rbind,binding.list)
   return(seg.out)

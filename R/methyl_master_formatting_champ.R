@@ -64,7 +64,9 @@ methyl_master_formatting_champ <- function(champ.form.seg=NULL,
 
   ##seg$chrom <-
   ##  as.integer(unlist(strsplit(seg$chrom,split="chr"))[c(FALSE,TRUE)])
-  seg$chrom <- as.integer(unlist(seg$chrom))
+  ##seg$chrom <- as.integer(unlist(seg$chrom))
+  ##Don't do as.integer() becasue may contain X,Y etc.
+  seg$chrom <- unlist(seg$chrom)
 
   ##"Sample_ID"
   ##"chrom"

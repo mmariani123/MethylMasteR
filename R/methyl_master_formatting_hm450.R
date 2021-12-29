@@ -31,11 +31,13 @@ methyl_master_formatting_hm450 <- function(hm450.form.seg=NULL,
                                   ){
 
 ##load(hm450.anno.file.path)
-##load("G:\\My Drive\\dartmouth\\salas_lab_working\\cnv\\cnv_testing\\probe450kfemanno.rda")
-##load("G:\\My Drive\\dartmouth\\salas_lab_working\\cnv\\cnv_testing\\hm450.manifest.hg38.rda")
+##load("G:\\My Drive\\dartmouth\\salas_lab_working\\cnv
+##\\cnv_testing\\probe450kfemanno.rda")
+##load("G:\\My Drive\\dartmouth\\salas_lab_working\\cnv
+##\\cnv_testing\\hm450.manifest.hg38.rda")
 ##https://www.bioconductor.org/packages/release/BiocViews.html#___IlluminaChip
-annotation1 <- getAnnotation(IlluminaHumanMethylation450kanno.ilmn12.hg19)
-annotation1 <- as.data.frame(annotation1)
+##annotation1 <- getAnnotation(IlluminaHumanMethylation450kanno.ilmn12.hg19)
+##annotation1 <- as.data.frame(annotation1)
 
 if(hm450.form.reference=="internal"){
 
@@ -89,51 +91,89 @@ if(hm450.form.reference=="internal"){
     }else if(hm450.form.workflow=="B"){
 
       candidates_data_treatment_B <- hm450.form.seg[[1]]
+      rm(hm450.form.seg)
+
+      ##colnames(candidates_data_treatment_B)
+      ##"chr"
+      ##"startPos"
+      ##"endPos"
+      ##"median"
+      ##"mean"
+      ##"sd"
+      ##"smp"
+      ##"p.val"
+
+      ##any(is.na=(candidates_data_treatment_B$chr))
+      ##No NA for chr field which is good
+
       candidates_data_treatment_B_sig <-
-        candidates_data_treatment_B[
-          candidates_data_treatment_B$p.val <= 0.05,]
+        candidates_data_treatment_B[candidates_data_treatment_B$p.val <= 0.05,]
+
+      rm(candidates_data_treatment_B)
+
+      colnames(candidates_data_treatment_B_sig)[
+        colnames(candidates_data_treatment_B_sig)=="smp"] <- "Sample_ID"
+
+      colnames(candidates_data_treatment_B_sig)[
+        colnames(candidates_data_treatment_B_sig)=="chr"] <- "chrom"
+
+      candidates_data_treatment_B_sig$chrom <-
+        unlist(strsplit(candidates_data_treatment_B_sig$chrom,
+                        split="chr"))[c(FALSE,TRUE)]
+
+      colnames(candidates_data_treatment_B_sig)[
+        colnames(candidates_data_treatment_B_sig)=="startPos"] <- "loc.start"
+
+      colnames(candidates_data_treatment_B_sig)[
+        colnames(candidates_data_treatment_B_sig)=="endPos"] <- "loc.end"
+
+      colnames(candidates_data_treatment_B_sig)[
+        colnames(candidates_data_treatment_B_sig)=="mean"] <- "seg.mean"
+
+      colnames(candidates_data_treatment_B_sig)[
+        colnames(candidates_data_treatment_B_sig)=="median"] <- "seg.median"
+
+      colnames(candidates_data_treatment_B_sig)[
+        colnames(candidates_data_treatment_B_sig)=="p.val"] <- "pval"
 
       candidates_data_treatment_B_sig$num.mark  <- NA
       candidates_data_treatment_B_sig$bstat     <- NA
+      candidates_data_treatment_B_sig$state <-
+        round(2^candidates_data_treatment_B_sig$seg.mean * 2)
+      candidates_data_treatment_B_sig$state[
+        candidates_data_treatment_B_sig$state > 4] <- 4
       candidates_data_treatment_B_sig$treatment <- hm450.form.comparison[1]
+      candidates_data_treatment_B_sig$method <- "hm450"
+      candidates_data_treatment_B_sig$sub.method <- "B"
+      row.names(candidates_data_treatment_B_sig) <- NULL
+      ##seg <- na.omit(seg) ##Workflow C ends up with some NA rows
 
-      preferred.columns <- c(7,1,2,3,10,9,8,5,4,11)
+      preferred.column.names <- c("Sample_ID",
+                                  "chrom",
+                                  "loc.start",
+                                  "loc.end",
+                                  "num.mark",
+                                  "bstat",
+                                  "seg.mean",
+                                  "seg.median",
+                                  "pval",
+                                  "state",
+                                  "treatment",
+                                  "method",
+                                  "sub.method")
 
       candidates_data_treatment_B_sig <-
-        candidates_data_treatment_B_sig[, preferred.columns]
+        candidates_data_treatment_B_sig[,preferred.column.names]
 
-      candidates_data_normal_B_sig_colnames <- c("Sample_ID",
-                                                 "chrom",
-                                                 "loc.start",
-                                                 "loc.end",
-                                                 "num.mark",
-                                                 "bstat",
-                                                 "pval",
-                                                 "seg.mean",
-                                                 "seg.median",
-                                                 "treatment")
+      seg.out <- list(candidates_data_treatment_B_sig)
 
-      colnames(candidates_data_treatment_B_sig) <-
-        candidates_data_normal_B_sig_colnames
+      names(seg.out) <- hm450.form.comparison[1]
 
-      seg <- candidates_data_treatment_B_sig
-
-      seg$state <- round(2^seg$seg.mean * 2)
-      seg$state[seg$state > 4] <- 4
-      seg$method <- "hm450"
-      row.names(seg) <- NULL
-      ##seg.1 <- na.omit(seg.1) ##Workflow C ends up with some NA rows
-
-      annotation1$probe <- rownames(annotation1)
-
+      ##annotation1$probe <- rownames(annotation1)
       ##seg.1$loc.start
       ##hm450.manifest.hg38$addressA
       ##hm450.manifest.hg38$probeStart
       ##hm450.manifest.hg38$probeEnd
-
-      seg.out <- list(seg)
-
-      names(seg.out) <- hm450.form.comparison[1]
 
     }else if(hm450.form.workflow=="C"){
 
@@ -303,7 +343,7 @@ if(hm450.form.reference=="internal"){
       row.names(seg.1) <- NULL
       ##seg.1 <- na.omit(seg.1) ##Workflow C ends up with some NA rows
 
-      annotation1$probe <- rownames(annotation1)
+      ##annotation1$probe <- rownames(annotation1)
 
       ##seg.1$loc.start
       ##hm450.manifest.hg38$addressA
@@ -374,6 +414,13 @@ if(hm450.form.reference=="internal"){
 
   }
 
+}
+
+if(hm450.form.save.seg==TRUE){
+    save(seg.out,
+         file=paste0(hm450.form.output.dir,
+                     .Platform$file.sep,
+                     "seg.out.RData"))
 }
 
 return(seg.out)
