@@ -37,29 +37,35 @@ methyl_master_plot_individual <- function(pi.seg = NULL,
 
   ##For others willl need to convert to sesame object or recode graph
   ##visualize individual sesame by sample:
-  debug(visualizeSegments.mm)
-  pi.seg <- readRDS(file = paste0("C:\\Users\\Mike\\Desktop\\pi.seg.RDS"))
-  samples <- unique(pi.seg$Sample_ID)
-  sample.now <- pi.seg[pi.seg$Sample_ID==samples[1],]
-  visualizeSegments.mm(sample.now)
+  ##debug(visualizeSegments.mm)
+  ##pi.seg <- readRDS(file = paste0("C:\\Users\\Mike\\Desktop\\pi.seg.RDS"))
+  ##samples <- unique(pi.seg$Sample_ID)
+  ##sample.now <- pi.seg[pi.seg$Sample_ID==samples[1],]
+  ##visualizeSegments.mm(sample.now)
 
+  samples <- names(pi.seg)
   for(i in 1:length(samples)){
 
-    sample.now <- pi.seg[pi.seg$Sample_ID==samples[i],]
-    ##ggplot2::ggsave({sesame::visualizeSegments(pi.seg[[i]]) +
-    ggplot2::ggsave({visualizeSegments.mm(sample.now) +
+    ##sample.now <- pi.seg[pi.seg$Sample_ID==samples[i],]
+    ##ggplot2::ggsave({visualizeSegments.mm(sample.now) +
+
+    ##is(pi.seg[[1]], "CNSegment")
+
+    sample.now <- pi.seg[[samples[i]]]
+    ggplot2::ggsave({sesame::visualizeSegments(sample.now) +
         ggplot2::theme_bw() +
         ggplot2::ylab("Signal") +
+        ggplot2::xlab("Chrom") +
         ggplot2::labs(color="Sesame seg. \nsignal") +
         ggplot2::ggtitle(paste0("Sample ",
-                       sample.now,
+                       samples[i],
                        "\n",
                        pi.name)) +
         ggplot2::theme(axis.text.x = ggplot2::element_text(angle=90),
               plot.title = ggplot2::element_text(hjust=0.5))},
         filename = paste0(individual.plots.dir,
                           .Platform$file.sep,
-                          sample.now,
+                          samples[i],
                           "_",
                           pi.name,
                           "_sesame_plot.pdf"),
