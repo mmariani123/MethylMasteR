@@ -54,6 +54,7 @@
 #' @param create.dir
 #' @param compare.list.files
 #' @param compare.files.in
+#' @param compare.names
 #' @param ...
 #' @import CNVRanger
 #' @import matter
@@ -103,6 +104,7 @@ methyl_master <- function(input.dir            = NULL,
                           create.dir           = FALSE,
                           compare.list.files   = FALSE,
                           compare.files.in     = NULL,
+                          compare.names        = NULL,
                           ...
                           ){
 
@@ -527,7 +529,8 @@ writeLines(capture.output(sessionInfo()),
   methyl_master_compare(compare.list.files=compare.list.files,
                         compare.files.in=compare.files.in,
                         compare.input.dir=input.dir,
-                        compare.output.dir=output.dir)
+                        compare.output.dir=output.dir,
+                        compare.names=compare.names)
 
 }
 
