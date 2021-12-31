@@ -389,7 +389,7 @@ if(sesame.reference=="internal"){
     ##}
 
     ##sesame_seg.treatment.1 %<-%
-      sesame_seg.treatment.1 <-
+    sesame_seg.treatment.1 <-
       foreach(i = 1:length(names(sesame_sset.treatment.1))) %do% {
       sesame::cnSegmentation(sesame_sset.treatment.1[[i]],
                              sesame_sset.control.1,
@@ -408,7 +408,7 @@ if(sesame.reference=="internal"){
 
     seg <- list(sesame_seg.treatment.1, sesame_seg.treatment.2)
 
-    ##load("C:\\Users\\Mike\\Desktop\\cnv_testing\\sesame_normal_sex\\seg.RData")
+  ##load("C:\\Users\\Mike\\Desktop\\cnv_testing\\sesame_normal_sex\\seg.RData")
 
   } ##End split.by
 

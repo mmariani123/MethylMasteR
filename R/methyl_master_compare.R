@@ -8,6 +8,7 @@
 #' @param compare.input.dir
 #' @param compare.output.dir
 #' @param compare.names
+#' @param compare.olaps.size
 #' @param ...
 #' @import ggplot2
 #' @import foreach
@@ -25,6 +26,7 @@ methyl_master_compare <- function(compare.list.files=FALSE,
                                   compare.input.dir=getwd(),
                                   compare.output.dir=getwd(),
                                   compare.names=NULL,
+                                  compare.olaps.size=1,
                                   ...
 ){
 
@@ -73,14 +75,22 @@ time.plot <- ggplot2::ggplot(time.mem.df,
          ggplot2::geom_col() +
          ggplot2::theme_bw() +
          ggplot2::ylab("Time (m)") +
-         ggplot2::xlab("Sample")
+         ggplot2::xlab("Sample") +
+         ggplot2::geom_text(ggplot2::aes(y=time, label=time), vjust=-0.2) +
+         ggplot2::geom_blank(ggplot2::aes(x = sample, y = time*1.1)) +
+  theme(axis.text.x = element_text(angle=90))
 
 mem.plot <- ggplot2::ggplot(time.mem.df,
-                            ggplot2::aes(x=sample,y=max.mem, fill=sample)) +
+                            ggplot2::aes(x=sample,y=as.numeric(max.mem),
+                                         fill=sample)) +
          ggplot2::geom_col() +
          ggplot2::theme_bw() +
          ggplot2::ylab("Max mem. (MiB)") +
-         ggplot2::xlab("Sample")
+         ggplot2::xlab("Sample") +
+  ggplot2::geom_text(ggplot2::aes(y=as.numeric(max.mem),
+                                  label=max.mem), vjust=-0.2) +
+  ggplot2::geom_blank(ggplot2::aes(x = sample, y = as.numeric(max.mem)*1.1)) +
+  theme(axis.text.x = element_text(angle=90))
 
 ############################# Overlaps #######################################
 
@@ -119,9 +129,16 @@ olaps.df.list <- foreach(i = olaps.in) %do% {
 names(olaps.df.list) <- compare.names
 ##olaps.out <- findOverlaps(olaps.gr.list)
 olaps.gr.list <- GenomicRanges::GRangesList(olaps.df.list)
-ssv.out <- S4Vectors::mcols(seqsetvis::ssvOverlapIntervalSets(olaps.gr.list))
+ssv.out <- S4Vectors::mcols(
+  seqsetvis::ssvOverlapIntervalSets(olaps.gr.list,
+                                    minoverlap=compare.olaps.size)
+  )
 colnames(ssv.out) <- compare.names
-olaps.plot <- seqsetvis::ssvFeatureUpset(ssv.out)
+olaps.plot <- seqsetvis::ssvFeatureUpset(ssv.out,
+                                         sets.x.label="Overlap category",
+                                         mainbar.y.label=paste0("Number of ",
+                                         as.character(compare.olaps.size),
+                                         " bp \nCNV overlaps"))
 
 ##findOverlapsOfPeaks(unlist(olaps.gr.list))
 ##findOverlaps(olaps.gr.list)
@@ -135,13 +152,14 @@ final.plot <- cowplot::plot_grid(time.plot,
                                  nrow=3,
                                  align="vh",
                                  axis="lr",
-                                 rel_widths = c(1,1,10))
+                                 rel_widths = c(1,1,10),
+                                 rel_heights = c(1,1,2))
 
 ggplot2::ggsave(final.plot,
        filename = paste0(compare.output.dir,
                          .Platform$file.sep,
                          "sample.comparison.plots.pdf"),
-       height=8,
+       height=12,
        width=6,
        device="pdf")
 

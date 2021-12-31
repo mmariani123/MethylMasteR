@@ -55,6 +55,7 @@
 #' @param compare.list.files
 #' @param compare.files.in
 #' @param compare.names
+#' @param compare.olaps.size
 #' @param ...
 #' @import CNVRanger
 #' @import matter
@@ -105,6 +106,7 @@ methyl_master <- function(input.dir            = NULL,
                           compare.list.files   = FALSE,
                           compare.files.in     = NULL,
                           compare.names        = NULL,
+                          compare.olaps.size   = 1,
                           ...
                           ){
 
@@ -530,7 +532,8 @@ writeLines(capture.output(sessionInfo()),
                         compare.files.in=compare.files.in,
                         compare.input.dir=input.dir,
                         compare.output.dir=output.dir,
-                        compare.names=compare.names)
+                        compare.names=compare.names,
+                        compare.olaps.size=compare.olaps.size)
 
 }
 

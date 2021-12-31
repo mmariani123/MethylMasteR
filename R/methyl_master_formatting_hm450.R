@@ -46,45 +46,67 @@ if(hm450.form.reference=="internal"){
     if(hm450.form.workflow=="A"){
 
       ##sub routine A
-      candidates_data_treatment_A <- hm450.form.seg[[1]]
 
       candidates_data_treatment_A_sig <-
-        candidates_data_treatment_A[
-          candidates_data_treatment_A$p.val <= 0.05,]
+        candidates_data_treatment_A[candidates_data_treatment_B$p.val <= 0.05,]
 
-      candidates_data_treatment_A_sig$num.mark    <- NA
+      rm(candidates_data_treatment_A)
+
+      colnames(candidates_data_treatment_A_sig)[
+        colnames(candidates_data_treatment_A_sig)=="smp"] <- "Sample_ID"
+
+      colnames(candidates_data_treatment_A_sig)[
+        colnames(candidates_data_treatment_A_sig)=="chr"] <- "chrom"
+
+      candidates_data_treatment_A_sig$chrom <-
+        unlist(strsplit(candidates_data_treatment_A_sig$chrom,
+                        split="chr"))[c(FALSE,TRUE)]
+
+      colnames(candidates_data_treatment_A_sig)[
+        colnames(candidates_data_treatment_A_sig)=="startPos"] <- "loc.start"
+
+      colnames(candidates_data_treatment_A_sig)[
+        colnames(candidates_data_treatment_A_sig)=="endPos"] <- "loc.end"
+
+      colnames(candidates_data_treatment_A_sig)[
+        colnames(candidates_data_treatment_A_sig)=="mean"] <- "seg.mean"
+
+      colnames(candidates_data_treatment_A_sig)[
+        colnames(candidates_data_treatment_A_sig)=="median"] <- "seg.median"
+
+      colnames(candidates_data_treatment_A_sig)[
+        colnames(candidates_data_treatment_A_sig)=="p.val"] <- "pval"
+
+      candidates_data_treatment_A_sig$num.mark  <- NA
       candidates_data_treatment_A_sig$bstat     <- NA
+      candidates_data_treatment_A_sig$state <-
+        round(2^candidates_data_treatment_A_sig$seg.mean * 2)
+      candidates_data_treatment_A_sig$state[
+        candidates_data_treatment_A_sig$state > 4] <- 4
       candidates_data_treatment_A_sig$treatment <- hm450.form.comparison[1]
+      candidates_data_treatment_A_sig$method <- "hm450"
+      candidates_data_treatment_A_sig$sub.method <- "A"
+      row.names(candidates_data_treatment_B_sig) <- NULL
+      ##seg <- na.omit(seg) ##Workflow C ends up with some NA rows
 
-      preferred.columns <- c(7,1,2,3,12,13,8,5,4,9,10,11,14)
+      preferred.column.names <- c("Sample_ID",
+                                  "chrom",
+                                  "loc.start",
+                                  "loc.end",
+                                  "num.mark",
+                                  "bstat",
+                                  "seg.mean",
+                                  "seg.median",
+                                  "pval",
+                                  "state",
+                                  "treatment",
+                                  "method",
+                                  "sub.method")
 
       candidates_data_treatment_A_sig <-
-        candidates_data_treatment_A_sig[, preferred.columns]
+        candidates_data_treatment_A_sig[,preferred.column.names]
 
-      candidates_data_treatment_A_sig_colnames <- c("ID",
-                                                    "chrom",
-                                                    "loc.start",
-                                                    "loc.end",
-                                                    "num.mark",
-                                                    "bstat",
-                                                    "pval",
-                                                    "seg.mean",
-                                                    "seg.median",
-                                                    "treatment")
-
-      colnames(candidates_data_treatment_A_sig) <-
-        candidates_data_treatment_A_sig_colnames
-
-      colnames(seg)[1] <- "Sample_ID"
-      seg <- seg[,c(1,2,3,4,5,8,10,11,12,13)]
-      seg$state <- round(2^seg$seg.mean * 2)
-      seg$state[seg$state > 4] <- 4
-      seg$method <- "hm450"
-      seg$sub.method <- hm450.form.sub.workflow
-      row.names(seg) <- NULL
-      seg <- na.omit(seg) ##Workflow C ends up with some NA rows
-
-      seg.out <- list(seg)
+      seg.out <- list(candidates_data_treatment_A_sig)
 
       names(seg.out) <- hm450.form.comparison[1]
 
@@ -178,25 +200,84 @@ if(hm450.form.reference=="internal"){
     }else if(hm450.form.workflow=="C"){
 
       candidates_data_treatment_C <- hm450.form.seg[[1]]
+      rm(hm450.form.seg)
+
+      ##colnames(candidates_data_treatment_B)
+      ##"chr"
+      ##"startPos"
+      ##"endPos"
+      ##"median"
+      ##"mean"
+      ##"sd"
+      ##"smp"
+      ##"p.val"
+
+      ##any(is.na=(candidates_data_treatment_B$chr))
+      ##No NA for chr field which is good
 
       candidates_data_treatment_C_sig <-
-        candidates_data_treatment_C$data[
-          candidates_data_treatment_C$data$pval <= 0.05,]
+        candidates_data_treatment_C[candidates_data_treatment_C$p.val <= 0.05,]
 
-      seg <- candidates_data_treatment_C_sig.1
+      rm(candidates_data_treatment_C)
 
-      seg$treatment <- hm450.form.comparison[1]
+      colnames(candidates_data_treatment_C_sig)[
+        colnames(candidates_data_treatment_C_sig)=="smp"] <- "Sample_ID"
 
-      colnames(seg)[1] <- "Sample_ID"
-      seg <- seg[,c(1,2,3,4,5,8,10,11,12,13)]
-      seg$state <- round(2^seg$seg.mean * 2)
-      seg$state[seg$state > 4] <- 4
-      seg$method <- "hm450"
-      seg$sub.method <- hm450.form.sub.workflow
-      row.names(seg) <- NULL
-      ##seg.1 <- na.omit(seg.1) ##Workflow C ends up with some NA rows
+      colnames(candidates_data_treatment_C_sig)[
+        colnames(candidates_data_treatment_C_sig)=="chr"] <- "chrom"
 
-      seg.out <- list(seg)
+      candidates_data_treatment_C_sig$chrom <-
+        unlist(strsplit(candidates_data_treatment_C_sig$chrom,
+                        split="chr"))[c(FALSE,TRUE)]
+
+      colnames(candidates_data_treatment_C_sig)[
+        colnames(candidates_data_treatment_C_sig)=="startPos"] <- "loc.start"
+
+      colnames(candidates_data_treatment_C_sig)[
+        colnames(candidates_data_treatment_C_sig)=="endPos"] <- "loc.end"
+
+      colnames(candidates_data_treatment_C_sig)[
+        colnames(candidates_data_treatment_C_sig)=="mean"] <- "seg.mean"
+
+      colnames(candidates_data_treatment_C_sig)[
+        colnames(candidates_data_treatment_C_sig)=="median"] <- "seg.median"
+
+      colnames(candidates_data_treatment_C_sig)[
+        colnames(candidates_data_treatment_C_sig)=="p.val"] <- "pval"
+
+      candidates_data_treatment_C_sig$num.mark  <- NA
+      candidates_data_treatment_C_sig$bstat     <- NA
+      candidates_data_treatment_C_sig$state <-
+        round(2^candidates_data_treatment_C_sig$seg.mean * 2)
+      candidates_data_treatment_C_sig$state[
+        candidates_data_treatment_C_sig$state > 4] <- 4
+      candidates_data_treatment_C_sig$treatment <- hm450.form.comparison[1]
+      candidates_data_treatment_C_sig$method <- "hm450"
+      candidates_data_treatment_C_sig$sub.method <- "B"
+      row.names(candidates_data_treatment_C_sig) <- NULL
+
+      candidates_data_treatment_C_sig <-
+      na.omit(candidates_data_treatment_C_sig)
+      ##Workflow C ends up with some NA rows
+
+      preferred.column.names <- c("Sample_ID",
+                                  "chrom",
+                                  "loc.start",
+                                  "loc.end",
+                                  "num.mark",
+                                  "bstat",
+                                  "seg.mean",
+                                  "seg.median",
+                                  "pval",
+                                  "state",
+                                  "treatment",
+                                  "method",
+                                  "sub.method")
+
+      candidates_data_treatment_C_sig <-
+        candidates_data_treatment_C_sig[,preferred.column.names]
+
+      seg.out <- list(candidates_data_treatment_C_sig)
 
       names(seg.out) <- hm450.form.comparison[1]
 
