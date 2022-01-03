@@ -418,12 +418,16 @@ if(routine=="sesame"){
 }else if(routine=="champ"){
   seg <- methyl_master_formatting_champ(champ.form.seg=seg,
                                         champ.form.output.dir=output.dir,
+                                        champ.form.reference=reference,
+                                        champ.form.split.by=split.by,
                                         champ.form.save.seg=save.seg,
                                         champ.form.comparison=comparison,
                                         champ.form.padj=champ.padj)
 }else if(routine=="epicopy"){
   seg <- methyl_master_formatting_epicopy(epi.form.seg=seg,
                                           epi.form.output.dir=output.dir,
+                                          epi.form.reference=reference,
+                                          epi.form.split.by=split.by,
                                           epi.form.save.seg=save.seg,
                                           epi.form.comparison=comparison)
 }else{
