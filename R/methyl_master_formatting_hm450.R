@@ -46,9 +46,11 @@ if(hm450.form.reference=="internal"){
     if(hm450.form.workflow=="A"){
 
       ##sub routine A
+      candidates_data_treatment_A <- hm450.form.seg[[1]]
+      rm(hm450.form.seg)
 
       candidates_data_treatment_A_sig <-
-        candidates_data_treatment_A[candidates_data_treatment_B$p.val <= 0.05,]
+        candidates_data_treatment_A[candidates_data_treatment_A$p.val <= 0.05,]
 
       rm(candidates_data_treatment_A)
 
@@ -86,7 +88,7 @@ if(hm450.form.reference=="internal"){
       candidates_data_treatment_A_sig$treatment <- hm450.form.comparison[1]
       candidates_data_treatment_A_sig$method <- "hm450"
       candidates_data_treatment_A_sig$sub.method <- "A"
-      row.names(candidates_data_treatment_B_sig) <- NULL
+      row.names(candidates_data_treatment_A_sig) <- NULL
       ##seg <- na.omit(seg) ##Workflow C ends up with some NA rows
 
       preferred.column.names <- c("Sample_ID",
@@ -281,13 +283,13 @@ if(hm450.form.reference=="internal"){
 
       names(seg.out) <- hm450.form.comparison[1]
 
-    }else{
+      }else{
 
-      stop(paste0("Error: need to select a ",
+        stop(paste0("Error: need to select a ",
                   "proper sub workflow for 450k",
                   " <hm450.form.workflow>"))
 
-    }
+      }
 
   }else{
 
@@ -463,8 +465,8 @@ if(hm450.form.reference=="internal"){
       colnames(candidates_data_treatment_B_sig.2)[
         colnames(candidates_data_treatment_B_sig.2)=="p.val"] <- "pval"
 
-      candidates_data_treatment_B_sig.1$num.mark  <- NB
-      candidates_data_treatment_B_sig.1$bstat     <- NB
+      candidates_data_treatment_B_sig.1$num.mark  <- NA
+      candidates_data_treatment_B_sig.1$bstat     <- NA
       candidates_data_treatment_B_sig.1$state <-
         round(2^candidates_data_treatment_B_sig.1$seg.mean * 2)
       candidates_data_treatment_B_sig.1$state[
@@ -475,10 +477,10 @@ if(hm450.form.reference=="internal"){
       row.names(candidates_data_treatment_B_sig.1) <- NULL
       ##candidates_data_treatment_C_sig <-
       ##  na.omit(candidates_data_treatment_C_sig)
-      ##Workflow C ends up with some NB rows
+      ##Workflow C ends up with some NA rows
 
-      candidates_data_treatment_B_sig.2$num.mark  <- NB
-      candidates_data_treatment_B_sig.2$bstat     <- NB
+      candidates_data_treatment_B_sig.2$num.mark  <- NA
+      candidates_data_treatment_B_sig.2$bstat     <- NA
       candidates_data_treatment_B_sig.2$state <-
         round(2^candidates_data_treatment_B_sig.2$seg.mean * 2)
       candidates_data_treatment_B_sig.2$state[
@@ -489,7 +491,7 @@ if(hm450.form.reference=="internal"){
       row.names(candidates_data_treatment_B_sig.2) <- NULL
       ##candidates_data_treatment_C_sig <-
       ##  na.omit(candidates_data_treatment_C_sig)
-      ##Workflow C ends up with some NB rows
+      ##Workflow C ends up with some NA rows
 
 
       preferred.column.names <- c("Sample_ID",
@@ -576,8 +578,8 @@ if(hm450.form.reference=="internal"){
       colnames(candidates_data_treatment_C_sig.2)[
         colnames(candidates_data_treatment_C_sig.2)=="p.val"] <- "pval"
 
-      candidates_data_treatment_C_sig.1$num.mark  <- NC
-      candidates_data_treatment_C_sig.1$bstat     <- NC
+      candidates_data_treatment_C_sig.1$num.mark  <- NA
+      candidates_data_treatment_C_sig.1$bstat     <- NA
       candidates_data_treatment_C_sig.1$state <-
         round(2^candidates_data_treatment_C_sig.1$seg.mean * 2)
       candidates_data_treatment_C_sig.1$state[
@@ -588,10 +590,10 @@ if(hm450.form.reference=="internal"){
       row.names(candidates_data_treatment_C_sig.1) <- NULL
       candidates_data_treatment_C_sig <-
         na.omit(candidates_data_treatment_C_sig)
-      ##Workflow C ends up with some NC rows
+      ##Workflow C ends up with some NA rows
 
-      candidates_data_treatment_C_sig.2$num.mark  <- NC
-      candidates_data_treatment_C_sig.2$bstat     <- NC
+      candidates_data_treatment_C_sig.2$num.mark  <- NA
+      candidates_data_treatment_C_sig.2$bstat     <- NA
       candidates_data_treatment_C_sig.2$state <-
         round(2^candidates_data_treatment_C_sig.2$seg.mean * 2)
       candidates_data_treatment_C_sig.2$state[
@@ -602,7 +604,7 @@ if(hm450.form.reference=="internal"){
       row.names(candidates_data_treatment_C_sig.2) <- NULL
       candidates_data_treatment_C_sig <-
         na.omit(candidates_data_treatment_C_sig)
-      ##Workflow C ends up with some NC rows
+      ##Workflow C ends up with some NA rows
 
       preferred.column.names <- c("Sample_ID",
                                   "chrom",
@@ -628,6 +630,14 @@ if(hm450.form.reference=="internal"){
 
       names(seg.out) <- c(paste0(hm450.form.comparison[1],"_1"),
                           paste0(hm450.form.comparison[1],"_2"))
+
+      }else{
+
+        stop(paste0("Error: need to select a ",
+                    "proper sub workflow for 450k",
+                    " <hm450.form.workflow>"))
+
+      }
   }
 
 }else{
@@ -844,7 +854,7 @@ if(hm450.form.reference=="internal"){
         candidates_data_treatment_C_sig$state > 4] <- 4
       candidates_data_treatment_C_sig$treatment <- hm450.form.comparison[1]
       candidates_data_treatment_C_sig$method <- "hm450"
-      candidates_data_treatment_C_sig$sub.method <- "B"
+      candidates_data_treatment_C_sig$sub.method <- "C"
       row.names(candidates_data_treatment_C_sig) <- NULL
 
       candidates_data_treatment_C_sig <-
@@ -1054,8 +1064,8 @@ if(hm450.form.reference=="internal"){
       colnames(candidates_data_treatment_B_sig.2)[
         colnames(candidates_data_treatment_B_sig.2)=="p.val"] <- "pval"
 
-      candidates_data_treatment_B_sig.1$num.mark  <- NB
-      candidates_data_treatment_B_sig.1$bstat     <- NB
+      candidates_data_treatment_B_sig.1$num.mark  <- NA
+      candidates_data_treatment_B_sig.1$bstat     <- NA
       candidates_data_treatment_B_sig.1$state <-
         round(2^candidates_data_treatment_B_sig.1$seg.mean * 2)
       candidates_data_treatment_B_sig.1$state[
@@ -1066,10 +1076,10 @@ if(hm450.form.reference=="internal"){
       row.names(candidates_data_treatment_B_sig.1) <- NULL
       ##candidates_data_treatment_C_sig <-
       ##  na.omit(candidates_data_treatment_C_sig)
-      ##Workflow C ends up with some NB rows
+      ##Workflow C ends up with some NA rows
 
-      candidates_data_treatment_B_sig.2$num.mark  <- NB
-      candidates_data_treatment_B_sig.2$bstat     <- NB
+      candidates_data_treatment_B_sig.2$num.mark  <- NA
+      candidates_data_treatment_B_sig.2$bstat     <- NA
       candidates_data_treatment_B_sig.2$state <-
         round(2^candidates_data_treatment_B_sig.2$seg.mean * 2)
       candidates_data_treatment_B_sig.2$state[
@@ -1080,7 +1090,7 @@ if(hm450.form.reference=="internal"){
       row.names(candidates_data_treatment_B_sig.2) <- NULL
       ##candidates_data_treatment_C_sig <-
       ##  na.omit(candidates_data_treatment_C_sig)
-      ##Workflow C ends up with some NB rows
+      ##Workflow C ends up with some NA rows
 
 
       preferred.column.names <- c("Sample_ID",
@@ -1167,8 +1177,8 @@ if(hm450.form.reference=="internal"){
       colnames(candidates_data_treatment_C_sig.2)[
         colnames(candidates_data_treatment_C_sig.2)=="p.val"] <- "pval"
 
-      candidates_data_treatment_C_sig.1$num.mark  <- NC
-      candidates_data_treatment_C_sig.1$bstat     <- NC
+      candidates_data_treatment_C_sig.1$num.mark  <- NA
+      candidates_data_treatment_C_sig.1$bstat     <- NA
       candidates_data_treatment_C_sig.1$state <-
         round(2^candidates_data_treatment_C_sig.1$seg.mean * 2)
       candidates_data_treatment_C_sig.1$state[
@@ -1179,10 +1189,10 @@ if(hm450.form.reference=="internal"){
       row.names(candidates_data_treatment_C_sig.1) <- NULL
       candidates_data_treatment_C_sig <-
         na.omit(candidates_data_treatment_C_sig)
-      ##Workflow C ends up with some NC rows
+      ##Workflow C ends up with some NA rows
 
-      candidates_data_treatment_C_sig.2$num.mark  <- NC
-      candidates_data_treatment_C_sig.2$bstat     <- NC
+      candidates_data_treatment_C_sig.2$num.mark  <- NA
+      candidates_data_treatment_C_sig.2$bstat     <- NA
       candidates_data_treatment_C_sig.2$state <-
         round(2^candidates_data_treatment_C_sig.2$seg.mean * 2)
       candidates_data_treatment_C_sig.2$state[
@@ -1193,7 +1203,7 @@ if(hm450.form.reference=="internal"){
       row.names(candidates_data_treatment_C_sig.2) <- NULL
       candidates_data_treatment_C_sig <-
         na.omit(candidates_data_treatment_C_sig)
-      ##Workflow C ends up with some NC rows
+      ##Workflow C ends up with some NA rows
 
 
       preferred.column.names <- c("Sample_ID",
@@ -1220,6 +1230,14 @@ if(hm450.form.reference=="internal"){
 
       names(seg.out) <- c(paste0(hm450.form.comparison[1],"_1"),
                           paste0(hm450.form.comparison[1],"_2"))
+
+      }else{
+
+        stop(paste0("Error: need to select a ",
+                    "proper sub workflow for 450k",
+                    " <hm450.form.workflow>"))
+
+      }
 
   }
 

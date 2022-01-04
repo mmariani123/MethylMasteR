@@ -202,23 +202,37 @@ methyl_master_hm450 <- function(hm450.input.dir=NULL,
       proc_treatment_C <- hm450_cn_methylset.treatment
       rm(hm450_cn_methylset.treatment)
 
-      ##What was I doing with shared names here:
-      ##proc_treatment_sorted_C.1 <-
-      ##  proc_treatment_sorted_C.1[female_shared_names,]
-      ##proc_treatment_sorted_C.2 <-
-      ##  proc_treatment_sorted_C.2[female_shared_names,]
-      ##proc_control_sorted_C.1   <-
-      ##  proc_control_sorted_C.1[male_shared_names,]
-      ##proc_control_sorted_C.2   <-
-      ##  proc_control_sorted_C.2[male_shared_names,]
+      ##Beware of getting the following error:
+      ##Beware of error:
+      ##Error in cnAnalysis450k::runConumee(proc_treatment_C,
+      ##                                    proc_control_C) :
+      ##  CpG probe IDs not in the same order in data and ctrl!
+
+      ##proc_treatment_sorted_C <-
+      ##  proc_treatment_sorted_C[female_shared_names,]
+      ##proc_control_sorted_C   <-
+      ##  proc_control_sorted_C[male_shared_names,]
 
       ####################### RUN CONUMEE ##############################
 
+      proc_treatment_C_ordered <-
+        proc_control_C[order(rownames(proc_treatment_C)),]
+
+      proc_control_C_ordered <-
+        proc_control_C[rownames(proc_control_C) %in%
+                                   rownames(proc_treatment_C_ordered),]
+      proc_control_C_ordered <-
+        proc_control_C[rownames(proc_treatment_C_ordered),]
+
+      require(IlluminaHumanMethylation450kanno.ilmn12.hg19)
+      require(IlluminaHumanMethylationEPICanno.ilm10b2.hg19)
+
       candidates_data_treatment_C <-
-        cnAnalysis450k::runConumee(proc_treatment_C,
-                                   proc_control_C
+        cnAnalysis450k::runConumee(proc_treatment_C_ordered,
+                                   proc_control_C_ordered,
                                    ##proc_treatment_sorted_C.2,
-                                   ##proc_control_sorted_C.2
+                                   ##proc_control_sorted_C.2,
+                                   what="segments"
         )
 
       candidates_data_treatment_C <-

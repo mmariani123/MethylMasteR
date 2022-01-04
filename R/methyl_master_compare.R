@@ -44,6 +44,8 @@ files.in <- list.files(path=compare.input.dir,
                        full.names = TRUE,
                        recursive = TRUE)
 
+compare.names <- gsub(".*/","",dirname(files.in))
+
 }
 
 items <- list()
@@ -122,11 +124,14 @@ olaps.df.list <- foreach(i = olaps.in) %do% {
 
   olaps.gr <- GenomicRanges::makeGRangesFromDataFrame(olaps.df,
                                                       keep.extra.columns = TRUE)
-  return(olaps.gr)
+
+  if(nrow(olaps.gr!=0)){
+    name(olaps.gr) <- compare.names[i]
+    return(olaps.gr)
+  }
 
 }
 
-names(olaps.df.list) <- compare.names
 ##olaps.out <- findOverlaps(olaps.gr.list)
 olaps.gr.list <- GenomicRanges::GRangesList(olaps.df.list)
 ssv.out <- S4Vectors::mcols(
