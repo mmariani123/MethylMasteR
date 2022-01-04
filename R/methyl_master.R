@@ -34,6 +34,7 @@
 #' @param sesame.ref.version
 #' @param hm450.workflow
 #' @param hm450.anno.file.path
+#' @param hm450.run.mean.correct
 #' @param champ.padj
 #' @param champ.control
 #' @param champ.run.combat
@@ -84,6 +85,7 @@ methyl_master <- function(input.dir            = NULL,
                           sesame.ref.version   = "hg38",
                           hm450.workflow       = "B",
                           hm450.anno.file.path = NULL,
+                          hm450.run.mean.correct = FALSE,
                           champ.padj           = 0.05,
                           champ.control        = FALSE,
                           champ.run.combat     = TRUE,
@@ -255,6 +257,7 @@ hm450 = {
                              hm450.sesame.data.normal = 'EPIC.5.normal',
                              hm450.sesame.ref.version = "hg38",
                              hm.450.save.seg          = save.seg,
+                             hm450.run.mean.correct   = hm450.run.mean.correct,
                              ...)
 
 }, ##End K450
