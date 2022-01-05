@@ -44,7 +44,8 @@ findSegments2 <-
       anno <- cnAnalysis450k::getAnnoData(arrayType)
     }
     annoSorted <- anno[order(anno$chr, anno$pos), ]
-    annoSorted <- annoSorted[which(rownames(annoSorted) %in% rownames(ctrlAll)),]
+    annoSorted <- annoSorted[which(rownames(annoSorted) %in%
+                                     rownames(ctrlAll)),]
 
     # Get cg Borders of Chromosomes
     chrs <- paste("chr", c(1:22, "X", "Y"), sep = "")

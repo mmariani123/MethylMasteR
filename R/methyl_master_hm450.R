@@ -16,7 +16,6 @@
 #' @param hm450.sesame.data.normal
 #' @param hm450.sesame.ref.version
 #' @param hm450.save.seg
-#' @param hm450.run.mean.correct
 #' @param ...
 #' @import data.table
 #' @import Biobase
@@ -40,7 +39,6 @@ methyl_master_hm450 <- function(hm450.input.dir=NULL,
                                 hm450.sesame.data.normal="EPIC.5.normal",
                                 hm450.sesame.ref.version="hg38",
                                 hm450.save.seg=FALSE,
-                                hm450.run.mean.correct=FALSE,
                                 ...
                                 ){
 
@@ -184,113 +182,6 @@ methyl_master_hm450 <- function(hm450.input.dir=NULL,
       candidates_data_treatment_B <-
         reformat_hm450(candidates_data_treatment_B, annotation1)
 
-      ##colnames(candidates_data_treatment_B)
-      ##"chr"
-      ##"startPos"
-      ##"endPos"
-      ##"median"
-      ##"mean"
-      ##"sd"
-      ##"smp"
-      ##"p.val"
-
-      if(hm450.run.mean.correct==TRUE){
-
-      ##ReadData {CopyNumber450kCancer}	R Documentation
-      ##Function Reads the Data (i.e. regions file and
-        ##sample list file) for CopyNumber450kCancer
-      ##Description
-      ##The input should be two files regions file and
-        ##sample list file.
-      ##regions file: contains the data for all the
-        ##regions/segments in all the sample
-      ##sample list file: contains the number of the samples,
-        ##the names of the samples and user comment.
-
-      ##The header of the segments/regions file should
-        ##be in this order and with these names:
-      ##"Sample", "Chromosome", "bp.Start", "bp.End",
-        ##"Num.of.Markers", "Mean".
-      ##The segments file should have all the samples
-        ##in one file Be carful for the dots and it is
-        ##case sensitive.
-
-      ##Sample	Sample name
-      ##Chromosome	Chromosome number chr1, chr2,
-        ##....., chrX, chrY
-      ##bp.Start	number, start point for the segment
-      ##bp.End	end point for the segment
-      ##Num.of.Markers	Number of the probes or
-        ##markers in the segment
-      ##Mean	is the log value for the segment
-        ##(the mean of the log values for all the
-        ##probes in the segment, it is the same
-        ##value that is used in CopyNumber450k package)
-      ##The header of the sample list file should be
-        ##in this order and with these names: To check
-        ##if the header of the sample list file is ok
-        ##"Number", "Sample", "Comment"
-      ##Be carful it is case sensitive.
-
-      ##Number	is the number of the sample 1,2,3,....
-      ##Sample	the name of the samples
-      ##Comment	any comment the user want to see
-        ##in the reviewing step and in the QC file,
-        ##(ex. karyotyping)
-      ##Usage
-      ##ReadData(regions_file,
-        ##Sample_list,
-        ##copynumber450k = FALSE)
-      ##Arguments
-      ##regions_file
-      ##The segmentaion file (CSV file)
-
-      ##Sample_list
-      ##The CSV file that contains the names of the samples
-        ##and the user comments
-
-      ##copynumber450k
-      ##True if the file is the output of copynumber450k,
-        ##defualt is FALSE.
-
-      ##Examples
-        ##example
-        ##the package contains example files:
-        ##regions.csv and sample_list.csv
-        #to load the example regions.csv
-        ##and sample_list.csv files
-        ##regions <- system.file("extdata",
-        ##"regions.csv",
-        ##package="CopyNumber450kCancer")
-        ##sample_list <- system.file("extdata",
-        ##"sample_list.csv",
-        ##package="CopyNumber450kCancer")
-
-        ##Create the object for the package
-        ##object <- ReadData(regions,sample_list)
-
-        ##Baseline autocorrection,
-        ##this will creat different plot and QC
-        ##and new regions file in the working directory
-        ##object <- AutoCorrectPeak(object)
-
-        ##For manual revision and manual baseline
-        ##determination
-        ##object <- ReviewPlot(object)
-
-        ##To plot the final plots
-        ##PlotCNV(object) ## to plot all the samples
-        ##PlotCNV(object,
-        ##select= c(1,4),
-        ##comment=FALSE,
-        ##cutoff=0.1,
-        ##markers=20) ## to plot some samples
-
-        candidates_data_treatment_B <-
-          CopyNumber450kCancer::AutoCorrectPeak(candidates_data_treatment_B)
-
-      }
-
       ## candidates_data_treatment_B.2$start <-
       ##  annotation1[candidates_data_treatment_B.2$startCG %in%
       ##                annotation$Name, annotation1$startPos]
@@ -347,7 +238,7 @@ methyl_master_hm450 <- function(hm450.input.dir=NULL,
       candidates_data_treatment_C <-
         reformat_hm450(candidates_data_treatment_C, annotation1)
 
-      seg <- list(candidates_data_treatment_C.1)
+      seg <- list(candidates_data_treatment_C)
 
     } ##End hm450 workflow
 

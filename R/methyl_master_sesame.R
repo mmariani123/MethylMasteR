@@ -20,6 +20,7 @@
 #' @param sesame.reference
 #' @param sesame.split.by
 #' @param sesame.save.seg
+#' @param sesame.hm450.mean.correct
 #' @param ...
 #' @import data.table
 #' @import dplyr
@@ -42,6 +43,7 @@ methyl_master_sesame <- function(sesame.idat.files.dir       = NULL,
                                  sesame.reference            = "internal",
                                  sesame.split.by             = NULL,
                                  sesame.save.seg             = FALSE,
+                                 sesame.hm450.mean.correct = FALSE,
                                  ...
                       ){
 
@@ -99,6 +101,182 @@ if(sesame.reference=="internal"){
                             refversion = sesame.ref.version)
     }
     names(sesame_seg) <- names(sesame_sset)
+
+    ##colnames(sesame_seg)
+    ##"chr"
+    ##"startPos"
+    ##"endPos"
+    ##"median"
+    ##"mean"
+    ##"sd"
+    ##"smp"
+    ##"p.val"
+
+    if(sesame.hm450.mean.correct==TRUE){
+
+      ##ReadData {CopyNumber450kCancer}	R Documentation
+      ##Function Reads the Data (i.e. regions file and
+      ##sample list file) for CopyNumber450kCancer
+      ##Description
+      ##The input should be two files regions file and
+      ##sample list file.
+      ##regions file: contains the data for all the
+      ##regions/segments in all the sample
+      ##sample list file: contains the number of the samples,
+      ##the names of the samples and user comment.
+
+      ##The header of the segments/regions file should
+      ##be in this order and with these names:
+      ##"Sample", "Chromosome", "bp.Start", "bp.End",
+      ##"Num.of.Markers", "Mean".
+      ##The segments file should have all the samples
+      ##in one file Be carful for the dots and it is
+      ##case sensitive.
+
+      ##Sample	Sample name
+      ##Chromosome	Chromosome number chr1, chr2,
+      ##....., chrX, chrY
+      ##bp.Start	number, start point for the segment
+      ##bp.End	end point for the segment
+      ##Num.of.Markers	Number of the probes or
+      ##markers in the segment
+      ##Mean	is the log value for the segment
+      ##(the mean of the log values for all the
+      ##probes in the segment, it is the same
+      ##value that is used in CopyNumber450k package)
+      ##The header of the sample list file should be
+      ##in this order and with these names: To check
+      ##if the header of the sample list file is ok
+      ##"Number", "Sample", "Comment"
+      ##Be carful it is case sensitive.
+
+      ##Number	is the number of the sample 1,2,3,....
+      ##Sample	the name of the samples
+      ##Comment	any comment the user want to see
+      ##in the reviewing step and in the QC file,
+      ##(ex. karyotyping)
+      ##Usage
+      ##ReadData(regions_file,
+      ##Sample_list,
+      ##copynumber450k = FALSE)
+      ##Arguments
+      ##regions_file
+      ##The segmentaion file (CSV file)
+
+      ##Sample_list
+      ##The CSV file that contains the names of the samples
+      ##and the user comments
+
+      ##copynumber450k
+      ##True if the file is the output of copynumber450k,
+      ##defualt is FALSE.
+
+      ##Examples
+      ##example
+      ##the package contains example files:
+      ##regions.csv and sample_list.csv
+      #to load the example regions.csv
+      ##and sample_list.csv files
+      ##regions <- system.file("extdata",
+      ##"regions.csv",
+      ##package="CopyNumber450kCancer")
+      ##sample_list <- system.file("extdata",
+      ##"sample_list.csv",
+      ##package="CopyNumber450kCancer")
+
+      ##Create the object for the package
+      ##object <- ReadData(regions,sample_list)
+
+      ##Baseline autocorrection,
+      ##this will creat different plot and QC
+      ##and new regions file in the working directory
+      ##object <- AutoCorrectPeak(object)
+
+      ##For manual revision and manual baseline
+      ##determination
+      ##object <- ReviewPlot(object)
+
+      ##To plot the final plots
+      ##PlotCNV(object) ## to plot all the samples
+      ##PlotCNV(object,
+      ##select= c(1,4),
+      ##comment=FALSE,
+      ##cutoff=0.1,
+      ##markers=20) ## to plot some samples
+
+for(i in 1:length(names(sesame_seg))){
+
+  signals.now <- sesame_seg[[i]]$seg.signals
+
+  ##"ID"
+  ##"chrom"
+  ##"loc.start"
+  ##"loc.end"
+  ##"num.mark"
+  ##"seg.mean"
+  ##"seg.sd"
+  ##"seg.median"
+  ##"seg.mad"
+  ##"pval"
+  ##"lcl"
+  ##"ucl"
+
+  regions.df <- data.frame(Sample           = signals.now$ID,
+                           Chromosome       = signals.now$chrom,
+                           bp.Start         = signals.now$loc.start,
+                           bp.End           = signals.now$loc.end,
+                           Num.of.Markers   = signals.now$num.mark,
+                           Mean             = signals.now$seg.mean,
+                           stringsAsFactors = FALSE)
+
+      sample_list.df <-
+        data.frame(Number=seq(from=1,
+                              by=1,
+                              to=length(
+                                unique(signals.now$ID))),
+                   Sample=unique(signals.now$ID),
+                   Comment="",
+                   stringsAsFactors = FALSE)
+
+      sample_list <- paste0(output.dir,
+                            .Platform$file.sep,
+                            "sample_list.csv")
+      write.table(sample_list.df,
+                  file = sample_list,
+                  sep=",",
+                  row.names = FALSE,
+                  quote = FALSE)
+
+      regions_file <- paste0(output.dir,
+                             .Platform$file.sep,
+                             "regions.csv")
+      write.table(regions.df,
+                  file = regions_file,
+                  sep=",",
+                  row.names = FALSE,
+                  quote = FALSE)
+
+      signals.in <-
+        CopyNumber450kCancer::AutoCorrectPeak(
+          ReadData(regions_file,
+                   sample_list,
+                   copynumber450k = FALSE))
+
+      ## For manual revision and manual baseline determination
+      ##signals.in <- CopyNumber450kCancer::ReviewPlot(signals.in)
+      ##Above requires interacting with plot
+      ## To plot the final plots
+
+      CopyNumber450kCancer::PlotCNV(signals.in) ## to plot all the samples
+
+      ##PlotCNV(signals.in,
+      ##        select= c(1,4),
+      ##        comment=FALSE,
+      ##        cutoff=0.1,
+      ##        markers=20) ## to plot some samples
+
+    }
+    }
 
     seg <- list(sesame_seg)
 
