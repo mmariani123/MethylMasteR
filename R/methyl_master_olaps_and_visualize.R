@@ -243,6 +243,7 @@ methyl_master_olaps_and_visualize <- function(ov.seg   = NULL,
                                       ##density=0.1,
                                       ##We can also like the density
                                       ##Jenn likes .01
+                                      ro.thresh       = 0.5,
                                       density         = ov.overlap.density,
                                       est.recur       = ov.estimate.recurrence
                                       )
@@ -289,6 +290,19 @@ methyl_master_olaps_and_visualize <- function(ov.seg   = NULL,
   ##cnvs.matrix <- cnvs.matrix[order(rownames(cnvs.matrix)),]
   ##cnvs.matrix[is.na(cnvs.matrix)] <- 2
   ##cnvs.matrix <- round(cnvs.matrix, 0)
+
+  write.table(seg[gtools::mixedorder(paste0(seg$chrom,"_",seg$loc.start)),],
+              ##seg[gtools::mixedorder(seg$chrom),],
+              file = paste0(ov.output.dir,
+                            .Platform$file.sep,
+                            ov.routine,
+                            "_",
+                            ov.name,
+                            "_all_regions.csv"),
+              sep=",",
+              col.names=TRUE,
+              row.names=FALSE,
+              quote=FALSE)
 
   write.table(GenomicRanges::as.data.frame(cnvrs),
               file = paste0(ov.output.dir,

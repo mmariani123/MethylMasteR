@@ -21,20 +21,22 @@
 #' @param sesame.form.comparison
 #' @param sesame.form.save.seg
 #' @param sesame.form.plot.individual
+#' @param sesame.auto.corrected
 #' @param ...
 #' @import CNVRanger
 #' @import matter
 #' @importFrom magrittr %>%
 #' @return #Formatted seg list object for visualizing
 #' @export
-methyl_master_formatting_sesame <- function(sesame.form.seg,
-                                            sesame.form.output.dir,
-                                            sesame.form.sample.sheet.path,
-                                            sesame.form.reference,
-                                            sesame.form.split.by,
-                                            sesame.form.comparison,
-                                            sesame.form.save.seg,
-                                            sesame.form.plot.individual,
+methyl_master_formatting_sesame <- function(sesame.form.seg=NULL,
+                                            sesame.form.output.dir=getwd(),
+                                            sesame.form.sample.sheet.path=NULL,
+                                            sesame.form.reference=NULL,
+                                            sesame.form.split.by=NULL,
+                                            sesame.form.comparison=NULL,
+                                            sesame.form.save.seg=FALSE,
+                                            sesame.form.plot.individual=FALSE,
+                                            sesame.auto.corrected=FALSE,
                                             ...){
 
 ##if(sesame.form.save.seg==TRUE){
@@ -75,11 +77,14 @@ if(sesame.form.reference=="internal"){
     rm(sesame.form.seg)
 
     sesame_seg_treatment.df <- binding_frames_mm(
-      sesame.seg)
+      x=sesame.seg,
+      auto.corrected=sesame.auto.corrected)
 
-    sesame_seg_treatment.df <- sesame_seg_treatment.df[
-      sesame_seg_treatment.df$pval <= 0.05 &
-        !is.na(sesame_seg_treatment.df$pval),]
+    if(sesame.auto.corrected==FALSE){
+      sesame_seg_treatment.df <- sesame_seg_treatment.df[
+        sesame_seg_treatment.df$pval <= 0.05 &
+          !is.na(sesame_seg_treatment.df$pval),]
+    }
 
     ##sesame_seg_treatment.df %>% colnames
     ##"ID"
@@ -98,18 +103,50 @@ if(sesame.form.reference=="internal"){
     seg <- sesame_seg_treatment.df
     rm(sesame_seg_treatment.df)
 
-    colnames(seg)[1] <- "Sample_ID"
+    if(sesame.auto.corrected==TRUE){
+      ##colnames(seg)
+      ##"Sample"
+      ##"Chromosome"
+      ##"bp.Start"
+      ##"bp.End"
+      ##"Num.of.Markers"
+      ##"Mean"
+      ##"ID"
+      seg<-seg[,c(2:7)]
+      colnames(seg)[6] <- "Sample_ID"
+      colnames(seg)[1] <- "chrom"
+      colnames(seg)[2] <- "loc.start"
+      colnames(seg)[3] <- "loc.end"
+      seg$chrom <-
+        unlist(strsplit(seg$chrom,split="chr"))[c(FALSE,TRUE)]
+      colnames(seg)[4] <- "num.mark"
+      colnames(seg)[5] <- "seg.mean"
+      seg$bstat        <- NA
+      seg$seg.median   <- NA
+      seg$pval         <- 0.05
+      seg$state        <- round(2^seg$seg.mean * 2)
+      seg$state[seg$state > 4] <- 4
+      seg$treatment    <- sesame.form.comparison[1]
+      seg$method       <- "sesame"
+      seg$sub.method   <- NA
+      row.names(seg)   <- NULL
 
-    seg$chrom <-
-      unlist(strsplit(seg$chrom,split="chr"))[c(FALSE,TRUE)]
+    }else{
 
-    seg$bstat      <- NA
-    seg$state <- round(2^seg$seg.mean * 2)
-    seg$state[seg$state > 4] <- 4
-    seg$treatment  <- sesame.form.comparison[1]
-    seg$method <- "sesame"
-    seg$sub.method <- NA
-    row.names(seg) <- NULL
+      colnames(seg)[1] <- "Sample_ID"
+
+      seg$chrom <-
+        unlist(strsplit(seg$chrom,split="chr"))[c(FALSE,TRUE)]
+
+      seg$bstat      <- NA
+      seg$state <- round(2^seg$seg.mean * 2)
+      seg$state[seg$state > 4] <- 4
+      seg$treatment  <- sesame.form.comparison[1]
+      seg$method <- "sesame"
+      seg$sub.method <- NA
+      row.names(seg) <- NULL
+
+    }
 
     ##seg <- na.omit(seg) ##Workflow C ends up with some NA rows
     ##Above will remove rows with ANY NAs present!

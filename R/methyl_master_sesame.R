@@ -114,6 +114,21 @@ if(sesame.reference=="internal"){
 
     if(sesame.hm450.mean.correct==TRUE){
 
+      sub.dir <- paste0(sesame.output.dir,
+                        .Platform$file.sep,
+                        "auto_corrected")
+
+      if(exists(sub.dir)){
+
+        unlink(sub.dir, recursive = TRUE)
+        dir.create(sub.dir)
+
+      }else{
+
+        dir.create(sub.dir)
+
+      }
+
       ##ReadData {CopyNumber450kCancer}	R Documentation
       ##Function Reads the Data (i.e. regions file and
       ##sample list file) for CopyNumber450kCancer
@@ -204,24 +219,28 @@ if(sesame.reference=="internal"){
       ##cutoff=0.1,
       ##markers=20) ## to plot some samples
 
-for(i in 1:length(names(sesame_seg))){
+  sesame.now <- sesame_seg
+  rm(sesame_seg)
 
-  signals.now <- sesame_seg[[i]]$seg.signals
+  sesame_seg <- list()
+  for(i in 1:length(names(sesame.now))){
 
-  ##"ID"
-  ##"chrom"
-  ##"loc.start"
-  ##"loc.end"
-  ##"num.mark"
-  ##"seg.mean"
-  ##"seg.sd"
-  ##"seg.median"
-  ##"seg.mad"
-  ##"pval"
-  ##"lcl"
-  ##"ucl"
+    signals.now <- sesame.now[[i]]$seg.signals
 
-  regions.df <- data.frame(Sample           = signals.now$ID,
+    ##"ID"
+    ##"chrom"
+    ##"loc.start"
+    ##"loc.end"
+    ##"num.mark"
+    ##"seg.mean"
+    ##"seg.sd"
+    ##"seg.median"
+    ##"seg.mad"
+    ##"pval"
+    ##"lcl"
+    ##"ucl"
+
+    regions.df <- data.frame(Sample         = signals.now$ID,
                            Chromosome       = signals.now$chrom,
                            bp.Start         = signals.now$loc.start,
                            bp.End           = signals.now$loc.end,
@@ -238,7 +257,7 @@ for(i in 1:length(names(sesame_seg))){
                    Comment="",
                    stringsAsFactors = FALSE)
 
-      sample_list <- paste0(output.dir,
+      sample_list <- paste0(sub.dir,
                             .Platform$file.sep,
                             "sample_list.csv")
       write.table(sample_list.df,
@@ -247,7 +266,7 @@ for(i in 1:length(names(sesame_seg))){
                   row.names = FALSE,
                   quote = FALSE)
 
-      regions_file <- paste0(output.dir,
+      regions_file <- paste0(sub.dir,
                              .Platform$file.sep,
                              "regions.csv")
       write.table(regions.df,
@@ -256,18 +275,23 @@ for(i in 1:length(names(sesame_seg))){
                   row.names = FALSE,
                   quote = FALSE)
 
-      signals.in <-
-        CopyNumber450kCancer::AutoCorrectPeak(
-          ReadData(regions_file,
-                   sample_list,
-                   copynumber450k = FALSE))
+      sesame_seg[[i]] <-
+        AutoCorrectPeak.mm(
+          object=CopyNumber450kCancer::ReadData(regions_file,
+                                                sample_list,
+                                                copynumber450k = FALSE),
+          output.dir = paste0(sub.dir,
+                              .Platform$file.sep,
+                              names(sesame.now)[i])
+        )
+
 
       ## For manual revision and manual baseline determination
       ##signals.in <- CopyNumber450kCancer::ReviewPlot(signals.in)
       ##Above requires interacting with plot
       ## To plot the final plots
 
-      CopyNumber450kCancer::PlotCNV(signals.in) ## to plot all the samples
+      ##CopyNumber450kCancer::PlotCNV(signals.in) ## to plot all the samples
 
       ##PlotCNV(signals.in,
       ##        select= c(1,4),
@@ -275,10 +299,13 @@ for(i in 1:length(names(sesame_seg))){
       ##        cutoff=0.1,
       ##        markers=20) ## to plot some samples
 
-    }
-    }
+  }
+  file.remove(regions_file)
+  file.remove(sample_list)
+  }
 
-    seg <- list(sesame_seg)
+  names(sesame_seg) <- names(sesame_sset)
+  seg <- list(sesame_seg)
 
   }else{
 

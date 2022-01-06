@@ -61,17 +61,28 @@ weightedmean.epicopy <- function(scores, ranges, qranges){
 #' Bind individual sesame frames together
 #'
 #'
-#' @param x sesame-style data frame
-#' @return segment dataframe output of multiple dfs bound together
+#' @param x #sesame-style data frame
+#' @param auto.corrected
+#' @return #segment dataframe output of multiple dfs bound together
 #' @export
-binding_frames_mm <- function(x){
+binding_frames_mm <- function(x,
+                              auto.corrected){
   binding.list <- list()
   for(i in 1:length(names(x))){
-    binding.list[[i]] <- x[[i]]$seg.signals
-    binding.list[[i]]$ID <- names(x)[i]
-    if(any(is.na(binding.list[[i]]$chrom))){
-      stop(paste0("ERROR one or more entries in the 'chrom' ",
-      "field in the sesame seg output are NA"))
+    if(auto.corrected==TRUE){
+      binding.list[[i]] <- x[[i]]
+      binding.list[[i]]$ID <- names(x)[i]
+      if(any(is.na(binding.list[[i]]$Chromosome))){
+        stop(paste0("ERROR one or more entries in the 'chrom' ",
+                    "field in the sesame seg output are NA"))
+      }
+    }else{
+      binding.list[[i]] <- x[[i]]$seg.signals
+      binding.list[[i]]$ID <- names(x)[i]
+      if(any(is.na(binding.list[[i]]$chrom))){
+        stop(paste0("ERROR one or more entries in the 'chrom' ",
+        "field in the sesame seg output are NA"))
+      }
     }
   }
   seg.out <- do.call(rbind,binding.list)
@@ -100,8 +111,6 @@ calc_seg_state <- function(seg, cutoff){
 #' @param bin.size bin size
 #' @return 450k-style candidates data frame
 #' @export
-########################  ########################
-
 fast_450k_binning <- function(proc.samples,
                               med.ref.values,
                               proc.ref.samples,
@@ -124,5 +133,212 @@ fast_450k_binning <- function(proc.samples,
 
   return(candidates.data)
   ## Note the offset function in the above script
+
+}
+
+#' @title AutoCorrectPeak.mm
+#' @description MethylMaster version of  CopyNumber450kCancer::AutoCorrectPeak
+#' function
+#' Original function by Marzouka et al. 2016
+#' Modified by Michael Mariani PhD Dartmouth College 2022
+#' @param object
+#' @param output.dir
+#' @param cutoff
+#' @param markers
+#' @param ...
+#' @import CopyNumber450kCancer
+#' @return #corrected regions plots and files and returns a corrected object
+#' @export
+AutoCorrectPeak.mm <- function(object,
+                               output.dir=getwd(),
+                               cutoff = 0.1,
+                               markers = 20,
+                               ...){
+
+  if(exists(output.dir)){
+
+    unlink(output.dir, recursive = TRUE)
+    dir.create(output.dir)
+
+  }else{
+
+    dir.create(output.dir)
+
+  }
+
+  ##Set NAs to 0
+  if(missing(markers)){
+    markers <- c(0)
+  }
+
+  QC <- object$SL[, 1:2]
+
+  QC[, 3:7] <- 0
+
+  colnames(QC) <- c("Sample",
+                    "Comment",
+                    "peak.sharpness",
+                    "number.of.regions",
+                    "IQR",
+                    "SD",
+                    "MAPD")
+
+  par(mfrow = c(2, 2),
+      mar = c(5.1, 0, 4.1, 0),
+      oma = c(2, 0, 0, 4))
+
+  layout(matrix(c(1, 2, 3, 4), 2, 2,
+                byrow = TRUE),
+         widths = c(3, 21),
+         heights = c(10, 10),
+         TRUE)
+
+  ##for(i in 1:length(object$SL[, "Sample"])){
+
+    ##print(paste("Auto Correction.... Sample number ",i))
+    print(paste("Auto Correction.... Sample number ",1))
+
+    sam <- object$regions_auto[which(object$regions_auto$Sample %in%
+                                  ##as.character(object$SL[i, "Sample"])), ]
+                                    as.character(object$SL[1, "Sample"])), ]
+
+    forDen <- sam[which(sam$Chromosome != "chrX" &
+                          sam$Chromosome != "chrY"), c("Num.of.Markers",
+                                                       "Mean")]
+
+    sam.original <- sam
+
+    d <- density(forDen$Mean,
+                 weights = forDen$Num.of.Markers/sum(forDen$Num.of.Markers),
+                 na.rm = TRUE,
+                 kernel = c("gaussian"),
+                 adjust = 0.15,
+                 n = 512)
+
+    max.peak.value <- d$x[which.max(d$y)]
+
+    sam$Mean <- sam$Mean - max.peak.value
+
+    point <- which(d$x == (max.peak.value))
+
+    QC.peak.sharpness <-
+      ((d$y[point + 20] + d$y[point - 20])/2)/d$y[which(d$x == max.peak.value)]
+
+    ##QC[i, "peak.sharpness"] <- as.numeric(QC.peak.sharpness)
+    QC[1, "peak.sharpness"] <- as.numeric(QC.peak.sharpness)
+
+    ##QC[i, "number.of.regions"] <- length(sam[, 1])
+    QC[1, "number.of.regions"] <- length(sam[, 1])
+
+    ##QC[i, "IQR"] <- IQR(forDen[, "Mean"], na.rm = TRUE, type = 7)
+    QC[1, "IQR"] <- IQR(forDen[, "Mean"], na.rm = TRUE, type = 7)
+
+    ##QC[i, "SD"] <- sd(forDen[, "Mean"], na.rm = TRUE)
+    QC[1, "SD"] <- sd(forDen[, "Mean"], na.rm = TRUE)
+
+    ##QC[i, "MAPD"] <- median(abs(diff(forDen[, "Mean"],
+      ##                               na.rm = TRUE)), na.rm = TRUE)
+    QC[1, "MAPD"] <- median(abs(diff(forDen[, "Mean"],
+                                   na.rm = TRUE)), na.rm = TRUE)
+
+    ##object$regions_auto[which(object$regions_auto$Sample %in%
+    ##              as.character(object$SL[i, "Sample"])), "Mean"] <- sam$Mean
+    object$regions_auto[which(object$regions_auto$Sample %in%
+                                as.character(object$SL[1, "Sample"])), "Mean"] <- sam$Mean
+
+    ##object$mod_auto[which(object$mod_auto$Sample %in% as.character(object$SL[i,
+    ##              "Sample"])), 2:4] <- c(round(max.peak.value,
+    ##                                    3), round(-max.peak.value, 3), "Auto")
+    object$mod_auto[which(object$mod_auto$Sample %in% as.character(object$SL[1,
+                            "Sample"])), 2:4] <- c(round(max.peak.value,
+                                  3), round(-max.peak.value, 3), "Auto")
+
+    ##print(paste("Plotting.... Sample number ", i))
+    print(paste("Plotting.... Sample number "))
+
+    pdf(file = paste0(output.dir,
+                      .Platform$file.sep,
+                      ##i,
+                      ##"_",
+                      ##object$SL[i, "Sample"],
+                      ##object$SL[1, "Sample"],
+                      gsub(".*/(?!.*/)","",output.dir,perl = TRUE),
+                      "_",
+                      "auto_corrected_plot.pdf"),
+                      width = 12,
+                      height = 8)
+
+    par(mfrow = c(2, 2), mar = c(5.1, 0, 4.1, 0), oma = c(2, 0, 0, 4))
+
+    layout(matrix(c(1, 2, 3, 4), 2, 2, byrow = TRUE), widths = c(3, 21),
+           heights = c(10, 10), TRUE)
+
+    plot(d$y, d$x, ylim = c(-1, 1), type = "l", ylab = "",
+         xlab = "", axes = FALSE, xlim = rev(range(d$y)))
+
+    abline(h = c(0, -cutoff, cutoff), lty = 3)
+
+    box()
+
+    legend("bottomleft", legend = "Density", cex = 1)
+
+    plotRegions(sam.original,
+                cutoff = cutoff,
+                markers = markers,
+                main = paste("Sample::",
+                             ##object$SL[i, "Sample"],
+                             ##object$SL[1, "Sample"],
+                             gsub(".*/(?!.*/)","",output.dir,perl = TRUE)
+                             ##"       Info::",
+                             ##object$SL[i, "Comment"]
+                             ##object$SL[1, "Comment"]
+                             ),
+                ...)
+
+    plot(d$y, d$x - max.peak.value, ylim = c(-1, 1), type = "l",
+         ylab = "", xlab = "", axes = FALSE, xlim = rev(range(d$y)))
+
+    abline(h = c(0, -cutoff, cutoff), lty = 3)
+
+    box()
+
+    legend("bottomleft", legend = "Density", cex = 1)
+
+    plotRegions(sam,
+                cutoff = cutoff,
+                markers = markers,
+                main = paste("Autocorrected plot"))
+
+    dev.off()
+
+  ##}
+
+  object$QC <- QC
+
+  object$regions <- object$regions_auto
+
+  print(paste0("Saving the autocorrection files to ",
+               output.dir,
+               " ..."))
+
+  write.csv(object$regions_auto,
+            file = paste0(output.dir,
+                          .Platform$file.sep,
+                          "autocorrected_regions.csv"))
+
+  write.csv(object$mod_auto,
+            file = paste0(output.dir,
+                          .Platform$file.sep,
+                          "autocorrections.csv"))
+
+  write.csv(QC,
+            file = paste0(output.dir,
+                          .Platform$file.sep,
+                          "QC.csv"),
+            row.names = FALSE)
+
+  print("Auto Correction Done.")
+
+  return(object$regions)
 
 }

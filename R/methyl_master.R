@@ -407,6 +407,7 @@ if(routine=="sesame"){
               sesame.form.comparison=comparison,
               sesame.form.save.seg=save.seg,
               sesame.form.plot.individual=visualize.individual,
+              sesame.auto.corrected=sesame.hm450.mean.correct,
               ...)
 }else if(routine=="hm450"){
   seg <- methyl_master_formatting_hm450(hm450.form.seg=seg,
