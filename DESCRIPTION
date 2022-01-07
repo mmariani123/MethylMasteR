@@ -37,7 +37,6 @@ Imports:
   cnAnalysis450k,
   CNAclinic,
   IlluminaHumanMethylation450kanno.ilmn12.hg19,
-  FlowSorted.CordBloodCombined.450k,
   ENmix,
   profmem,
   profvis, 

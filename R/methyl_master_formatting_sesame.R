@@ -124,8 +124,11 @@ if(sesame.form.reference=="internal"){
       seg$bstat        <- NA
       seg$seg.median   <- NA
       seg$pval         <- 0.05
-      seg$state        <- round(2^seg$seg.mean * 2)
-      seg$state[seg$state > 4] <- 4
+      seg$state        <- calc_seg_state(seg.means = seg$seg.mean,
+                                         upper.thresh = 4,
+                                         use.cutoff = TRUE,
+                                         cutoff = c(-0.3,0.3),
+                                        )
       seg$treatment    <- sesame.form.comparison[1]
       seg$method       <- "sesame"
       seg$sub.method   <- NA
@@ -139,8 +142,11 @@ if(sesame.form.reference=="internal"){
         unlist(strsplit(seg$chrom,split="chr"))[c(FALSE,TRUE)]
 
       seg$bstat      <- NA
-      seg$state <- round(2^seg$seg.mean * 2)
-      seg$state[seg$state > 4] <- 4
+      seg$state      <- calc_seg_state(seg.means = seg$seg.mean,
+                                       upper.thresh = 4,
+                                       use.cutoff = TRUE,
+                                       cutoff = c(-0.3,0.3),
+                                       )
       seg$treatment  <- sesame.form.comparison[1]
       seg$method <- "sesame"
       seg$sub.method <- NA

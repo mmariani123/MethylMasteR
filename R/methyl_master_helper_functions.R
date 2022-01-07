@@ -89,17 +89,33 @@ binding_frames_mm <- function(x,
   return(seg.out)
 }
 
-#' Bind individual sesame frames together
-#'
-#'
-#' @param x sesame-style data frame
-#' @param cutoff cutoff CN, any number above this will be assigned this value
-#' @return seg frame with state assigned
+#' @title calc_seg_state
+#' @description function to calculate seg state from seg mean
+#' Michael Mariani PhD Dartmouth College 2022
+#' @param seg.means vector of seg.means
+#' @param upper.thresh CN,
+#' any number above this will be assigned this value
+#' @param use.cutoff use cutof values instead of eqution
+#' @param cutoff vector of cutoff threshold for loss and
+#' gain respectively
+#' @return #vector of calculated states
 #' @export
-calc_seg_state <- function(seg, cutoff){
-  seg$state <- round(2^seg$seg.mean * 2)
-  seg$state[seg$state > cutoff] <- cutoff
-  return(seg)
+calc_seg_state <- function(seg.means=NULL,
+                           upper.thresh=4,
+                           use.cutoff=FALSE,
+                           cutoff=c(-0.3,0.3)
+                           ){
+  if(use.cutoff==FALSE){
+    seg.state <- round(2^seg.means * 2)
+    seg.state[seg.state > upper.thresh] <- upper.thresh
+  }else{
+    seg.state <-
+      ifelse(seg.means>=cutoff[2],3,
+             ##seg.means>=cutoff[2],2+floor(seg.means/0.3),
+             ifelse(seg.means<=cutoff[1],1,2))
+    seg.state[seg.state > upper.thresh] <- upper.thresh
+  }
+  return(seg.state)
 }
 
 #' This is a faster version of binding 450K bins
