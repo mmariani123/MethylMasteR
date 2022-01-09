@@ -328,7 +328,7 @@ if(sesame.reference=="internal"){
     ExperimentHub::ExperimentHub()
 
     idat_prefixes <- sesame::searchIDATprefixes(idat.files.dir,
-                                                          recursive=TRUE)
+                                                recursive=TRUE)
 
     sesameData::sesameDataCacheAll()
 

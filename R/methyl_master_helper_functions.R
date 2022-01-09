@@ -76,7 +76,7 @@ binding_frames_mm <- function(x,
       binding.list[[i]] <- x[[i]]
       binding.list[[i]]$ID <- names(x)[i]
       if(!is.null(add.col)){
-        binding.list[[i]][[names(add.col)]] <- unname(add.col)
+        binding.list[[i]][[names(add.col)[i]]] <- unname(add.col[i])
       }
       if(any(is.na(binding.list[[i]]$Chromosome))){
         stop(paste0("ERROR one or more entries in the 'chrom' ",
@@ -86,7 +86,7 @@ binding_frames_mm <- function(x,
       binding.list[[i]] <- x[[i]]$seg.signals
       binding.list[[i]]$ID <- names(x)[i]
       if(!is.null(add.col)){
-        binding.list[[i]][[names(add.col)]] <- unname(add.col)
+        binding.list[[i]][[names(add.col)[i]]] <- unname(add.col[i])
       }
       if(any(is.na(binding.list[[i]]$chrom))){
         stop(paste0("ERROR one or more entries in the 'chrom' ",
@@ -104,17 +104,15 @@ binding_frames_mm <- function(x,
 #' @param seg.means vector of seg.means
 #' @param upper.thresh CN,
 #' any number above this will be assigned this value
-#' @param use.cutoff use cutof values instead of eqution
 #' @param cutoff vector of cutoff threshold for loss and
 #' gain respectively
 #' @return #vector of calculated states
 #' @export
 calc_seg_state <- function(seg.means=NULL,
                            upper.thresh=4,
-                           use.cutoff=FALSE,
-                           cutoff=c(-0.3,0.3)
+                           cutoff=NULL
                            ){
-  if(use.cutoff==FALSE){
+  if(is.null(cutoff)){
     seg.state <- round(2^seg.means * 2)
     seg.state[seg.state > upper.thresh] <- upper.thresh
   }else{

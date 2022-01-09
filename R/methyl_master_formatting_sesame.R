@@ -39,7 +39,7 @@ methyl_master_formatting_sesame <- function(sesame.form.seg=NULL,
                                             sesame.form.save.seg=FALSE,
                                             sesame.form.plot.individual=FALSE,
                                             sesame.form.auto.corrected=FALSE,
-                                            sesame.form.thresholds=c(-0.3,0.3),
+                                            sesame.form.thresholds=NULL,
                                             sesame.form.add.meta=NULL,
                                             ...){
 
@@ -81,7 +81,8 @@ if(sesame.form.reference=="internal"){
     rm(sesame.form.seg)
 
     sesame.form.col <- sesame.form.sample.sheet.df[[sesame.form.add.meta]]
-    names(sesame.form.col) <- sesame.form.add.col
+    names(sesame.form.col) <-
+        rep(sesame.form.add.meta,times=length(sesame.form.col))
     sesame_seg_treatment.df <- binding_frames_mm(
       x=sesame.seg,
       auto.corrected=sesame.form.auto.corrected,
@@ -120,7 +121,7 @@ if(sesame.form.reference=="internal"){
       ##"Num.of.Markers"
       ##"Mean"
       ##"ID"
-      seg<-seg[,c(2:7)]
+      seg<-seg[,c(2:ncol(seg))]
       colnames(seg)[6] <- "Sample_ID"
       colnames(seg)[1] <- "chrom"
       colnames(seg)[2] <- "loc.start"
@@ -134,7 +135,6 @@ if(sesame.form.reference=="internal"){
       seg$pval         <- 0.05
       seg$state        <- calc_seg_state(seg.means = seg$seg.mean,
                                          upper.thresh = 4,
-                                         use.cutoff = TRUE,
                                          cutoff = sesame.form.thresholds
                                         )
       seg$treatment    <- sesame.form.comparison[1]
@@ -152,8 +152,7 @@ if(sesame.form.reference=="internal"){
       seg$bstat      <- NA
       seg$state      <- calc_seg_state(seg.means = seg$seg.mean,
                                        upper.thresh = 4,
-                                       use.cutoff = TRUE,
-                                       cutoff = sesame.form.thresholds,
+                                       cutoff = sesame.form.thresholds
                                        )
       seg$treatment  <- sesame.form.comparison[1]
       seg$method <- "sesame"
@@ -177,7 +176,8 @@ if(sesame.form.reference=="internal"){
                                 "state",
                                 "treatment",
                                 "method",
-                                "sub.method")
+                                "sub.method",
+                                sesame.form.add.meta)
 
     seg <- seg[,preferred.column.names]
 
@@ -274,7 +274,8 @@ if(sesame.form.reference=="internal"){
                                 "state",
                                 "treatment",
                                 "method",
-                                "sub.method")
+                                "sub.method",
+                                sesame.form.add.meta)
 
     seg.1 <- seg.1[,preferred.column.names]
     seg.2 <- seg.2[,preferred.column.names]

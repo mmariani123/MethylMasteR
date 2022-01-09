@@ -107,6 +107,22 @@ methyl_master_olaps_and_visualize <- function(ov.seg   = NULL,
   seg$loc.start <- as.numeric(seg$loc.start)
   seg$loc.end   <- as.numeric(seg$loc.end)
 
+  tumor.plot <-   ggplot2::ggplot(seg,
+                  ggplot2::aes(x=1, y=Sample_ID)) +
+                  ggplot2::geom_tile(ggplot2::aes(fill = Tumor)) +
+                  ggplot2::scale_fill_distiller(palette = "YlGnBu",
+                                                direction = -1) +
+                  ggplot2::theme_light() +
+                  theme(axis.text.y      = ggplot2::element_blank(),
+                        axis.ticks.x     = ggplot2::element_blank(),
+                        axis.text.x      = ggplot2::element_blank(),
+                        panel.grid.major = ggplot2::element_blank(),
+                        panel.grid.minor = ggplot2::element_blank(),
+                        panel.background = ggplot2::element_blank(),
+                        panel.border     = ggplot2::element_blank()) +
+                  ggplot2::xlab("") +
+                  ggplot2::ylab("")
+
   ##floor(seg.vis.total$loc.start + seg.vis.total$loc.end) /2)
   seg.heatmap <- ggplot2::ggplot(seg,
                                  ggplot2::aes(
@@ -142,9 +158,19 @@ methyl_master_olaps_and_visualize <- function(ov.seg   = NULL,
     ggplot2::ylim(c(0,1)) +
     ggplot2::scale_fill_manual(values=c("orange",
                                         "white",
-                                        "blue"))
+                                        "blue")) +
 
-  ggplot2::ggsave(seg.heatmap,
+    theme(legend.position="bottom")
+
+  seg.output <- cowplot::plot_grid(seg.heatmap,
+                                   tumor.plot,
+                                   align="h",
+                                   axis="tb",
+                                   ncol=2,
+                                   nrow=1,
+                                   rel_widths = c(5,1))
+
+  ggplot2::ggsave(seg.output,
                   filename = paste0(ov.output.dir,
                                     .Platform$file.sep,
                                     ov.routine,
