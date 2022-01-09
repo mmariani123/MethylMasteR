@@ -33,6 +33,8 @@
 #' @param sesame.data.normal
 #' @param sesame.ref.version
 #' @param sesame.hm450.mean.correct
+#' @param sesame.form.thresholds
+#' @param sesame.form.add.meta
 #' @param hm450.workflow
 #' @param hm450.anno.file.path
 #' @param champ.padj
@@ -84,6 +86,8 @@ methyl_master <- function(input.dir            = NULL,
                           sesame.data.normal   = 'EPIC.5.normal',
                           sesame.ref.version   = "hg38",
                           sesame.hm450.mean.correct = FALSE,
+                          sesame.form.thresholds = c(-0.3,0.3),
+                          sesame.form.add.meta = NULL,
                           hm450.workflow       = "B",
                           hm450.anno.file.path = NULL,
                           champ.padj           = 0.05,
@@ -233,6 +237,7 @@ sesame = {
                        sesame.split.by              = split.by,
                        sesame.save.seg              = save.seg,
                        sesame.hm450.mean.correct    = sesame.hm450.mean.correct,
+                       sesame.form.add.meta         = sesame.form.add.meta,
                        ...
                        )
 
@@ -407,7 +412,8 @@ if(routine=="sesame"){
               sesame.form.comparison=comparison,
               sesame.form.save.seg=save.seg,
               sesame.form.plot.individual=visualize.individual,
-              sesame.auto.corrected=sesame.hm450.mean.correct,
+              sesame.form.auto.corrected=sesame.hm450.mean.correct,
+              sesame.form.thresholds=sesame.form.thresholds,
               ...)
 }else if(routine=="hm450"){
   seg <- methyl_master_formatting_hm450(hm450.form.seg=seg,

@@ -21,7 +21,9 @@
 #' @param sesame.form.comparison
 #' @param sesame.form.save.seg
 #' @param sesame.form.plot.individual
-#' @param sesame.auto.corrected
+#' @param sesame.form.auto.corrected
+#' @param sesame.form.thresholds
+#' @param sesame.form.add.meta
 #' @param ...
 #' @import CNVRanger
 #' @import matter
@@ -36,7 +38,9 @@ methyl_master_formatting_sesame <- function(sesame.form.seg=NULL,
                                             sesame.form.comparison=NULL,
                                             sesame.form.save.seg=FALSE,
                                             sesame.form.plot.individual=FALSE,
-                                            sesame.auto.corrected=FALSE,
+                                            sesame.form.auto.corrected=FALSE,
+                                            sesame.form.thresholds=c(-0.3,0.3),
+                                            sesame.form.add.meta=NULL,
                                             ...){
 
 ##if(sesame.form.save.seg==TRUE){
@@ -76,11 +80,15 @@ if(sesame.form.reference=="internal"){
     sesame.seg <- sesame.form.seg[[1]]
     rm(sesame.form.seg)
 
+    sesame.form.col <- sesame.form.sample.sheet.df[[sesame.form.add.meta]]
+    names(sesame.form.col) <- sesame.form.add.col
     sesame_seg_treatment.df <- binding_frames_mm(
       x=sesame.seg,
-      auto.corrected=sesame.auto.corrected)
+      auto.corrected=sesame.form.auto.corrected,
+      add.col=sesame.form.col
+      )
 
-    if(sesame.auto.corrected==FALSE){
+    if(sesame.form.auto.corrected==FALSE){
       sesame_seg_treatment.df <- sesame_seg_treatment.df[
         sesame_seg_treatment.df$pval <= 0.05 &
           !is.na(sesame_seg_treatment.df$pval),]
@@ -103,7 +111,7 @@ if(sesame.form.reference=="internal"){
     seg <- sesame_seg_treatment.df
     rm(sesame_seg_treatment.df)
 
-    if(sesame.auto.corrected==TRUE){
+    if(sesame.form.auto.corrected==TRUE){
       ##colnames(seg)
       ##"Sample"
       ##"Chromosome"
@@ -127,7 +135,7 @@ if(sesame.form.reference=="internal"){
       seg$state        <- calc_seg_state(seg.means = seg$seg.mean,
                                          upper.thresh = 4,
                                          use.cutoff = TRUE,
-                                         cutoff = c(-0.3,0.3),
+                                         cutoff = sesame.form.thresholds
                                         )
       seg$treatment    <- sesame.form.comparison[1]
       seg$method       <- "sesame"
@@ -145,7 +153,7 @@ if(sesame.form.reference=="internal"){
       seg$state      <- calc_seg_state(seg.means = seg$seg.mean,
                                        upper.thresh = 4,
                                        use.cutoff = TRUE,
-                                       cutoff = c(-0.3,0.3),
+                                       cutoff = sesame.form.thresholds,
                                        )
       seg$treatment  <- sesame.form.comparison[1]
       seg$method <- "sesame"

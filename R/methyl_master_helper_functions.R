@@ -63,15 +63,21 @@ weightedmean.epicopy <- function(scores, ranges, qranges){
 #'
 #' @param x #sesame-style data frame
 #' @param auto.corrected
+#' @param add.col
 #' @return #segment dataframe output of multiple dfs bound together
 #' @export
 binding_frames_mm <- function(x,
-                              auto.corrected){
+                              auto.corrected,
+                              add.col
+                              ){
   binding.list <- list()
   for(i in 1:length(names(x))){
     if(auto.corrected==TRUE){
       binding.list[[i]] <- x[[i]]
       binding.list[[i]]$ID <- names(x)[i]
+      if(!is.null(add.col)){
+        binding.list[[i]][[names(add.col)]] <- unname(add.col)
+      }
       if(any(is.na(binding.list[[i]]$Chromosome))){
         stop(paste0("ERROR one or more entries in the 'chrom' ",
                     "field in the sesame seg output are NA"))
@@ -79,6 +85,9 @@ binding_frames_mm <- function(x,
     }else{
       binding.list[[i]] <- x[[i]]$seg.signals
       binding.list[[i]]$ID <- names(x)[i]
+      if(!is.null(add.col)){
+        binding.list[[i]][[names(add.col)]] <- unname(add.col)
+      }
       if(any(is.na(binding.list[[i]]$chrom))){
         stop(paste0("ERROR one or more entries in the 'chrom' ",
         "field in the sesame seg output are NA"))
