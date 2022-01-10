@@ -17,18 +17,43 @@ methyl_master_sesame(
   sesame.reference = "internal",
   sesame.split.by = NULL,
   sesame.save.seg = FALSE,
+  sesame.hm450.mean.correct = FALSE,
   ...
 )
+}
+\arguments{
+\item{sesame.idat.files.dir}{The input directory for the sesame routine}
+
+\item{sesame.output.dir}{The ouptut directory for the sesame routine}
+
+\item{sesame.sample.sheet.path}{The path to the MethylMaster sample sheet}
+
+\item{sesame.comparison}{the 2-element vector of Sample_Group levels to be
+compared. First element is taken as the treatment and second as the control
+if "reference" is set to "internal" the second element is ignored}
+
+\item{sesame.file.sep}{the file separator to use}
+
+\item{sesame.data.cache}{the sesame data cache to use}
+
+\item{sesame.data.normal}{the sesame normal data set to use,
+e.g. Epic.5.Normal}
+
+\item{sesame.ref.version}{the sesame reference version (default is hg38)}
+
+\item{sesame.reference}{the sesame reference to use}
+
+\item{sesame.split.by}{which column, if any, to split the analyses by}
+
+\item{sesame.save.seg}{save the segmentation results as .RData object}
+
+\item{sesame.hm450.mean.correct}{apply the hm450 AutoCorrectPeak algorithm}
+
+\item{...}{additional parameters to passs to methyl_master_sesame}
 }
 \value{
 A seg object for downstream analysis
 }
 \description{
 MethylMasteR run SeSAMe function
-
-First part:: Very similar to PROCESS SESAME
-command to prepare for segementation
-this is included so that the total
-time and mem for running sesame
-can be recorded
 }

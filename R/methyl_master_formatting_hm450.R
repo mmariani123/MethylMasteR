@@ -1,22 +1,21 @@
 #!/usr/bin/env Rscript
 
 #' @title methyl_master_formatting_hm450
-#' @description formatting the hm450 output to prepare for plotting etc.
-#' Michael Mariani PhD Dartmouth College 2021
-#' @param hm450.form.seg
-#' @param hm450.form.output.dir
-#' @param hm450.form.sample.sheet.path
-#' @param hm450.form.reference
-#' @param hm450.form.split.by
-#' @param hm450.form.workflow
-#' @param hm450.form.comparison
-#' @param hm450.form.save.seg
-#' @param hm450.form.anno.file.path
-#' @param ...
+#' @description Formatting the hm450 output to prepare for plotting etc.
+#' @param hm450.form.seg The hm450 routine seg results as input to be formatted
+#' @param hm450.form.output.dir The output dir for the formatting results
+#' @param hm450.form.sample.sheet.path The MehtylMaster sample sheet path
+#' @param hm450.form.reference The hm450 reference that was used
+#' @param hm450.form.split.by The split.by sample sheet field that was used
+#' @param hm450.form.workflow The specific HM450 workflow that was used
+#' @param hm450.form.comparison The MethylMaster two-element comparison vector
+#' @param hm450.form.save.seg Whether to save the formatted HM450 results
+#' @param hm450.form.anno.file.path The hm450 annotation file path
+#' @param ... Additional parameters passed to methyl_master_formatting_hm450
 #' @import CNVRanger
 #' @import matter
 #' @importFrom magrittr %>%
-#' @return #Formatted seg list object for visualizing
+#' @return #Formatted seg list object for overlaps and visualizing
 #' @export
 methyl_master_formatting_hm450 <- function(hm450.form.seg=NULL,
                                     hm450.form.output.dir=getwd(),

@@ -2,13 +2,24 @@
 % Please edit documentation in R/methyl_master_epicopy_helper_functions.R
 \name{read.metharray.mm}
 \alias{read.metharray.mm}
-\title{Modified read.metharray from minfi}
+\title{readmetharray.mm}
 \usage{
 read.metharray.mm(basenames, extended = FALSE, verbose = FALSE, force = FALSE)
 }
+\arguments{
+\item{basenames}{The basenames parameter}
+
+\item{extended}{The extended parameter}
+
+\item{verbose}{The verbose parameter}
+
+\item{force}{The force parameter}
+
+\item{diff.array.type}{The diff.array.type parameter}
+}
 \value{
-methylation array data
+Methylation array data
 }
 \description{
-Modified read.metharray from minfi
+MethylMaster version of Minfi read.metharray() function
 }

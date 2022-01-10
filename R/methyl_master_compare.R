@@ -3,23 +3,26 @@
 #' @title methyl_master_compare
 #' @description compare results from different routine outputs
 #' Michael Mariani PhD Dartmouth College 2021
-#' @param compare.list.files
-#' @param compare.files.in
-#' @param compare.input.dir
-#' @param compare.output.dir
-#' @param compare.names
-#' @param compare.olaps.size
-#' @param ...
+#' @param compare.list.files list files of not if set to FALSE, will recursively
+#' search the compare.input.dir for overlaps_filt and time_mem files to compare
+#' @param compare.files.in vector of individual files in for the compare routine
+#' @param compare.input.dir input directory for the compare routine
+#' @param compare.output.dir output directory for the compare routine
+#' @param compare.names the names of the results for the individual routines
+#' that are being compared. Default is the routine results dir basename
+#' @param compare.olaps.size size of overlaps across routines considered a hit
+#' default is 1 (1 or more bp overlap)
+#' @param ... additional parameters to pass to methyl_master_compare
 #' @import ggplot2
 #' @import foreach
-#' @importFrom GenomicRanges GRangesList unbox
-#' @importFrom GenomicRanges makeGRangesFromDataFrame unbox
-#' @importFrom cowplot plotgrid
-#' @importFrom S4Vectors mcols unbox
-#' @importFrom seqsetvis ssvOverlapIntervalSets unbox
-#' @importFrom seqsetvis ssvFeatureUpset unbox
-#' @importFrom rlist list.append unbox
-#' @return #outputs a comparison plot to <compare.output.dir>
+#' @importFrom GenomicRanges GRangesList
+#' @importFrom GenomicRanges makeGRangesFromDataFrame
+#' @importFrom cowplot plot_grid
+#' @importFrom S4Vectors mcols
+#' @importFrom seqsetvis ssvOverlapIntervalSets
+#' @importFrom seqsetvis ssvFeatureUpset
+#' @importFrom rlist list.append
+#' @return Outputs a comparison plot to <compare.output.dir>
 #' @export
 methyl_master_compare <- function(compare.list.files=FALSE,
                                   compare.files.in=NULL,
@@ -44,8 +47,8 @@ files.in <- list.files(path=compare.input.dir,
                        full.names = TRUE,
                        recursive = TRUE)
 
-compare.names <- gsub(".*/","",dirname(files.in))
-
+if(is.null(compare.names))
+  compare.names <- gsub(".*/(!?.*/)","",dirname(files.in))
 }
 
 items <- list()
@@ -125,8 +128,8 @@ olaps.df.list <- foreach(i = olaps.in) %do% {
   olaps.gr <- GenomicRanges::makeGRangesFromDataFrame(olaps.df,
                                                       keep.extra.columns = TRUE)
 
-  if(nrow(olaps.gr!=0)){
-    name(olaps.gr) <- compare.names[i]
+  if(length(olaps.gr)!=0){
+    names(olaps.gr) <- compare.names[i]
     return(olaps.gr)
   }
 

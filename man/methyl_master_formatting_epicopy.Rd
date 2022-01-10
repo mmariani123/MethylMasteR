@@ -7,15 +7,31 @@
 methyl_master_formatting_epicopy(
   epi.form.seg = NULL,
   epi.form.output.dir = getwd(),
+  epi.form.reference = NULL,
+  epi.form.split.by = NULL,
   epi.form.save.seg = FALSE,
   epi.form.comparison = NULL
 )
 }
+\arguments{
+\item{epi.form.seg}{The input Epicopy seg results}
+
+\item{epi.form.output.dir}{The output dir for the formatted seg object}
+
+\item{epi.form.reference}{The reference that was used in the Epicopy routine}
+
+\item{epi.form.split.by}{The split.by field from the Sample Sheet that was
+used earlier in the analysis}
+
+\item{epi.form.save.seg}{Whether to save the formatted Epicopy seg results}
+
+\item{epi.form.comparison}{The comparison vector used earlier in the anlysis}
+}
 \value{
-Formatted epicopy result as MethylMaster seg object
+Formatted epicopy result as a MethylMaster seg object
 for downstream analysis
 }
 \description{
-Formatting Epicopy output into MethylMaster seg object
+Formatting the Epicopy output into MethylMaster seg object
 for downstream analyses
 }

@@ -2,16 +2,19 @@
 % Please edit documentation in R/methyl_master_helper_functions.R
 \name{harmonized_rg_sets}
 \alias{harmonized_rg_sets}
-\title{Harmonize RG data}
+\title{harmonized_rg_sets}
 \usage{
 harmonized_rg_sets(rgset1, rgset2)
 }
 \arguments{
-\item{rgset1}{Path to the input file}
+\item{rgset1}{Path to the first RGset}
+
+\item{rgset2}{Path to the second RGset}
 }
 \value{
 Harmonized data set
 }
 \description{
 Harmonize RG data
+Functionality by Lucas Salas PhD Dartmouth College 2021
 }

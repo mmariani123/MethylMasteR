@@ -35,11 +35,69 @@ epicopy.mm(
   ...
 )
 }
+\arguments{
+\item{target_dir}{The input directory}
+
+\item{output_dir}{The output directory}
+
+\item{single.file}{Specify a single file (logical)}
+
+\item{single.file.path}{The single file path}
+
+\item{epic.manifest.path}{The path to the epic.manifest file}
+
+\item{comparison}{The MehtylMaster comparison vector}
+
+\item{reference_group}{The reference group to specify}
+
+\item{split.by}{The MethylMaster split.by field form the sample sheet to
+split up the epicopy analysis by}
+
+\item{project_name}{The project name}
+
+\item{Normals}{The specified Normals see documentaion}
+
+\item{sampNames}{Customize the sample names here}
+
+\item{QN}{The QN parameter to use}
+
+\item{Ref}{The Ref parameter to use}
+
+\item{mode.bw}{The mode.bw parameter to use}
+
+\item{mode.method}{The mode.method parameter to use}
+
+\item{normal.cnv}{The normal.cnv parameter to use}
+
+\item{mean.center}{Whether to use mean centering (default=TRUE)}
+
+\item{filterProbes}{The filterProbes parameter}
+
+\item{retainedProbes}{The retained Probes parameter}
+
+\item{ncores}{The number of cores to use, note that multiple cores may not
+work on every system}
+
+\item{seg.undo.splits}{The seg.undo.splits parameter}
+
+\item{seg.undo.SD}{The seg.undo.SD parameter}
+
+\item{filterbycount}{The filterbycount parameter}
+
+\item{min_probes}{The min_probes parameter}
+
+\item{verbose}{The verbose parameter}
+
+\item{keep_fnobj}{The keep_fnobj parameter}
+
+\item{fn_output}{The fn_output parameter}
+
+\item{...}{Additional parameters to pass to epicopy.mm()}
+}
 \value{
-return a cna list containing CNV frame(s)
+Return a cna list containing CNV frame(s)
 }
 \description{
-Modified epicopy() function from Epicopy
-I updated the read.metharray.sheet function
-and incorporated it here
+MethylMaster version of the main Epicopy::epicopy() function
+from Epicopy
 }

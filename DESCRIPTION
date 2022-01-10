@@ -41,7 +41,32 @@ Imports:
   profmem,
   profvis, 
   htmlwidgets,
-  ungeviz
+  ungeviz,
+  AnnotationDbi,
+  Biobase,
+  BiocGenerics,
+  BiocParallel,
+  ChAMPdata,
+  CopyNumber450kCancer,
+  DelayedArray,
+  GenomicRanges,
+  Matrix,
+  RaggedExperiment,
+  S4Vectors,
+  cowplot,
+  dendextend,
+  doParallel,
+  future,
+  gtools,
+  illuminaio,
+  iterators,
+  matter,
+  pheatmap,
+  ramify,
+  readxl,
+  rlist, 
+  scales,
+  seqsetvis
 Depends: 
     R (>= 2.10)
 Suggests: 

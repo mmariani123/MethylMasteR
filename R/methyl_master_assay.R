@@ -1,18 +1,17 @@
 #usr/bin/env Rscript
 
-#' @title ##methyl_master_assay
+#' @title methyl_master_assay
 #' @description MethylMasteR Assay function
 #' Originally from sparseAssay() from the
-#' RaggedExperiment Package
+#' RaggedExperiment Package by Martin Morgan and Marcel Ramos 2021
 #' I have modified my own version
 #' here for use in methyl master
-#'
-#' @param sesame.idat.files.dir
-#' @param x
-#' @param i
-#' @param withDimnames
-#' @param background
-#' @param sparse
+#' @param sesame.idat.files.dir The input dir with the .idat files
+#' @param x A ragged experiment object
+#' @param i Integer or character name of assay to be transformed
+#' @param withDimnames Whether to include the dimnames on the retunred matrix
+#' @param background A value for the returned matrix
+#' @param sparse Whether to return a sparse matrix or not
 #' @import RaggedExperiment
 #' @import Matrix
 #' @return A reduced ReaggedExperiment assay object

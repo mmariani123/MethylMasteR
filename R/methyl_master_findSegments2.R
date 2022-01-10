@@ -1,20 +1,19 @@
 #!/usr/bin/env Rscript
 
-#' Modified findSegments function
-#'
-#' Find segements
-#'
-#' @param data
-#' @param ctrl
-#' @param ctrlAll
-#' @param statistic
-#' @param plot
-#' @param delta
-#' @param output
-#' @param ylim
-#' @param arrayType
+#' @title findSegments2
+#' @description MethylMaster findSegments2 function
+#' Function originally by Lucas Salas MD, PhD Dartmouth College 2021
+#' @param data The data parameter
+#' @param ctrl The ctrl parameter
+#' @param ctrlAll The ctrlAll parameter
+#' @param statistic The statistic parameter
+#' @param plot The plot parameter
+#' @param delta The delta parameter
+#' @param output The output parameter
+#' @param ylim The ylim parameter
+#' @param arrayType The arrayType parameter
 #' @import plyr
-#' @return
+#' @return CNV calls for the HM450 routine
 #' @export
 findSegments2 <-
   function(data,

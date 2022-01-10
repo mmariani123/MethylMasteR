@@ -1,14 +1,13 @@
 #!/usr/bin/env Rscript
 
 #' @title methyl_master_plot_individual
-#' @description output signal inensity plots for individual samples
-#' ##Michael Mariani PhD Dartmouth College 2021
+#' @description Function to output signal inensity plots for individual samples
 #' @import ggplot2
-#' @param pi.seg
-#' @param pi.output.dir
-#' @param pi.name
-#' @param ...
-#' @return #NULL
+#' @param pi.seg The input sesame segmentation objects
+#' @param pi.output.dir The output directory
+#' @param pi.name The names to use
+#' @param ... Additional parameters passed to methyl_master_plot_individual
+#' @return Individual plots
 #' @export
 methyl_master_plot_individual <- function(pi.seg = NULL,
                            pi.output.dir = NULL,
@@ -78,14 +77,14 @@ methyl_master_plot_individual <- function(pi.seg = NULL,
 }
 
 #' @title visualizeSegments.mm
-#' @description modified sesame::visualizeSegments function
-#' Michael Mariani PhD Dartmouth College 2021, originally by SeSAMe team
-#' @param seg
-#' @param to.plot
+#' @description Methyl master modified sesame::visualizeSegments function
+#' from SeSAMe
+#' @param seg The sesame segmentation object
+#' @param to.plot the to.plot parameter
 #' @import ggplot2
 #' @import scales
 #' @import GenomicRanges
-#' @return #A ggplot
+#' @return A ggplot
 #' @export
 visualizeSegments.mm <- function(seg,
                                  to.plot = NULL

@@ -16,9 +16,29 @@ DoEpiMod(
   ew.v = NULL
 )
 }
+\arguments{
+\item{intEpi.o}{The intEpi.o parameter}
+
+\item{nseeds}{The nseeds parameter}
+
+\item{gamma}{The gamma parameter}
+
+\item{sizeR.v}{The sizeR.v parameter}
+
+\item{minsizeOUT}{The minsizeout parameter}
+
+\item{writeOUT}{The writeOUT parameter}
+
+\item{nameSTUDY}{The nameSTUDY parameter}
+
+\item{ew.v}{The ew.v parameter}
+
+\item{nMC=1000}{The nMC parameter}
+}
 \value{
-A matrix of the infile
+A list of results
 }
 \description{
+MethylMaster version of the DoEpiMod function
 https://rdrr.io/bioc/FEM/src/R/DoEpiMod.R
 }

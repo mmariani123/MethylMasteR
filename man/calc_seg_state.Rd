@@ -2,18 +2,22 @@
 % Please edit documentation in R/methyl_master_helper_functions.R
 \name{calc_seg_state}
 \alias{calc_seg_state}
-\title{Bind individual sesame frames together}
+\title{calc_seg_state}
 \usage{
-calc_seg_state(seg, cutoff)
+calc_seg_state(seg.means = NULL, upper.thresh = 4, cutoff = NULL)
 }
 \arguments{
-\item{cutoff}{cutoff CN, any number above this will be assigned this value}
+\item{seg.means}{vector of seg.means}
 
-\item{x}{sesame-style data frame}
+\item{upper.thresh}{CN state threshold, any number above this will be
+assigned this value}
+
+\item{cutoff}{vector of cutoff threshold for loss and
+gain respectively}
 }
 \value{
-seg frame with state assigned
+vector of calculated CNV states
 }
 \description{
-Bind individual sesame frames together
+common function used to calculate seg state from seg mean
 }

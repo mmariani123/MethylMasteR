@@ -2,7 +2,7 @@
 % Please edit documentation in R/methyl_master_champ_helper_functions.R
 \name{champ.QC}
 \alias{champ.QC}
-\title{Extra ChAMP functions}
+\title{champ.QC()}
 \usage{
 champ.QC(
   beta = NULL,
@@ -18,13 +18,28 @@ champ.QC(
 }
 \arguments{
 \item{infile}{Path to the input file}
+
+\item{champ.beta}{champ.beta parameter}
+
+\item{champ.pheno}{champ.pheno parameter}
+
+\item{champ.mds.plot}{champ.mds.plot parameter}
+
+\item{champ.density.plot}{champ.density.plot parameter}
+
+\item{champ.dendrogram}{champ.dendrogram parameter}
+
+\item{champ.pdf.plot}{champ.pdf parameter}
+
+\item{champ.rplot}{champ.rplot parameter}
+
+\item{champ.feature.sel}{champ.feature.sel parameter}
+
+\item{champ.results.dir}{champ.results.dir parameter}
 }
 \value{
 A matrix of the infile
 }
 \description{
-This function loads a file as a matrix. It assumes that the first column
-contains the rownames and the subsequent columns are the sample identifiers.
-Any rows with duplicated row names will be dropped with the first one being
-kepted.
+MethylMaster version of the champ.QC function()
 }

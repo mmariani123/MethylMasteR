@@ -2,7 +2,7 @@
 % Please edit documentation in R/methyl_master_epicopy_helper_functions.R
 \name{read.metharray.sheet.mm}
 \alias{read.metharray.sheet.mm}
-\title{Modified read.metharray.sheet from minfi}
+\title{read.metharray.sheet.mm}
 \usage{
 read.metharray.sheet.mm(
   base,
@@ -15,11 +15,25 @@ read.metharray.sheet.mm(
 )
 }
 \arguments{
-\item{...}{Additional arguments}
+\item{base}{The base parameter}
+
+\item{pattern}{The pattern parameter}
+
+\item{ignore.case}{The ignore.case parameter}
+
+\item{recursive}{The recursive parameter}
+
+\item{single.file}{The single.file parameter}
+
+\item{single.file.path}{The single.file.path parameter}
+
+\item{verbose}{The verbose parameter}
+
+\item{...}{Additional arguments passed to read.metharray.mm}
 }
 \value{
-formatted csv as df
+A formatted csv as a dataframe
 }
 \description{
-Modified read.metharray.sheet from minfi
+MethylMaster version of read.metharray.sheet() from minfi
 }

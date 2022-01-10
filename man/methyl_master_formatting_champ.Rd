@@ -7,10 +7,30 @@
 methyl_master_formatting_champ(
   champ.form.seg = NULL,
   champ.form.output.dir = getwd(),
+  champ.form.reference = NULL,
+  champ.form.split.by = NULL,
   champ.form.save.seg = FALSE,
   champ.form.comparison = NULL,
   champ.form.padj = NULL
 )
+}
+\arguments{
+\item{champ.form.seg}{The input ChAMP CNV segmentation results}
+
+\item{champ.form.output.dir}{The output directory}
+
+\item{champ.form.reference}{The reference that was used}
+
+\item{champ.form.split.by}{The splt.by variable in the sample sheet that was
+used}
+
+\item{champ.form.save.seg}{Whether to save the formatted ChAMP results}
+
+\item{champ.form.comparison}{The MethylMaster comparison vector}
+
+\item{champ.form.padj}{The padj that was used in the ChAMP routine}
+
+\item{...}{Additional parameters passed to methyl_master_champ_formatting}
 }
 \value{
 Formatted champ result as MethylMaster seg object

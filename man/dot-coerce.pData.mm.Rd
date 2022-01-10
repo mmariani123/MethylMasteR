@@ -10,8 +10,9 @@
 \item{pdat}{Path to the input file}
 }
 \value{
-compatible pData data frame
+Compatible pData data frame
 }
 \description{
+MethylMaster .coerce.pData() function
 This will fix the issue with LRR2
 }

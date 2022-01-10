@@ -2,7 +2,7 @@
 % Please edit documentation in R/methyl_master_helper_functions.R
 \name{fast_450k_binning}
 \alias{fast_450k_binning}
-\title{This is a faster version of binding 450K bins}
+\title{fast_450_k_binning}
 \usage{
 fast_450k_binning(
   proc.samples,
@@ -12,17 +12,18 @@ fast_450k_binning(
 )
 }
 \arguments{
-\item{proc.samples}{samples input}
+\item{proc.samples}{The samples used as input}
 
-\item{med.ref.values}{median reference values}
+\item{med.ref.values}{The median reference values}
 
-\item{proc.ref.samples}{refernce samples}
+\item{proc.ref.samples}{the refernce samples}
 
-\item{bin.size}{bin size}
+\item{bin.size}{The bin size}
 }
 \value{
-450k-style candidates data frame
+A 450k-style candidates data frame
 }
 \description{
-This is a faster version of binding 450K bins
+A faster version for binding 450K bins
+Originally function by Knoll et al., 2017
 }

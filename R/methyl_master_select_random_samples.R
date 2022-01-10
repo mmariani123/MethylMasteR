@@ -5,10 +5,9 @@
 #' Michael Mariani PhD Dartmouth College 2021
 #' norm.path<-"G:\\My Drive\\dartmouth\\salas_lab_working\\cnv\\BLCA_normal.txt"
 #' tum.path<-"G:\\My Drive\\dartmouth\\salas_lab_working\\cnv\\BLCA_normal.txt"
-#'
-#' @param normal.path
-#' @param tumor.path
-#' @return #Return randomly sampled TCGA IDAT samples
+#' @param normal.path The normal path
+#' @param tumor.path The tumor path
+#' @return Return randomly sampled TCGA IDAT samples
 #' @export
 methyl_master_select_random_samples <- function(normal.path,
                                                 tumor.path)

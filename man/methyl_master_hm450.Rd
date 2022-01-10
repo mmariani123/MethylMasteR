@@ -20,10 +20,40 @@ methyl_master_hm450(
   ...
 )
 }
+\arguments{
+\item{hm450.input.dir}{The input .idat directory}
+
+\item{hm450.output.dir}{The output directory for the HM450 routine}
+
+\item{hm450.comparison}{The two-element MethylMaster comparison vector}
+
+\item{hm450.split.by}{The split.by column in the MethylMaster sample sheet
+to splut up the HM450 analysis by}
+
+\item{hm450.reference}{The reference to use for the HM450 routine}
+
+\item{hm450.workflow}{The specific HM450 workflow to use: "A", "B", or "C"}
+
+\item{hm450.file.sep}{The system-specific file separator to use}
+
+\item{hm450.sesame.data.cache}{The sesame data control data cache: if using
+a sesame dataset as the reference}
+
+\item{hm450.sesame.data.normal}{The sesame data normal data set: if using a
+sesame dataset as the reference}
+
+\item{hm450.sesame.ref.version}{The sesame ref version (e.g. hg38) if using
+a sesame dataset as the reference}
+
+\item{hm450.save.seg}{Whether to save the HM450 routine segmentatin results}
+
+\item{...}{Additional parameters to pass to methyl_master_hm450}
+
+\item{hm450.sample.sheet}{The MethylMaster sample sheet path}
+}
 \value{
-#seg.out
+HM450 routine segmentation CNV results stored in a list
 }
 \description{
-My version of hm450 analyses
-############ Samples and ref also need to be in same order ##########
+MethylMaster version of HM450 analysis
 }

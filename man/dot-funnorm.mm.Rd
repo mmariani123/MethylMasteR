@@ -2,13 +2,22 @@
 % Please edit documentation in R/methyl_master_epicopy_helper_functions.R
 \name{.funnorm.mm}
 \alias{.funnorm.mm}
-\title{Epciopy modified .funnorm function}
+\title{.funnorm.mm}
 \usage{
 .funnorm.mm(rgSet, nPCs = 2, sex = NULL, verbose = TRUE)
 }
+\arguments{
+\item{rgSet}{The rgSet parameter}
+
+\item{nPCs}{The nPCs parameter}
+
+\item{sex}{The sex parameter}
+
+\item{verbose}{the verbose parameter}
+}
 \value{
-return final gm set
+Return a final gm set
 }
 \description{
-Epciopy modified .funnorm function
+MethylMaster version of the Epicopy .funnorm() function
 }

@@ -4,14 +4,15 @@
 #' @description formatting the champ seg results for
 #' overlaps and visualization etc.a
 #' Michael Mariani PhD Dartmouth College 2021
-#' @param champ.form.seg
-#' @param champ.form.output.dir
-#' @param champ.form.reference
-#' @param champ.form.split.by
-#' @param champ.form.save.seg
-#' @param champ.form.comparison
-#' @param champ.form.padj
-#' @param ...
+#' @param champ.form.seg The input ChAMP CNV segmentation results
+#' @param champ.form.output.dir The output directory
+#' @param champ.form.reference The reference that was used
+#' @param champ.form.split.by The splt.by variable in the sample sheet that was
+#' used
+#' @param champ.form.save.seg Whether to save the formatted ChAMP results
+#' @param champ.form.comparison The MethylMaster comparison vector
+#' @param champ.form.padj The padj that was used in the ChAMP routine
+#' @param ... Additional parameters passed to methyl_master_champ_formatting
 #' @import CNVRanger
 #' @import matter
 #' @importFrom magrittr %>%

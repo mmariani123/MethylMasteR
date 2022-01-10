@@ -1,9 +1,10 @@
 #!/usr/bin/env Rscript
 
 #' @title methyl_master
-#' @description Main function:
-#' MultiMethylv1.0 : CNV calling from methylation data
-#' Michael Mariani PhD Dartmouth College 2021
+#' @description MethyMaster main function:
+#' CNV calling platform from methylation data algorithms
+#' and additional comparison functionality
+#' Michael Mariani PhD Dartmouth College 2021-2022
 #' Possible routines:
 #' "test"            ##Run a quick test
 #' "process_sesame", ##Preprocess the TCGA and cord data in sesame format
@@ -12,58 +13,73 @@
 #' "champ" ,         ##Run ChAMP   CNV calling (get segments)
 #' "epicopy" ,       ##Run EpiCopy CNV calling (get segments)
 #' "compare"         ##Run algorithm comparison functionality
-#' @param input.dir
-#' @param output.dir
-#' @param sample.sheet.path
-#' @param file.sep
-#' @param r.lib.path
-#' @param n.cores
-#' @param os.type
-#' @param proj
-#' @param visualize
-#' @param visualize.individual
-#' @param simplify.reduce
-#' @param routine
-#' @param reference
-#' @param reference.name
-#' @param split.by
-#' @param comparison
-#' @param overlap.density
-#' @param sesame.data.cache
-#' @param sesame.data.normal
-#' @param sesame.ref.version
-#' @param sesame.hm450.mean.correct
-#' @param sesame.form.thresholds
-#' @param sesame.form.add.meta
-#' @param hm450.workflow
-#' @param hm450.anno.file.path
-#' @param champ.padj
-#' @param champ.control
-#' @param champ.run.combat
-#' @param champ.run.dmp
-#' @param champ.run.dmr
-#' @param champ.run.block
-#' @param champ.run.gsea
-#' @param champ.run.epimod
-#' @param epi.run.gistic
-#' @param compare.name
-#' @param olaps.split.field
-#' @param estimate.recurrence
-#' @param ov.less.stringent.ra.setting
-#' @param ov.keep.extra.columns
-#' @param ov.pvalue
-#' @param ov.simplify.reduce
-#' @param save.seg
-#' @param create.dir
-#' @param compare.list.files
-#' @param compare.files.in
-#' @param compare.names
-#' @param compare.olaps.size
-#' @param ...
+#' @param input.dir input directory
+#' @param output.dir output directory
+#' @param sample.sheet.path path to sample sheet
+#' @param file.sep file separator
+#' @param r.lib.path path to r library default is .libPaths()
+#' @param n.cores number of cores to run
+#' @param os.type the os type running the software
+#' @param proj the project name
+#' @param visualize visualize the output
+#' @param visualize.individual visualize individual sample plots for sesame
+#' @param simplify.reduce the reduction function being applied to the output
+#' @param routine the specific routine to run
+#' @param reference the reference to use
+#' @param reference.name the reference name, for the epicopy routine
+#' @param split.by which additional metadata column to split the analysis by
+#' @param comparison which groups from the metadata "Sample_Group" to compare
+#' @param overlap.density the overlap density applied to final results from
+#' the modified population ranges function
+#' @param sesame.data.cache the sesame data cache to use
+#' @param sesame.data.normal which sesame normal data to use e.g."EPIC.5.Normal"
+#' @param sesame.ref.version which sesame reference version, default is hg38
+#' @param sesame.hm450.mean.correct hm450 style auto-correction centering
+#' @param sesame.form.thresholds the thresholds for cnv state calling
+#' @param sesame.form.add.meta additional metadata column to be plotted with
+#' final heatmap
+#' @param hm450.workflow which hm450 workflow to use with the hm450 routine:
+#' "A", "B", or "C"
+#' @param hm450.anno.file.path the path to the hm450 annotation file for the
+#' hm450 routine
+#' @param champ.padj adjusted p-value threshold for the ChAMP routine
+#' @param champ.control select the champ control to use
+#' @param champ.run.combat run combat batch correction in the champ routine
+#' @param champ.run.dmp run dmp in the champ routin
+#' @param champ.run.dmr run dmr in the champ routine
+#' @param champ.run.block run block in the champ routine
+#' @param champ.run.gsea run gsea in the champ routine
+#' @param champ.run.epimod run epimod in the champ routine
+#' @param epi.run.gistic run GISTIC in the epicopy routine
+#' @param compare.name the compare.name to use
+#' @param olaps.split.field which field in the olaps to split the results by
+#' the default (recommended) is to use "Sample_ID"
+#' @param estimate.recurrence whether to use the estimate.recurrence feature
+#' in populationsRanges when looking at overlaps within a particular routine
+#' @param ov.less.stringent.ra.setting whether to use less stringent
+#' method when comparing overlaps of cnvs from an individual routine
+#' @param ov.keep.extra.columns whether to keep extra meta data columns or
+#' not when collating results from an individual routine
+#' @param ov.pvalue the pvalue cutoff to use within a routine
+#' @param ov.simplify.reduce which reduction method to use to compare overlaps
+#' within a routine
+#' @param save.seg whether to save the seg output or not
+#' @param create.dir create output directory when running MethylMaster,
+#' if already exists it will be over-written
+#' @param compare.list.files whether to list the files individually to be
+#' compared with the compare routine or not, otherwise will search through
+#' the input.dir path
+#' @param compare.files.in vector of file paths to individual routine results
+#' to use with the compare routine
+#' @param compare.names the names of the files (with paths) to run with the
+#' compare routine
+#' @param compare.olaps.size the overlaps size to use when considering an
+#' overlap hit across multiple routine results (using the compare routin)
+#' @param ... additional parameters to be passed to methyl_master
 #' @import CNVRanger
 #' @import matter
 #' @importFrom magrittr %>%
-#' @return #NULL
+#' @return NULL
 #' @export
 methyl_master <- function(input.dir            = NULL,
                           output.dir           = NULL,

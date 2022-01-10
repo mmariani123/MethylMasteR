@@ -1,29 +1,37 @@
 #!/usr/bin/env Rscript
 
 #' @title methyl_master_olaps_and_visualize
-#' @description perform overlaps analysis and visualization
-#' ##Michael Mariani Dartmouth College 2021
-#' @param ov.seg
-#' @param ov.name
-#' @param ov.output.dir
-#' @param ov.routine
-#' @param ov.split.field
-#' @param ov.keep.extra.columns
-#' @param ov.overlap.density
-#' @param ov.estimate.recurrence
-#' @param ov.keep.extra.columns
-#' @param ov.simplify.reduce
-#' @param ov.less.stringent.ra.setting
-#' @param ov.pvalue
-#' @param ov.plot.individual
-#' @param ...
+#' @description perform overlaps analysis and visualization for the various
+#' routines.
+#' @param ov.seg The formatted seg input object
+#' @param ov.name The name of the formatted seg input object
+#' @param ov.output.dir The output directory for the overlaps and visualization
+#' results
+#' @param ov.routine The specific routine that was run to produce the results
+#' @param ov.split.field The split.by field specified earlier in the analysis
+#' from the Sample Sheet
+#' @param ov.keep.extra.columns Keep the extra metadata columns in the output
+#' @param ov.overlap.density The populationRanges desnity value to use when
+#' caluclating overlaping CNV regions
+#' @param ov.estimate.recurrence Whether or not to use esitmate recursion
+#' (generates a p-value) for the overlaps regions identified by populationRanges
+#' @param ov.simplify.reduce The reduction function used to reduce the overlaps
+#' results
+#' @param ov.less.stringent.ra.setting Whether or not to use the more or less
+#' stringent overlaps filltering (ra denotes "Ragged Experiment" object)
+#' @param ov.pvalue The incoming CNV call p-value threshold to filter by
+#' before any overlaps caluclations are performed
+#' @param ov.plot.individual Whether to plot individual plots for the the sesame
+#' routine
+#' @param ... Additional parameters to pass to methyl_master_olaps_and_visualize
 #' @import pheatmap
 #' @import ggplot2
-#' @importFrom gtools mixedorder unbox
-#' @importFrom GenomicRanges as.data.frame unbox
-#' @importFrom GenomicRanges makeGRangesListFromDataFrame unbox
-#' @importFrom ramify flatten unbox
-#' @return #seg.out
+#' @importFrom gtools mixedorder
+#' @importFrom GenomicRanges as.data.frame
+#' @importFrom GenomicRanges makeGRangesListFromDataFrame
+#' @importFrom ramify flatten
+#' @importFrom cowplot plot_grid
+#' @return Output overlaps regions .CSVs and images
 #' @export
 methyl_master_olaps_and_visualize <- function(ov.seg   = NULL,
                                               ov.name  = NULL,

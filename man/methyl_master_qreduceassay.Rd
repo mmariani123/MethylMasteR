@@ -2,7 +2,7 @@
 % Please edit documentation in R/methyl_master_qreduceassay.R
 \name{methyl_master_qreduceassay}
 \alias{methyl_master_qreduceassay}
-\title{##methyl_master_qreduceassay}
+\title{methyl_master_qreduceassay}
 \usage{
 methyl_master_qreduceassay(
   x,
@@ -13,12 +13,24 @@ methyl_master_qreduceassay(
   background = NA_integer_
 )
 }
+\arguments{
+\item{x}{The x parameter}
+
+\item{query}{The query parameter}
+
+\item{simplifyReduce}{The simplifyReduce parameter}
+
+\item{i}{The i parameter}
+
+\item{withDimnames}{The withDimnames parameter}
+
+\item{background}{the background parameter}
+}
 \value{
 A reduced ReaggedExperiment assay object
 }
 \description{
-MethylMasteR qreduceAssay function
-Originally from the RaggedExperiment Package
-I have modified my own version here for debugging
-and tighter control
+MethylMaster version of the qreduceAssay function
+Originally from the RaggedExperiment Package by Martin Morgan and
+Marcel Ramos 2021.
 }

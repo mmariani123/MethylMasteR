@@ -5,29 +5,56 @@
 \title{methyl_master_formatting_sesame}
 \usage{
 methyl_master_formatting_sesame(
-  sesame.form.seg,
-  sesame.form.output.dir,
-  sesame.form.sample.sheet.path,
-  sesame.form.reference,
-  sesame.form.split.by,
-  sesame.form.comparison,
-  sesame.form.save.seg,
+  sesame.form.seg = NULL,
+  sesame.form.output.dir = getwd(),
+  sesame.form.sample.sheet.path = NULL,
+  sesame.form.reference = NULL,
+  sesame.form.split.by = NULL,
+  sesame.form.comparison = NULL,
+  sesame.form.save.seg = FALSE,
+  sesame.form.plot.individual = FALSE,
+  sesame.form.auto.corrected = FALSE,
+  sesame.form.thresholds = NULL,
+  sesame.form.add.meta = NULL,
   ...
 )
 }
+\arguments{
+\item{sesame.form.seg}{The input sesame segmentation list for formatting}
+
+\item{sesame.form.output.dir}{The output dir for sesame formatting}
+
+\item{sesame.form.reference}{The sesame reference used in the analysis}
+
+\item{sesame.form.split.by}{The split.by field used in the sesame routine
+in the MethylMaster sample sheet}
+
+\item{sesame.form.comparison}{The MethylMaster comparison vector used in the
+Sesame routine analysis}
+
+\item{sesame.form.save.seg}{Whether or not to save the formatted seg output}
+
+\item{sesame.form.plot.individual}{Whether to plot the individual sesame
+sample signal plots}
+
+\item{sesame.form.auto.corrected}{whether the hm450 AutoCorrectionPeak method
+was applied during the sesame routine}
+
+\item{sesame.form.thresholds}{The sesame thresholds used to determine the CNV
+state, if NULL, the equation  seg.state <- round(2^seg.means * 2) is used}
+
+\item{sesame.form.add.meta}{An additional metadata column (numeric) to plot
+in the output heatmap of the sesame routine}
+
+\item{...}{additional parameters to pass to methyl_master_formatting_sesame}
+
+\item{sample.form.sample.sheet.path}{The path to the MethylMaster
+sample sheet}
+}
 \value{
-#Formatted seg list object for visualizing
+Formatted seg list object for visualizing etc.
 }
 \description{
-Main function:
-MultiMethylv1.0 : CNV calling from methylation data
-Michael Mariani PhD Dartmouth College 2021
-Possible routines:
-"test"            ##Run a quick test
-"process_sesame", ##Preprocess the TCGA and cord data in sesame format
-"sesame",         ##Run Sesame  CNV calling (get segments)
-"hm450" ,         ##Run 450K    CNV calling (get segments)
-"champ" ,         ##Run ChAMP   CNV calling (get segments)
-"epicopy" ,       ##Run EpiCopy CNV calling (get segments)
-"compare"         ##Run algorithm comparison functionality
+formatting the results of the sesame functionality to prepare
+for comparison and output
 }

@@ -17,11 +17,32 @@ champ.EpiMod(
   arraytype = "450K"
 )
 }
+\arguments{
+\item{beta}{The beta parameter}
+
+\item{pheno}{The pheno parameter}
+
+\item{nseeds}{The nseeds parameter}
+
+\item{gamma}{The gamma parameter}
+
+\item{nMC}{The nMC parameter}
+
+\item{sizeR.v}{The sizeR.v parameter}
+
+\item{minsizeOUT}{The minisizeOUT parameter}
+
+\item{resultsDir}{The resultsDir parameter}
+
+\item{PDFplot}{The PDFplot parameter}
+
+\item{arraytype}{The arraytype parameter}
+}
 \value{
-A matrix of the infile
+A ChAMP EpiMod object
 }
 \description{
-champ.EpiMod functionality
-BiocManager::install("FEM")
-https://rdrr.io/github/gaberosser/ChAMP/src/R/champ.EpiMod.R
+MethylMaster version of the champ.EpiMod() function
+Note: BiocManager::install("FEM")
+see https://rdrr.io/github/gaberosser/ChAMP/src/R/champ.EpiMod.R
 }

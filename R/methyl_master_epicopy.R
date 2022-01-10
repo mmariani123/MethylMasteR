@@ -1,30 +1,35 @@
 #!/usr/bin/env Rscript
 
 #' @title methyl_master_epicopy
-#' @description my modfiied epicopy function for MethylMaster
-#'
-#' @param epi.input.dir
-#' @param epi.output.dir
-#' @param epi.single.file
-#' @param epi.single.file.path
-#' @param epic.manifest.path
-#' @param epi.reference.group
-#' @param epi.comparison
-#' @param epi.split.by
-#' @param epi.ncores
-#' @param epi.ref
-#' @param epi.normals
-#' @param epi.samp.names
-#' @param epi.qn
-#' @param epi.mode.bw
-#' @param epi.mode.method
-#' @param epi.normal.cnv
-#' @param epi.mean.center
-#' @param epi.filter.probes
-#' @param epi.retained.probes
-#' @param epi.keepfnobj
-#' @param epi.fn.output
-#' @param epi.run.gistic
+#' @description MethyMaster version of Epicopy::epicopy() function
+#' Epicopy by:
+#' Sean, Soonweng Cho, Hyunseok Kim and Leslie Cope (2017).
+#' Epicopy: Get CNVinformation from 450K array. R package version 0.99.0.
+#' @param epi.input.dir The idat input dir
+#' @param epi.output.dir The output dir for epicopy functionality
+#' @param epi.single.file Whether a single file is used
+#' @param epi.single.file.path The single file path
+#' @param epic.manifest.path The EPIC manifest file path
+#' @param epi.reference.group The reference group to use
+#' @param epi.comparison The MehtylMaster comparison vector
+#' @param epi.split.by The MethylMaster split.by field selected from the sample
+#' sheet
+#' @param epi.ncores The number of cores to use, multiple cores may not be
+#' supported on all systems
+#' @param epi.ref The Epicopy ref to use
+#' @param epi.normals The Epciopy normals to specify
+#' @param epi.samp.names The Epicopy sample names can be custom specified here
+#' @param epi.qn The Epicopy qn parameter
+#' @param epi.mode.bw The Epicopy mode.bw parameter
+#' @param epi.mode.method The Epicopy mode.method parameter
+#' @param epi.normal.cnv The Epicopy normal.cnv parameter
+#' @param epi.mean.center Whether to perform Epicopy mean centering
+#' @param epi.filter.probes The Epicopy filter.probes parameter
+#' @param epi.retained.probes The Epicopy retained probes parameter
+#' @param epi.keepfnobj The Epicopy keepfnobj parameter
+#' @param epi.fn.output The Epicopy fn.output parameter
+#' @param epi.run.gistic The Epicopy run.gistic parameter
+#' (Whetehr to run GISTIC)
 #' @import Epicopy
 #' @return epicopy results data frame
 #' @export

@@ -14,15 +14,23 @@ champ.import.mm(
 )
 }
 \arguments{
-\item{infile}{Path to the input file}
+\item{directory}{The input directory}
+
+\item{sample.sheet}{The MethylMaster sample sheet}
+
+\item{offset}{The offset to use}
+
+\item{control}{Whether or not to use control}
+
+\item{compare.group}{The MethylMaster two-element comparison vector to use}
+
+\item{arraytype}{The array type eg. "450k"}
+
+\item{infile}{The path to the input file}
 }
 \value{
-Return a list
+Returns a list of imported data
 }
 \description{
-champ.import function modified by Michael Mariani
-This function loads a file as a matrix. It assumes that the first column
-contains the rownames and the subsequent columns are the sample identifiers.
-Any rows with duplicated row names will be dropped with the first one being
-kept.
+MethylMaster modified champ.import() function
 }

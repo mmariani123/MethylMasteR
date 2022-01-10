@@ -1,15 +1,16 @@
 #!/usr/bin/env Rscript
 
 #' @title methyl_master_formatting_epicopy
-#' @description Formatting Epicopy output into MethylMaster seg object
+#' @description Formatting the Epicopy output into MethylMaster seg object
 #' for downstream analyses
-#' @param epi.form.seg
-#' @param epi.form.output.dir
-#' @param epi.form.reference
-#' @param epi.form.split.by
-#' @param epi.form.save.seg
-#' @param epi.form.comparison
-#' @return Formatted epicopy result as MethylMaster seg object
+#' @param epi.form.seg The input Epicopy seg results
+#' @param epi.form.output.dir The output dir for the formatted seg object
+#' @param epi.form.reference The reference that was used in the Epicopy routine
+#' @param epi.form.split.by The split.by field from the Sample Sheet that was
+#' used earlier in the analysis
+#' @param epi.form.save.seg Whether to save the formatted Epicopy seg results
+#' @param epi.form.comparison The comparison vector used earlier in the anlysis
+#' @return Formatted epicopy result as a MethylMaster seg object
 #' for downstream analysis
 #' @export
 methyl_master_formatting_epicopy <- function(epi.form.seg=NULL,

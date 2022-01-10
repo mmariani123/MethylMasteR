@@ -2,7 +2,7 @@
 % Please edit documentation in R/methyl_master_findSegments2.R
 \name{findSegments2}
 \alias{findSegments2}
-\title{Modified findSegments function}
+\title{findSegments2}
 \usage{
 findSegments2(
   data,
@@ -16,9 +16,29 @@ findSegments2(
   arrayType = "auto"
 )
 }
-\value{
+\arguments{
+\item{data}{The data parameter}
 
+\item{ctrl}{The ctrl parameter}
+
+\item{ctrlAll}{The ctrlAll parameter}
+
+\item{statistic}{The statistic parameter}
+
+\item{plot}{The plot parameter}
+
+\item{delta}{The delta parameter}
+
+\item{output}{The output parameter}
+
+\item{ylim}{The ylim parameter}
+
+\item{arrayType}{The arrayType parameter}
+}
+\value{
+CNV calls for the HM450 routine
 }
 \description{
-Find segements
+MethylMaster findSegments2 function
+Function originally by Lucas Salas MD, PhD Dartmouth College 2021
 }

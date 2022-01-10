@@ -1,10 +1,10 @@
 #!/usr/bin/env Rscripts
 
 #' @title .coerce.pData.mm
-#' @description This will fix the issue with LRR2
-#'
+#' @description MethylMaster .coerce.pData() function
+#' This will fix the issue with LRR2
 #' @param pdat Path to the input file
-#' @return compatible pData data frame
+#' @return Compatible pData data frame
 #' @export
 .coerce.pData.mm <- function(pdat){
   pDat <- apply(pdat, 2, as.character)
@@ -17,17 +17,19 @@
 }
 
 #' @title LRRtoCNA.mm
-#' @desciption Epicopy modified convert log r ratio data to cna calls:
-#' Same as Lucas Salas' modified LRRtoCNA2 function
-#' @param LRR
-#' @param sampID
-#' @param ncores
-#' @param seg.undo.splits
-#' @param seg.undo.SD
-#' @param epic.manifest.path
-#' @param platform
+#' @description MethylMaster version of the Epicopy LRRtoCNA function
+#' Epicopy convert log r ratio data to cna calls:
+#' Similar to Lucas Salas' PhD modified LRRtoCNA2 function
+#' @param LRR The LRR parameter
+#' @param sampID The sampID parameter
+#' @param ncores The ncores parameter, note that multiple cores may not work
+#' on every system
+#' @param seg.undo.splits The seg.undo.splits parameter
+#' @param seg.undo.SD The seg.undo.SD parameter
+#' @param epic.manifest.path The epic.manifest.path parameter
+#' @param platform The platform parameter
 #' @import minfi
-#' @return returns segments
+#' @return Returns CNA segments
 #' @export
 LRRtoCNA.mm <- function(LRR,
                       sampID = NULL,
@@ -93,16 +95,15 @@ LRRtoCNA.mm <- function(LRR,
   return(seg)
 }
 
-#' Epciopy modified .funnorm function
-#'
-#'
-#' @param rgSet
-#' @param nPCs
-#' @param sex
-#' @param verbose
+#' @title .funnorm.mm
+#' @description MethylMaster version of the Epicopy .funnorm() function
+#' @param rgSet The rgSet parameter
+#' @param nPCs The nPCs parameter
+#' @param sex The sex parameter
+#' @param verbose the verbose parameter
 #' @import minfi
 #' @import BiocGenerics
-#' @return return final gm set
+#' @return Return a final gm set
 #' @export
 .funnorm.mm <- function(rgSet,
                         nPCs = 2,
@@ -139,26 +140,25 @@ LRRtoCNA.mm <- function(LRR,
 
 }
 
-#' Epciopy modified getLRR function
-#'
-#'
-#' @param rgSet
-#' @param Normals
-#' @param sampNames
-#' @param QN
-#' @param Ref
-#' @param mode.bw
-#' @param mode.method
-#' @param normal.cnv
-#' @param mean.center
-#' @param filter.autosomal.probes
-#' @param autosomal
-#' @param filterProbes
-#' @param ...
+#' @title getLRR.mm
+#' @description MethylMaster version of Epicopy getLRR function
+#' @param rgSet The rgSet parameter
+#' @param Normals The Normals parameter
+#' @param sampNames The sampNames parameter
+#' @param QN The QN parameter
+#' @param Ref The Ref parameter
+#' @param mode.bw The mode.bw parameter
+#' @param mode.method The mode.method parameter
+#' @param normal.cnv The normal.cnv parameter
+#' @param mean.center The mean.center parameter
+#' @param filter.autosomal.probes The filter.autosomal.probes parameter
+#' @param autosomal The autosomal parameter
+#' @param filterProbes The filterProbes parameter
+#' @param ... Additional parameter passed to getLRR.mm
 #' @param import EpicopyData
 #' @import stats
 #' @import minfi
-#' @return return final LRR values
+#' @return Return final LRR values
 #' @export
 getLRR.mm <- function(rgSet = rgset,
                       Normals = Normals,
@@ -482,20 +482,19 @@ getLRR.mm <- function(rgSet = rgset,
   }
 }
 
-#' Modified read.metharray from minfi
-#'
-#'
-#' @param basenames
-#' @param extended
-#' @param verbose
-#' @param force
-#' @param diff.array.type
+#' @title readmetharray.mm
+#' @description MethylMaster version of Minfi read.metharray() function
+#' @param basenames The basenames parameter
+#' @param extended The extended parameter
+#' @param verbose The verbose parameter
+#' @param force The force parameter
+#' @param diff.array.type The diff.array.type parameter
 #' @import DelayedArray
 #' @import BiocParallel
 #' @import illuminaio
 #' @import ENmix
 #' @import minfi
-#' @return methylation array data
+#' @return Methylation array data
 #' @export
 read.metharray.mm <- function(basenames,
                               extended = FALSE,
@@ -575,7 +574,7 @@ read.metharray.mm <- function(basenames,
   sameLength <- (length(unique(arrayTypes[, "size"])) == 1)
   sameArray <- (length(unique(arrayTypes[, "array"])) == 1)
     if(!sameLength && !sameArray){
-      cat("[read.metharray] Trying to parse IDAT files from different arrays.\n")
+    cat("[read.metharray] Trying to parse IDAT files from different arrays.\n")
       cat("  Inferred Array sizes and types:\n")
       print(arrayTypes[, c("array", "size")])
       stop("[read.metharray] Trying to parse different IDAT files, of ",
@@ -617,7 +616,7 @@ read.metharray.mm <- function(basenames,
   ptime1 <- proc.time()
   if (extended) {
     out <- minfi::RGChannelSetExtended(Red = RedMean, Green = GreenMean,
-                                RedSD = RedSD, GreenSD = GreenSD, NBeads = NBeads)
+                          RedSD = RedSD, GreenSD = GreenSD, NBeads = NBeads)
   }
   else {
     out <- minfi::RGChannelSet(Red = RedMean, Green = GreenMean)
@@ -632,12 +631,11 @@ read.metharray.mm <- function(basenames,
   return(out)
 }
 
-#' Modified readSheet from minfi
-#'
-#'
-#' @param file
-#' @param recursive
-#' @return formatted csv as df
+#' @title readSheet.mm
+#' @description MethylMaster version of readSheet() from Minfi
+#' @param file The file parameter
+#' @param recursive The recursive parameter
+#' @return Formatted csv as dataframe
 #' @export
 readSheet.mm <- function(file,
                       recursive=TRUE
@@ -712,18 +710,17 @@ readSheet.mm <- function(file,
   df
 }
 
-#' Modified read.metharray.sheet from minfi
-#'
-#'
-#' @param base
-#' @param pattern
-#' @param ignore.case
-#' @param recursive
-#' @param single.file
-#' @param single.file.path
-#' @param verbose
-#' @param ... Additional arguments
-#' @return formatted csv as df
+#' @title read.metharray.sheet.mm
+#' @description MethylMaster version of read.metharray.sheet() from minfi
+#' @param base The base parameter
+#' @param pattern The pattern parameter
+#' @param ignore.case The ignore.case parameter
+#' @param recursive The recursive parameter
+#' @param single.file The single.file parameter
+#' @param single.file.path The single.file.path parameter
+#' @param verbose The verbose parameter
+#' @param ... Additional arguments passed to read.metharray.mm
+#' @return A formatted csv as a dataframe
 #' @export
 read.metharray.sheet.mm <- function(base,
                                     pattern = "csv$",
@@ -770,43 +767,44 @@ read.metharray.sheet.mm <- function(base,
 }
 
 #' @title epicopy.mm
-#' @description Modified epicopy() function from Epicopy
-#' I updated the read.metharray.sheet function
-#' and incorporated it here
-#' @param target_dir
-#' @param output_dir
-#' @param single.file
-#' @param single.file.path
-#' @param epic.manifest.path
-#' @param comparison
-#' @param reference_group
-#' @param split.by
-#' @param project_name
-#' @param Normals
-#' @param sampNames
-#' @param QN
-#' @param Ref
-#' @param mode.bw
-#' @param mode.method
-#' @param normal.cnv
-#' @param mean.center
-#' @param filterProbes
-#' @param retainedProbes
-#' @param ncores
-#' @param seg.undo.splits
-#' @param seg.undo.SD
-#' @param filterbycount
-#' @param min_probes
-#' @param verbose
-#' @param keep_fnobj
-#' @param fn_output
-#' @param ...
+#' @description MethylMaster version of the main Epicopy::epicopy() function
+#' from Epicopy
+#' @param target_dir The input directory
+#' @param output_dir The output directory
+#' @param single.file Specify a single file (logical)
+#' @param single.file.path The single file path
+#' @param epic.manifest.path The path to the epic.manifest file
+#' @param comparison The MehtylMaster comparison vector
+#' @param reference_group The reference group to specify
+#' @param split.by The MethylMaster split.by field form the sample sheet to
+#' split up the epicopy analysis by
+#' @param project_name The project name
+#' @param Normals The specified Normals see documentaion
+#' @param sampNames Customize the sample names here
+#' @param QN The QN parameter to use
+#' @param Ref The Ref parameter to use
+#' @param mode.bw The mode.bw parameter to use
+#' @param mode.method The mode.method parameter to use
+#' @param normal.cnv The normal.cnv parameter to use
+#' @param mean.center Whether to use mean centering (default=TRUE)
+#' @param filterProbes The filterProbes parameter
+#' @param retainedProbes The retained Probes parameter
+#' @param ncores The number of cores to use, note that multiple cores may not
+#' work on every system
+#' @param seg.undo.splits The seg.undo.splits parameter
+#' @param seg.undo.SD The seg.undo.SD parameter
+#' @param filterbycount The filterbycount parameter
+#' @param min_probes The min_probes parameter
+#' @param verbose The verbose parameter
+#' @param keep_fnobj The keep_fnobj parameter
+#' @param fn_output The fn_output parameter
+#' @param ... Additional parameters to pass to epicopy.mm()
 #' @import parallel
 #' @import foreach
 #' @import iterators
 #' @import doParallel
 #' @import minfi
-#' @return return a cna list containing CNV frame(s)
+#' @return Return a cna list containing CNV frame(s)
 #' @export
 epicopy.mm <- function(target_dir,
                        output_dir = NULL,

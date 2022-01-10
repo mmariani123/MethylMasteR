@@ -1,16 +1,16 @@
 #!/usr/bin env Rscript
 
-##Michael Mariani Dartmouth College 2021
+##Michael Mariani PhD Dartmouth College 2021-2022
 
-##Helper functions for MultiMethyl
+##Helper functions for MethylMaster
 
 ######################## FUNCTIONS ########################################
 
-#' Harmonize RG data
-#'
-#'
-#' @param rgset1 Path to the input file
-#' @param rgset2
+#' @title harmonized_rg_sets
+#' @description Harmonize RG data
+#' Functionality by Lucas Salas PhD Dartmouth College 2021
+#' @param rgset1 Path to the first RGset
+#' @param rgset2 Path to the second RGset
 #' @return Harmonized data set
 #' @export
 harmonized_rg_sets <- function(rgset1,rgset2){
@@ -19,11 +19,11 @@ harmonized_rg_sets <- function(rgset1,rgset2){
   return(rgset.harm)
 }
 
-#' Use sesame to infer sex karyotype
-#'
-#'
-#' @param sset Path to the input file
-#' @param ref.sset
+#' @title infer_sex_karyotype
+#' @description Use sesame to infer sex karyotype
+#' functionality by Jennifer Chen Dartmouth College 2021
+#' @param sset SeSAMe sset
+#' @param ref.sset SeSAMe reference sset
 #' @return sset with inferred sex data
 #' @export
 infer_sex_karyotype <- function(sset, ref.sset){
@@ -33,9 +33,9 @@ infer_sex_karyotype <- function(sset, ref.sset){
     }
 }
 
-#' Weighted-mean function
-#'
-#'
+#' @title weightedmean
+#' @description Weighted-mean function
+#' Original function from Epicopy by Cho et al., 2019
 #' @param scores  input scores
 #' @param ranges  input Granges
 #' @param qranges input Qranges
@@ -45,9 +45,9 @@ weightedmean <- function(scores, ranges, qranges){
     return(sum(scores * width(ranges)) / sum(width(ranges)))
 }
 
-#' Epicopy-style weighted mean funtion
-#'
-#'
+#' @title weightedmean.epicopy
+#' @description Epicopy-style weighted mean function
+#' Original function from Epicopy by Cho et al., 2019
 #' @param scores  input scores
 #' @param ranges  input Granges
 #' @param qranges input Qranges
@@ -58,13 +58,13 @@ weightedmean.epicopy <- function(scores, ranges, qranges){
     return(sum(scores * width(isects)) / sum(width(isects)))
 }
 
-#' Bind individual sesame frames together
-#'
-#'
-#' @param x #sesame-style data frame
-#' @param auto.corrected
-#' @param add.col
-#' @return #segment dataframe output of multiple dfs bound together
+#' @title binding_frames_mm
+#' @description Bind individual sesame frames together
+#' @param x Wesame-style data frame
+#' @param auto.corrected Whether or not data went through AutoCorrecPeaks
+#' @param add.col Addtional (numeric) column to add to output dataframe to be
+#' used in downstream analysis/plotting
+#' @return Segment dataframe output of multiple dfs bound together
 #' @export
 binding_frames_mm <- function(x,
                               auto.corrected,
@@ -99,14 +99,13 @@ binding_frames_mm <- function(x,
 }
 
 #' @title calc_seg_state
-#' @description function to calculate seg state from seg mean
-#' Michael Mariani PhD Dartmouth College 2022
+#' @description common function used to calculate seg state from seg mean
 #' @param seg.means vector of seg.means
-#' @param upper.thresh CN,
-#' any number above this will be assigned this value
+#' @param upper.thresh CN state threshold, any number above this will be
+#' assigned this value
 #' @param cutoff vector of cutoff threshold for loss and
 #' gain respectively
-#' @return #vector of calculated states
+#' @return vector of calculated CNV states
 #' @export
 calc_seg_state <- function(seg.means=NULL,
                            upper.thresh=4,
@@ -125,14 +124,14 @@ calc_seg_state <- function(seg.means=NULL,
   return(seg.state)
 }
 
-#' This is a faster version of binding 450K bins
-#'
-#'
-#' @param proc.samples samples input
-#' @param med.ref.values median reference values
-#' @param proc.ref.samples refernce samples
-#' @param bin.size bin size
-#' @return 450k-style candidates data frame
+#' @title fast_450_k_binning
+#' @description A faster version for binding 450K bins
+#' Originally function by Knoll et al., 2017
+#' @param proc.samples The samples used as input
+#' @param med.ref.values The median reference values
+#' @param proc.ref.samples the refernce samples
+#' @param bin.size The bin size
+#' @return A 450k-style candidates data frame
 #' @export
 fast_450k_binning <- function(proc.samples,
                               med.ref.values,
@@ -160,17 +159,15 @@ fast_450k_binning <- function(proc.samples,
 }
 
 #' @title AutoCorrectPeak.mm
-#' @description MethylMaster version of  CopyNumber450kCancer::AutoCorrectPeak
-#' function
-#' Original function by Marzouka et al. 2016
-#' Modified by Michael Mariani PhD Dartmouth College 2022
-#' @param object
-#' @param output.dir
-#' @param cutoff
-#' @param markers
-#' @param ...
+#' @description MethylMaster version of CopyNumber450kCancer::AutoCorrectPeak
+#' function. Original function by Marzouka et al. 2016
+#' @param object The sesame CNV object to have its peaks adjusted/corrected
+#' @param output.dir The specified output directory
+#' @param cutoff The cutoff threshold
+#' @param markers The number of markers
+#' @param ... Additional parameters to AutoCorrectPeak.mm
 #' @import CopyNumber450kCancer
-#' @return #corrected regions plots and files and returns a corrected object
+#' @return Corrected regions plots and files and returns a corrected object
 #' @export
 AutoCorrectPeak.mm <- function(object,
                                output.dir=getwd(),
@@ -267,11 +264,12 @@ AutoCorrectPeak.mm <- function(object,
     ##object$regions_auto[which(object$regions_auto$Sample %in%
     ##              as.character(object$SL[i, "Sample"])), "Mean"] <- sam$Mean
     object$regions_auto[which(object$regions_auto$Sample %in%
-                                as.character(object$SL[1, "Sample"])), "Mean"] <- sam$Mean
+                          as.character(object$SL[1, "Sample"])), "Mean"] <-
+      sam$Mean
 
-    ##object$mod_auto[which(object$mod_auto$Sample %in% as.character(object$SL[i,
-    ##              "Sample"])), 2:4] <- c(round(max.peak.value,
-    ##                                    3), round(-max.peak.value, 3), "Auto")
+  ##object$mod_auto[which(object$mod_auto$Sample %in% as.character(object$SL[i,
+  ##              "Sample"])), 2:4] <- c(round(max.peak.value,
+  ##                                    3), round(-max.peak.value, 3), "Auto")
     object$mod_auto[which(object$mod_auto$Sample %in% as.character(object$SL[1,
                             "Sample"])), 2:4] <- c(round(max.peak.value,
                                   3), round(-max.peak.value, 3), "Auto")

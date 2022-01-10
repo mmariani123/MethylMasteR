@@ -2,7 +2,7 @@
 % Please edit documentation in R/methyl_master_helper_functions.R
 \name{weightedmean.epicopy}
 \alias{weightedmean.epicopy}
-\title{Epicopy-style weighted mean funtion}
+\title{weightedmean.epicopy}
 \usage{
 weightedmean.epicopy(scores, ranges, qranges)
 }
@@ -17,5 +17,6 @@ weightedmean.epicopy(scores, ranges, qranges)
 epicopy-style weighted mean values
 }
 \description{
-Epicopy-style weighted mean funtion
+Epicopy-style weighted mean function
+Original function from Epicopy by Cho et al., 2019
 }

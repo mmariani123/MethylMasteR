@@ -25,6 +25,9 @@ methyl_master(
   sesame.data.cache = "EPIC",
   sesame.data.normal = "EPIC.5.normal",
   sesame.ref.version = "hg38",
+  sesame.hm450.mean.correct = TRUE,
+  sesame.form.thresholds = NULL,
+  sesame.form.add.meta = NULL,
   hm450.workflow = "B",
   hm450.anno.file.path = NULL,
   champ.padj = 0.05,
@@ -47,16 +50,128 @@ methyl_master(
   create.dir = FALSE,
   compare.list.files = FALSE,
   compare.files.in = NULL,
+  compare.names = NULL,
+  compare.olaps.size = 1,
   ...
 )
 }
-\value{
-#NULL
+\arguments{
+\item{input.dir}{input directory}
+
+\item{output.dir}{output directory}
+
+\item{sample.sheet.path}{path to sample sheet}
+
+\item{file.sep}{file separator}
+
+\item{r.lib.path}{path to r library default is .libPaths()}
+
+\item{n.cores}{number of cores to run}
+
+\item{os.type}{the os type running the software}
+
+\item{proj}{the project name}
+
+\item{visualize}{visualize the output}
+
+\item{visualize.individual}{visualize individual sample plots for sesame}
+
+\item{simplify.reduce}{the reduction function being applied to the output}
+
+\item{routine}{the specific routine to run}
+
+\item{reference}{the reference to use}
+
+\item{reference.name}{the reference name, for the epicopy routine}
+
+\item{split.by}{which additional metadata column to split the analysis by}
+
+\item{comparison}{which groups from the metadata "Sample_Group" to compare}
+
+\item{overlap.density}{the overlap density applied to final results from
+the modified population ranges function}
+
+\item{sesame.data.cache}{the sesame data cache to use}
+
+\item{sesame.data.normal}{which sesame normal data to use e.g."EPIC.5.Normal"}
+
+\item{sesame.ref.version}{which sesame reference version, default is hg38}
+
+\item{sesame.hm450.mean.correct}{hm450 style auto-correction centering}
+
+\item{sesame.form.thresholds}{the thresholds for cnv state calling}
+
+\item{sesame.form.add.meta}{additional metadata column to be plotted with
+final heatmap}
+
+\item{hm450.workflow}{which hm450 workflow to use with the hm450 routine:
+"A", "B", or "C"}
+
+\item{hm450.anno.file.path}{the path to the hm450 annotation file for the
+hm450 routine}
+
+\item{champ.padj}{adjusted p-value threshold for the ChAMP routine}
+
+\item{champ.control}{select the champ control to use}
+
+\item{champ.run.combat}{run combat batch correction in the champ routine}
+
+\item{champ.run.dmp}{run dmp in the champ routin}
+
+\item{champ.run.dmr}{run dmr in the champ routine}
+
+\item{champ.run.block}{run block in the champ routine}
+
+\item{champ.run.gsea}{run gsea in the champ routine}
+
+\item{champ.run.epimod}{run epimod in the champ routine}
+
+\item{epi.run.gistic}{run GISTIC in the epicopy routine}
+
+\item{compare.name}{the compare.name to use}
+
+\item{save.seg}{whether to save the seg output or not}
+
+\item{olaps.split.field}{which field in the olaps to split the results by
+the default (recommended) is to use "Sample_ID"}
+
+\item{estimate.recurrence}{whether to use the estimate.recurrence feature
+in populationsRanges when looking at overlaps within a particular routine}
+
+\item{ov.less.stringent.ra.setting}{whether to use less stringent
+method when comparing overlaps of cnvs from an individual routine}
+
+\item{ov.pvalue}{the pvalue cutoff to use within a routine}
+
+\item{ov.keep.extra.columns}{whether to keep extra meta data columns or
+not when collating results from an individual routine}
+
+\item{ov.simplify.reduce}{which reduction method to use to compare overlaps
+within a routine}
+
+\item{create.dir}{create output directory when running MethylMaster,
+if already exists it will be over-written}
+
+\item{compare.list.files}{whether to list the files individually to be
+compared with the compare routine or not, otherwise will search through
+the input.dir path}
+
+\item{compare.files.in}{vector of file paths to individual routine results
+to use with the compare routine}
+
+\item{compare.names}{the names of the files (with paths) to run with the
+compare routine}
+
+\item{compare.olaps.size}{the overlaps size to use when considering an
+overlap hit across multiple routine results (using the compare routin)}
+
+\item{...}{additional parameters to be passed to methyl_master}
 }
 \description{
-Main function:
-MultiMethylv1.0 : CNV calling from methylation data
-Michael Mariani PhD Dartmouth College 2021
+MethyMaster main function:
+CNV calling platform from methylation data algorithms
+and additional comparison functionality
+Michael Mariani PhD Dartmouth College 2021-2022
 Possible routines:
 "test"            ##Run a quick test
 "process_sesame", ##Preprocess the TCGA and cord data in sesame format

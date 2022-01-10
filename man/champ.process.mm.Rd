@@ -39,10 +39,93 @@ champ.process.mm(
   saveStepresults = TRUE
 )
 }
+\arguments{
+\item{runload}{Whether to run runload}
+
+\item{directory}{Input directory for ChAMP}
+
+\item{resultsDir}{The Champ results directory, can be different from
+the output directory if desired}
+
+\item{sample.sheet}{The MethylMaster sample sheet path}
+
+\item{arraytype}{The arrray type, default "450k"}
+
+\item{controlGroup}{Specify the control Group}
+
+\item{filters}{Filters to use}
+
+\item{runimpute}{Whether to run imputation}
+
+\item{imputemethod}{The imputation method to use}
+
+\item{runQC}{Whether to run QC}
+
+\item{QCplots}{The QC plots to output}
+
+\item{runnorm}{Whether to run runnorm}
+
+\item{normalizationmethod}{The normalization method to use}
+
+\item{runSVD}{Whether to run SVD}
+
+\item{RGEffect}{The RGE effect logical}
+
+\item{runCombat}{Whether to run Combat batch correction}
+
+\item{batchname}{The name of the batch field in the MethylMaster sample sheet}
+
+\item{runDMP}{Whether to run DMP}
+
+\item{runDMR}{whether to run DMR}
+
+\item{DMRmethod}{The DMR method to use}
+
+\item{runBlock}{Whether to tun runBlock}
+
+\item{runGSEA}{Whether to run runGSEA}
+
+\item{runEpiMod}{Whether to run runEpiMod}
+
+\item{runCNA}{Whether to run runCNA}
+
+\item{control}{Whether or not to use control}
+
+\item{runRefBase}{Whether to run runRefBase}
+
+\item{compare.group}{The two-element MethylMaster comparison vector}
+
+\item{adjPVal}{The padj value to filter ChAMP results by}
+
+\item{PDFplot}{Whether to do PDF plots}
+
+\item{Rplot}{Whether to do R plots}
+
+\item{cores}{Number of cores to use, note that more than 1 core may not
+work on all systems.}
+
+\item{saveStepresults}{Whether to save the Stepresults}
+}
 \value{
 Return a champ.result object
 }
 \description{
-champ.process function modified by
-Michael Mariani PhD Dartmouth College 2021
+MethylMaster modified champ.process() function from ChAMP
+ChAMP by:
+#' Tian Y, Morris TJ, Webster AP, Yang Z, Beck S, Andrew F, Teschendorff AE
+(2017). "ChAMP: updated methylation analysis pipeline for Illumina
+BeadChips." \emph{Bioinformatics}, btx513. doi: 10.1093/bioinformatics/btx513
+(URL: https://doi.org/10.1093/bioinformatics/btx513).
+
+Morris TJ, Butcher LM, Teschendorff AE, Chakravarthy AR, Wojdacz TK, Beck S
+(2014). "ChAMP: 450k Chip Analysis Methylation Pipeline." \emph{Bioinformatics},
+\emph{30}(3), 428-430. doi: 10.1093/bioinformatics/btt684 (URL:
+https://doi.org/10.1093/bioinformatics/btt684).
+
+champ.lasso method is described in:
+
+Butcher LM, Beck S (2015). "Probe Lasso: A novel method to rope in
+differentially methylated regions with 450K DNA methylation data."
+\emph{Methods}, \emph{72}, 21-28. doi: 10.1016\%2Fj.ymeth.2014.10.036 (URL:
+https://doi.org/10.1016\%2Fj.ymeth.2014.10.036).
 }

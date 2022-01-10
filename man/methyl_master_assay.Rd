@@ -2,7 +2,7 @@
 % Please edit documentation in R/methyl_master_assay.R
 \name{methyl_master_assay}
 \alias{methyl_master_assay}
-\title{##methyl_master_assay}
+\title{methyl_master_assay}
 \usage{
 methyl_master_assay(
   x,
@@ -12,13 +12,26 @@ methyl_master_assay(
   sparse = FALSE
 )
 }
+\arguments{
+\item{x}{A ragged experiment object}
+
+\item{i}{Integer or character name of assay to be transformed}
+
+\item{withDimnames}{Whether to include the dimnames on the retunred matrix}
+
+\item{background}{A value for the returned matrix}
+
+\item{sparse}{Whether to return a sparse matrix or not}
+
+\item{sesame.idat.files.dir}{The input dir with the .idat files}
+}
 \value{
 A reduced ReaggedExperiment assay object
 }
 \description{
 MethylMasteR Assay function
 Originally from sparseAssay() from the
-RaggedExperiment Package
+RaggedExperiment Package by Martin Morgan and Marcel Ramos 2021
 I have modified my own version
 here for use in methyl master
 }

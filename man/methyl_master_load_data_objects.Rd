@@ -6,16 +6,18 @@
 \usage{
 methyl_master_load_data_objects(files.dir, file.sep)
 }
+\arguments{
+\item{files.dir}{The parameter containing the R files}
+
+\item{file.sepThe}{the desired file separator}
+}
 \value{
-#loaded data object(s)
+loaded data object(s)
 }
 \description{
 Possible function for loading data objects
-Michael Mariani PhD Dartmouth College 2021
-
-Required data objects for MethylMaster
+required for MethylMaster
 Load required data objects:
-
 load(file=paste0(files.dir,"/","hm450.manifest.hg38.rda"))
 annotation_df <- as.data.frame(
 data.table::fread(

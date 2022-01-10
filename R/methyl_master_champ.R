@@ -1,34 +1,50 @@
 #!/usr/bin/env Rscript
 
-#' @title methyl_master_hm450
-#' @description My version of hm450 analyses
-#' ############ Samples and ref also need to be in same order ##########
-#' "CpG probe IDs not in the same order in data and ctrl!"
-#' Modified by Michael Mariani PhD Dartmouth College 2021
-#' @param champ.input.dir
-#' @param champ.output.dir
-#' @param champ.sample.sheet
-#' @param champ.array.type
-#' @param champ.batch.name
-#' @param champ.padj
-#' @param champ.ncores
-#' @param champ.control
-#' @param champ.control.group
-#' @param champ.comparison
-#' @param champ.runimpute
-#' @param champ.runQC
-#' @param champ.runnorm
-#' @param champ.runSVD
-#' @param champ.runCombat
-#' @param champ.runDMP
-#' @param champ.runDMR
-#' @param champ.runBlock
-#' @param champ.runGSEA
-#' @param champ.runEpiMod
-#' @param ...
+#' @title methyl_master_champ
+#' @description My function to call the ChAMP::champ.process() function
+#' For ChAMP refs see:
+#' Tian Y, Morris TJ, Webster AP, Yang Z, Beck S, Andrew F, Teschendorff AE
+#' (2017). "ChAMP: updated methylation analysis pipeline for Illumina
+#' BeadChips." _Bioinformatics_, btx513. doi: 10.1093/bioinformatics/btx513
+#' (URL: https://doi.org/10.1093/bioinformatics/btx513).
+#'
+#' Morris TJ, Butcher LM, Teschendorff AE, Chakravarthy AR, Wojdacz TK, Beck S
+#' (2014). "ChAMP: 450k Chip Analysis Methylation Pipeline." _Bioinformatics_,
+#' *30*(3), 428-430. doi: 10.1093/bioinformatics/btt684 (URL:
+#' https://doi.org/10.1093/bioinformatics/btt684).
+#'
+#' champ.lasso method is described in:
+#'
+#'   Butcher LM, Beck S (2015). "Probe Lasso: A novel method to rope in
+#' differentially methylated regions with 450K DNA methylation data."
+#' _Methods_, *72*, 21-28. doi: 10.1016%2Fj.ymeth.2014.10.036 (URL:
+#' https://doi.org/10.1016%2Fj.ymeth.2014.10.036).
+#' @param champ.input.dir The input idat files dir
+#' @param champ.output.dir The output dir for ChAMP output files
+#' @param champ.sample.sheet The MethylMaster sample sheet path
+#' @param champ.array.type The array type being used, default is "hm450"
+#' @param champ.batch.name The field in the sample sheet used as batch field
+#' for batch correction with combat, default is c("Batch")
+#' @param champ.padj The p.adj value to filter ChAMP result by (default is 0.05)
+#' @param champ.ncores The number of cores to use with ChAMP, note that more
+#' than 1, i.e. parallel processing, may not work on all systems.
+#' @param champ.control The champ control to use
+#' @param champ.control.group The specific ChAMP control group
+#' @param champ.comparison The MethylMaster comparison 2 element vector
+#' @param champ.runimpute Whether to run Champ.runimpute or not
+#' @param champ.runQC Whether to run champ.runQC or not
+#' @param champ.runnorm Whether to run champ.runnorm or not
+#' @param champ.runSVD Whether to run champ.runSVD or not
+#' @param champ.runCombat Whether to run combat in champ (champ.runCombat)
+#' @param champ.runDMP Whether to run champ.runDMP
+#' @param champ.runDMR Whether to run champ.DMR
+#' @param champ.runBlock Whether to run champ.runBlock
+#' @param champ.runGSEA Whether to run champ.runGSEA
+#' @param champ.runEpiMod Whether to run champ.runEpiMod
+#' @param ... Additional parameter to pass to ChAMP
 #' @import ChAMP
 #' @import org.Hs.eg.db
-#' @return #champ results
+#' @return ChAMP results stored in a list
 #' @export
 methyl_master_champ <- function(champ.input.dir=getwd(),
                                 champ.output.dir=getwd(),

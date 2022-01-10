@@ -2,26 +2,22 @@
 
 #' @title ##methyl_master_Sesame
 #' @description MethylMasteR run SeSAMe function
-#'
-#' First part:: Very similar to PROCESS SESAME
-#' command to prepare for segementation
-#' this is included so that the total
-#' time and mem for running sesame
-#' can be recorded
-#'
-#' @param sesame.idat.files.dir
-#' @param sesame.output.dir
-#' @param sesame.sample.sheet.path
-#' @param sesame.comparison
-#' @param sesame.file.sep
-#' @param sesame.data.cache
-#' @param sesame.data.normal
-#' @param sesame.ref.version
-#' @param sesame.reference
-#' @param sesame.split.by
-#' @param sesame.save.seg
-#' @param sesame.hm450.mean.correct
-#' @param ...
+#' @param sesame.idat.files.dir The input directory for the sesame routine
+#' @param sesame.output.dir The ouptut directory for the sesame routine
+#' @param sesame.sample.sheet.path The path to the MethylMaster sample sheet
+#' @param sesame.comparison the 2-element vector of Sample_Group levels to be
+#' compared. First element is taken as the treatment and second as the control
+#' if "reference" is set to "internal" the second element is ignored
+#' @param sesame.file.sep the file separator to use
+#' @param sesame.data.cache the sesame data cache to use
+#' @param sesame.data.normal the sesame normal data set to use,
+#' e.g. Epic.5.Normal
+#' @param sesame.ref.version the sesame reference version (default is hg38)
+#' @param sesame.reference the sesame reference to use
+#' @param sesame.split.by which column, if any, to split the analyses by
+#' @param sesame.save.seg save the segmentation results as .RData object
+#' @param sesame.hm450.mean.correct apply the hm450 AutoCorrectPeak algorithm
+#' @param ... additional parameters to passs to methyl_master_sesame
 #' @import data.table
 #' @import dplyr
 #' @import sesame

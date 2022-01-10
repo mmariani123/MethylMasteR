@@ -1,31 +1,33 @@
 #!/usr/bin/env Rscript
 
 #' @title methyl_master_hm450
-#' @description My version of hm450 analyses
-#' ############ Samples and ref also need to be in same order ##########
-## "CpG probe IDs not in the same order in data and ctrl!"
-#' @param hm450.input.dir
-#' @param hm450.output.dir
-#' @param hm450.sample.sheet
-#' @param hm450.reference
-#' @param hm450.workflow
-#' @param hm450.file.sep
-#' @param hm450.comparison
-#' @param hm450.split.by
-#' @param hm450.sesame.data.cache
-#' @param hm450.sesame.data.normal
-#' @param hm450.sesame.ref.version
-#' @param hm450.save.seg
-#' @param ...
+#' @description MethylMaster version of HM450 analysis
+#' @param hm450.input.dir The input .idat directory
+#' @param hm450.output.dir The output directory for the HM450 routine
+#' @param hm450.sample.sheet The MethylMaster sample sheet path
+#' @param hm450.reference The reference to use for the HM450 routine
+#' @param hm450.workflow The specific HM450 workflow to use: "A", "B", or "C"
+#' @param hm450.file.sep The system-specific file separator to use
+#' @param hm450.comparison The two-element MethylMaster comparison vector
+#' @param hm450.split.by The split.by column in the MethylMaster sample sheet
+#' to splut up the HM450 analysis by
+#' @param hm450.sesame.data.cache The sesame data control data cache: if using
+#' a sesame dataset as the reference
+#' @param hm450.sesame.data.normal The sesame data normal data set: if using a
+#' sesame dataset as the reference
+#' @param hm450.sesame.ref.version The sesame ref version (e.g. hg38) if using
+#' a sesame dataset as the reference
+#' @param hm450.save.seg Whether to save the HM450 routine segmentatin results
+#' @param ... Additional parameters to pass to methyl_master_hm450
 #' @import data.table
 #' @import Biobase
-#' @importFrom ExperimentHub setExperimentHubOption unbox
-#' @importFrom ExperimentHub ExperimentHub unbox
-#' @importFrom sesameData sesamesesameDataGet
-#' @importFrom sesameData sesamesesameDataCache
-#' @importFrom sesame SigSetsToRGChannel
+#' @importFrom ExperimentHub setExperimentHubOption
+#' @importFrom ExperimentHub ExperimentHub
+#' @importFrom sesameData sesameDataGet
+#' @importFrom sesameData sesameDataCache
+#' @importFrom sesame SigSetsToRGChannelSet
 #' @importFrom sesame openSesame
-#' @return #seg.out
+#' @return HM450 routine segmentation CNV results stored in a list
 #' @export
 methyl_master_hm450 <- function(hm450.input.dir=NULL,
                                 hm450.output.dir=NULL,

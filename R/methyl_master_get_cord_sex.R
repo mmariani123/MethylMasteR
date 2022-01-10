@@ -1,15 +1,14 @@
 #!/usr/bin/env Rscript
 
 #' @title methyl_master_get_cord_sex
-#' @description get sex information for cord samples
-#' Michael Mariani PhD Dartmouth College 2022
-#' @param mmcs.idat.files.dir
-#' @param mmcs.platform
-#' @param mmcs.output.file.name
+#' @description Get sex information for cord samples
+#' @param mmcs.idat.files.dir The .idat files directory
+#' @param mmcs.platform The platform
+#' @param mmcs.output.file.name The output file name
 #' @import sesame
 #' @import sesameData
 #' @import ExperimentHub
-#' @return #outputs a file of the sexes for select cord samples
+#' @return Outputs a file of the sexes for select cord samples
 #' @export
 methyl_measter_get_cord_sex <- function(mmcs.idat.files.dir=getwd(),
                                         mmcs.platform='EPIC',

@@ -2,7 +2,7 @@
 % Please edit documentation in R/methyl_master_epicopy_helper_functions.R
 \name{getLRR.mm}
 \alias{getLRR.mm}
-\title{Epciopy modified getLRR function}
+\title{getLRR.mm}
 \usage{
 getLRR.mm(
   rgSet = rgset,
@@ -22,11 +22,37 @@ getLRR.mm(
 )
 }
 \arguments{
+\item{rgSet}{The rgSet parameter}
+
+\item{Normals}{The Normals parameter}
+
+\item{sampNames}{The sampNames parameter}
+
+\item{QN}{The QN parameter}
+
+\item{Ref}{The Ref parameter}
+
+\item{mode.bw}{The mode.bw parameter}
+
+\item{mode.method}{The mode.method parameter}
+
+\item{normal.cnv}{The normal.cnv parameter}
+
+\item{mean.center}{The mean.center parameter}
+
+\item{filter.autosomal.probes}{The filter.autosomal.probes parameter}
+
+\item{autosomal}{The autosomal parameter}
+
+\item{filterProbes}{The filterProbes parameter}
+
+\item{...}{Additional parameter passed to getLRR.mm}
+
 \item{import}{EpicopyData}
 }
 \value{
-return final LRR values
+Return final LRR values
 }
 \description{
-Epciopy modified getLRR function
+MethylMaster version of Epicopy getLRR function
 }

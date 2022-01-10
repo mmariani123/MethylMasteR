@@ -17,10 +17,30 @@ methyl_master_formatting_hm450(
   ...
 )
 }
+\arguments{
+\item{hm450.form.seg}{The hm450 routine seg results as input to be formatted}
+
+\item{hm450.form.output.dir}{The output dir for the formatting results}
+
+\item{hm450.form.sample.sheet.path}{The MehtylMaster sample sheet path}
+
+\item{hm450.form.reference}{The hm450 reference that was used}
+
+\item{hm450.form.split.by}{The split.by sample sheet field that was used}
+
+\item{hm450.form.workflow}{The specific HM450 workflow that was used}
+
+\item{hm450.form.comparison}{The MethylMaster two-element comparison vector}
+
+\item{hm450.form.save.seg}{Whether to save the formatted HM450 results}
+
+\item{hm450.form.anno.file.path}{The hm450 annotation file path}
+
+\item{...}{Additional parameters passed to methyl_master_formatting_hm450}
+}
 \value{
-#Formatted seg list object for visualizing
+#Formatted seg list object for overlaps and visualizing
 }
 \description{
-formatting the hm450 output to prepare for plotting etc.
-Michael Mariani PhD Dartmouth College 2021
+Formatting the hm450 output to prepare for plotting etc.
 }

@@ -15,9 +15,27 @@ LRRtoCNA.mm(
   ...
 )
 }
+\arguments{
+\item{LRR}{The LRR parameter}
+
+\item{sampID}{The sampID parameter}
+
+\item{ncores}{The ncores parameter, note that multiple cores may not work
+on every system}
+
+\item{seg.undo.splits}{The seg.undo.splits parameter}
+
+\item{seg.undo.SD}{The seg.undo.SD parameter}
+
+\item{epic.manifest.path}{The epic.manifest.path parameter}
+
+\item{platform}{The platform parameter}
+}
 \value{
-returns segments
+Returns CNA segments
 }
 \description{
-LRRtoCNA.mm
+MethylMaster version of the Epicopy LRRtoCNA function
+Epicopy convert log r ratio data to cna calls:
+Similar to Lucas Salas' PhD modified LRRtoCNA2 function
 }

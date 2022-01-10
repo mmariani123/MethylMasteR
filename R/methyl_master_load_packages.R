@@ -1,22 +1,26 @@
 #!/usr/bin env Rscript
 
-## Michael Mariani Dartmouth Colllege 2021
-
-## Note loading packages is borken up so that when the
+#' @title methyl_master_load_packages
+#' @description A function that attempts to load all packages for MethylMaster
+#' Note loading packages is borken up so that when the
 ## pipeline is run on windows it won't overload RStudio
 ## and spontaneously abort
+#' @param routine The routine to be used
+#' @return Loads all pertinent R packages
+#' @export
 
-methyl_master_load_packages <- function(routine){
-  
+methyl_master_load_packages <- function(routine
+                                        ){
+
 if(routine=="test"){
-  
+
   library(magrittr)
   library(profvis)
   library(profmem)
 
 }else if(routine=="champ"){
-  
-  ##Just load champ libraries when running champ 
+
+  ##Just load champ libraries when running champ
   ##so wont crash on windows
   ##For ChAMP:
   ##library(sesame)
@@ -38,9 +42,9 @@ if(routine=="test"){
   library(profvis)
   library(htmlwidgets)
   library(ungeviz)
-  
+
 }else if(routine=="epicopy"){
-  
+
   library(dplyr)
   library(magrittr)
   library(data.table)
@@ -51,9 +55,9 @@ if(routine=="test"){
   library(profvis)
   library(htmlwidgets)
   library(ungeviz)
-  
+
 }else{
-  
+
   library(foreach)
   library(ggplot2)
   library(magrittr)
@@ -61,7 +65,7 @@ if(routine=="test"){
   library(dplyr)
   library(foreach)
   library(data.table)
-  library(TCGAbiolinks) 
+  library(TCGAbiolinks)
   library(ExperimentHub)
   library(sesame)
   library(sesameData)
@@ -74,7 +78,7 @@ if(routine=="test"){
   library(IlluminaHumanMethylation450kanno.ilmn12.hg19)
   library(FlowSorted.CordBloodCombined.450k)
   ##library(ENmix)
-  
+
   ##For ChAMPP
   library(stats) ##Model.matrix()
   library(ChAMP)
@@ -84,12 +88,12 @@ if(routine=="test"){
   library(org.Hs.eg.db) ##Contains org.Hs.egSYMBOL
   library(marray) ##mPalette()
   library(shape) ##colorlegend()
-  
+
   library(profmem)
   library(profvis)
   library(htmlwidgets)
   library(ungeviz)
-  
+
 }
 
 }

@@ -6,9 +6,19 @@
 \usage{
 FemModShow(mod, name, fem.o, mode = "Integration")
 }
+\arguments{
+\item{mod}{The mod parameter}
+
+\item{name}{The name parameter}
+
+\item{fem.o}{The fem.o parameter}
+
+\item{mode}{The mode parameter}
+}
 \value{
-A matrix of the infile
+Perform caluclations and plotting
 }
 \description{
-https://rdrr.io/bioc/FEM/src/R/FemModShow.R
+MethylMaster verssion of the FemModShow() function
+See https://rdrr.io/bioc/FEM/src/R/FemModShow.R
 }

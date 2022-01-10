@@ -1,46 +1,62 @@
 #!/usr/bin/env Rscript
 
-##Michael Mariani PhD Dartmouth College 2021
-
 #' @title champ.process.mm
-#' @description champ.process function modified by
-#' Michael Mariani PhD Dartmouth College 2021
-#' @param runload
-#' @param directory
-#' @param resultsDir
-#' @param sample.sheet
-#' @param arraytype
-#' @param filters
-#' @param runimpute
-#' @param imputemethod
-#' @param runQC
-#' @param QCplots
-#' @param runnorm
-#' @param normalizationmethod
-#' @param runSVD
-#' @param RGEffect
-#' @param runCombat
-#' @param batchname
-#' @param runDMP
-#' @param runDMR
-#' @param DMRmethod
-#' @param runBlock
-#' @param runGSEA
-#' @param runEpiMod
-#' @param runCNA
-#' @param control
-#' @param controlGroup
-#' @param runRefBase
-#' @param compare.group
-#' @param adjPVal
-#' @param resultsDir
-#' @param PDFplot
-#' @param Rplot
-#' @param cores
-#' @param saveStepresults
+#' @description MethylMaster modified champ.process() function from ChAMP
+#' ChAMP by:
+#' #' Tian Y, Morris TJ, Webster AP, Yang Z, Beck S, Andrew F, Teschendorff AE
+#' (2017). "ChAMP: updated methylation analysis pipeline for Illumina
+#' BeadChips." _Bioinformatics_, btx513. doi: 10.1093/bioinformatics/btx513
+#' (URL: https://doi.org/10.1093/bioinformatics/btx513).
+#'
+#' Morris TJ, Butcher LM, Teschendorff AE, Chakravarthy AR, Wojdacz TK, Beck S
+#' (2014). "ChAMP: 450k Chip Analysis Methylation Pipeline." _Bioinformatics_,
+#' *30*(3), 428-430. doi: 10.1093/bioinformatics/btt684 (URL:
+#' https://doi.org/10.1093/bioinformatics/btt684).
+#'
+#' champ.lasso method is described in:
+#'
+#'   Butcher LM, Beck S (2015). "Probe Lasso: A novel method to rope in
+#' differentially methylated regions with 450K DNA methylation data."
+#' _Methods_, *72*, 21-28. doi: 10.1016%2Fj.ymeth.2014.10.036 (URL:
+#' https://doi.org/10.1016%2Fj.ymeth.2014.10.036).
+#' @param runload Whether to run runload
+#' @param directory Input directory for ChAMP
+#' @param resultsDir The output directory for ChAMP
+#' @param sample.sheet The MethylMaster sample sheet path
+#' @param arraytype The arrray type, default "450k"
+#' @param filters Filters to use
+#' @param runimpute Whether to run imputation
+#' @param imputemethod The imputation method to use
+#' @param runQC Whether to run QC
+#' @param QCplots The QC plots to output
+#' @param runnorm Whether to run runnorm
+#' @param normalizationmethod The normalization method to use
+#' @param runSVD Whether to run SVD
+#' @param RGEffect The RGE effect logical
+#' @param runCombat Whether to run Combat batch correction
+#' @param batchname The name of the batch field in the MethylMaster sample sheet
+#' @param runDMP Whether to run DMP
+#' @param runDMR whether to run DMR
+#' @param DMRmethod The DMR method to use
+#' @param runBlock Whether to tun runBlock
+#' @param runGSEA Whether to run runGSEA
+#' @param runEpiMod Whether to run runEpiMod
+#' @param runCNA Whether to run runCNA
+#' @param control Whether or not to use control
+#' @param controlGroup Specify the control Group
+#' @param runRefBase Whether to run runRefBase
+#' @param compare.group The two-element MethylMaster comparison vector
+#' @param adjPVal The padj value to filter ChAMP results by
+#' @param resultsDir The Champ results directory, can be different from
+#' the output directory if desired
+#' @param PDFplot Whether to do PDF plots
+#' @param Rplot Whether to do R plots
+#' @param cores Number of cores to use, note that more than 1 core may not
+#' work on all systems.
+#' @param saveStepresults Whether to save the Stepresults
 #' @import ChAMP
 #' @import ChAMPdata
-#' @importFrom dendextend labels_colors unbox
+#' @importFrom dendextend labels_colors
 #' @return Return a champ.result object
 #' @export
 champ.process.mm <- function(runload = TRUE,
@@ -388,21 +404,17 @@ champ.process.mm <- function(runload = TRUE,
 }
 
 #' @title champ.import.mm
-#' @description champ.import function modified by Michael Mariani
-#' This function loads a file as a matrix. It assumes that the first column
-#' contains the rownames and the subsequent columns are the sample identifiers.
-#' Any rows with duplicated row names will be dropped with the first one being
-#' kept.
-#' @param infile Path to the input file
-#' @param directory
-#' @param sample.sheet
-#' @param offset
-#' @param control
-#' @param compare.group
-#' @param arraytype
+#' @description MethylMaster modified champ.import() function
+#' @param infile The path to the input file
+#' @param directory The input directory
+#' @param sample.sheet The MethylMaster sample sheet
+#' @param offset The offset to use
+#' @param control Whether or not to use control
+#' @param compare.group The MethylMaster two-element comparison vector to use
+#' @param arraytype The array type eg. "450k"
 #' @import ChAMPdata
-#' @importFrom illuminaio readIDAT unbox
-#' @return Return a list
+#' @importFrom illuminaio readIDAT
+#' @return Returns a list of imported data
 #' @export
 champ.import.mm <- function(directory = getwd(),
                             sample.sheet = NULL,
@@ -650,32 +662,28 @@ champ.import.mm <- function(directory = getwd(),
 }
 
 #' @title champ.load.mm
-#' @description champ.load function modified by Michael Mariani
-#' This function loads a file as a matrix. It assumes that the first column
-#' contains the rownames and the subsequent columns are the sample identifiers.
-#' Any rows with duplicated row names will be dropped with the first one being
-#' kept.
-#' @param directory
-#' @param sample.sheet
-#' @param compare.group
-#' @param control
-#' @param method
-#' @param methValue
-#' @param autoimpute
-#' @param filterDetP
-#' @param ProbeCutoff
-#' @param SampleCutoff
-#' @param detPcut
-#' @param filterBeads
-#' @param beadCutoff
-#' @param filterNoCG
-#' @param filterSNPs
-#' @param population
-#' @param filterMultiHit
-#' @param filterXY
-#' @param force
-#' @param arraytype
-#' @importFrom ChAMP champ.filter unbox
+#' @description MethylMaster modified champ.load() function
+#' @param directory The input directory
+#' @param sample.sheet The MethylMaster sample sheet
+#' @param compare.group The MethylMaster comparison vector
+#' @param control Whether to specify control or not
+#' @param method Specify the method parameter
+#' @param methValue Specify the methValue parameter
+#' @param autoimpute Specify the autoimpute parameter
+#' @param filterDetP Specify the filterDetP parameter
+#' @param ProbeCutoff Specify the ProbeCutoff parameter
+#' @param SampleCutoff Specify the SampleCutoff parameter
+#' @param detPcut Specify the detPcut parameter
+#' @param filterBeads Specify the filterBeads parameter
+#' @param beadCutoff Specify the beadCutoff parameter
+#' @param filterNoCG Specify the NoCG parameter
+#' @param filterSNPs Specify the filterSNPs parameter
+#' @param population Specify the population parameter
+#' @param filterMultiHit Specify the filterMultiHit parameter
+#' @param filterXY Specify the filterXY parameter
+#' @param force Specify the force parameter
+#' @param arraytype Specify the arraytype parameter
+#' @importFrom ChAMP champ.filter
 #' @return Return a list of loaded data
 #' @export
 champ.load.mm <- function(directory   = getwd(),
@@ -1048,23 +1056,18 @@ champ.load.mm <- function(directory   = getwd(),
   }
 }
 
-#' # Extra ChAMP functions
-#'
-#' This function loads a file as a matrix. It assumes that the first column
-#' contains the rownames and the subsequent columns are the sample identifiers.
-#' Any rows with duplicated row names will be dropped with the first one being
-#' kepted.
-#'
+#' @title champ.QC()
+#' @description MethylMaster version of the champ.QC function()
 #' @param infile Path to the input file
-#' @param champ.beta
-#' @param champ.pheno
-#' @param champ.mds.plot
-#' @param champ.density.plot
-#' @param champ.dendrogram
-#' @param champ.pdf.plot
-#' @param champ.rplot
-#' @param champ.feature.sel
-#' @param champ.results.dir
+#' @param champ.beta champ.beta parameter
+#' @param champ.pheno champ.pheno parameter
+#' @param champ.mds.plot champ.mds.plot parameter
+#' @param champ.density.plot champ.density.plot parameter
+#' @param champ.dendrogram champ.dendrogram parameter
+#' @param champ.pdf.plot champ.pdf parameter
+#' @param champ.rplot champ.rplot parameter
+#' @param champ.feature.sel champ.feature.sel parameter
+#' @param champ.results.dir champ.results.dir parameter
 #' @import dendextend
 #' @return A matrix of the infile
 #' @export
@@ -1209,19 +1212,17 @@ champ.QC <- function(beta        = NULL,
     message("[You may want to process champ.norm() next.]\n")
 }
 
-#' GenStatM.R
-#'
+#' @title GenStatM.R
+#' @description MethylMaster of the GenStatM.R function see:
 #' https://rdrr.io/bioc/FEM/src/R/GenStatM.R
-#'
-#'
-#' @param dnaM.m
-#' @param pheno.v
-#' @param chiptype
-#' @importFrom limma lmFit unbox
-#' @importFrom limma contrasts.fit unbox
-#' @importFrom limma eBayes unbox
-#' @importFrom limma  topTable unbox
-#' @return A matrix of the infile
+#' @param dnaM.m The dnaM.m parameter
+#' @param pheno.v The pheno.v parameter
+#' @param chiptype The chiptype parameter
+#' @importFrom limma lmFit
+#' @importFrom limma contrasts.fit
+#' @importFrom limma eBayes
+#' @importFrom limma  topTable
+#' @return A results list
 #' @export
 GenStatM <- function(dnaM.m,
                      pheno.v,
@@ -1303,19 +1304,17 @@ GenStatM <- function(dnaM.m,
 
 }
 
-#' DoIntEpi450k
-#'
-#' ##https://rdrr.io/bioc/FEM/src/R/DoIntEpi450k.R
-#'
-#'
-#' @param statM.o
-#' @param adj.m
-#' @param c
-#' @param dmaMode
-#' @importFrom igraph graph.adjacency unbox
-#' @importFrom igraph get.edgelist unbox
-#' @importFrom igraph clusters unbox
-#' @return A matrix of the infile
+#' @title DoIntEpi450k
+#' @description The MethylMaster version of the DoIntEpi450k function
+#' See https://rdrr.io/bioc/FEM/src/R/DoIntEpi450k.R
+#' @param statM.o The statM.o parameter
+#' @param adj.m The adj.m parameter
+#' @param c The c parameter
+#' @param dmaMode The dmaMode parameter
+#' @importFrom igraph graph.adjacency
+#' @importFrom igraph get.edgelist
+#' @importFrom igraph clusters
+#' @return A list of results
 #' @export
 DoIntEpi450k <-
     function(statM.o,
@@ -1398,24 +1397,22 @@ DoIntEpi450k <-
         else{print("Please indicate correct mode for statM.o object!"); break}
     }
 
-#' DoEpiMod
-#'
+#' @title DoEpiMod
+#' @description MethylMaster version of the DoEpiMod function
 #' https://rdrr.io/bioc/FEM/src/R/DoEpiMod.R
-#'
-#'
-#' @param intEpi.o
-#' @param nseeds
-#' @param gamma
-#' @param nMC=1000
-#' @param sizeR.v
-#' @param minsizeOUT
-#' @param writeOUT
-#' @param nameSTUDY
-#' @param ew.v
+#' @param intEpi.o The intEpi.o parameter
+#' @param nseeds The nseeds parameter
+#' @param gamma The gamma parameter
+#' @param nMC=1000 The nMC parameter
+#' @param sizeR.v The sizeR.v parameter
+#' @param minsizeOUT The minsizeout parameter
+#' @param writeOUT The writeOUT parameter
+#' @param nameSTUDY The nameSTUDY parameter
+#' @param ew.v The ew.v parameter
 #' @import igraph
-#' @importFrom AnnotationDbi mappedkeys unbox
-#' @importFrom org.Hs.eg.db org.Hs.egSYMBOL unbox
-#' @return A matrix of the infile
+#' @importFrom AnnotationDbi mappedkeys
+#' @importFrom org.Hs.eg.db org.Hs.egSYMBOL
+#' @return A list of results
 #' @export
 DoEpiMod <-
     function(intEpi.o,
@@ -1696,19 +1693,17 @@ DoEpiMod <-
 
     }
 
-#' FemModShow
-#'
-#' https://rdrr.io/bioc/FEM/src/R/FemModShow.R
-#'
-#'
-#' @param mod
-#' @param name
-#' @param fem.o
-#' @param mode
+#' @title FemModShow
+#' @description MethylMaster verssion of the FemModShow() function
+#' See https://rdrr.io/bioc/FEM/src/R/FemModShow.R
+#' @param mod The mod parameter
+#' @param name The name parameter
+#' @param fem.o The fem.o parameter
+#' @param mode The mode parameter
 #' @import igraph
-#' @importFrom shape colorlegend unbox
-#' @importFrom marray maPalette unbox
-#' @return A matrix of the infile
+#' @importFrom shape colorlegend
+#' @importFrom marray maPalette
+#' @return Perform caluclations and plotting
 #' @export
 FemModShow <-
     function(mod,
@@ -1997,23 +1992,20 @@ FemModShow <-
 }
 
 #' @title champ.EpiMod
-#' @description champ.EpiMod functionality
-
-#' BiocManager::install("FEM")
-#' https://rdrr.io/github/gaberosser/ChAMP/src/R/champ.EpiMod.R
-#'
-#'
-#' @param beta
-#' @param pheno
-#' @param nseeds
-#' @param gamma
-#' @param nMC
-#' @param sizeR.v
-#' @param minsizeOUT
-#' @param resultsDir
-#' @param PDFplot=TRUE
-#' @param arraytype
-#' @return A matrix of the infile
+#' @description MethylMaster version of the champ.EpiMod() function
+#' Note: BiocManager::install("FEM")
+#' see https://rdrr.io/github/gaberosser/ChAMP/src/R/champ.EpiMod.R
+#' @param beta The beta parameter
+#' @param pheno The pheno parameter
+#' @param nseeds The nseeds parameter
+#' @param gamma The gamma parameter
+#' @param nMC The nMC parameter
+#' @param sizeR.v The sizeR.v parameter
+#' @param minsizeOUT The minisizeOUT parameter
+#' @param resultsDir The resultsDir parameter
+#' @param PDFplot The PDFplot parameter
+#' @param arraytype The arraytype parameter
+#' @return A ChAMP EpiMod object
 #' @export
 champ.EpiMod <- function(beta=myNorm,
                          pheno=myLoad$pd$Sample_Group,

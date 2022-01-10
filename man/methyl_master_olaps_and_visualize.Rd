@@ -20,10 +20,45 @@ methyl_master_olaps_and_visualize(
   ...
 )
 }
+\arguments{
+\item{ov.seg}{The formatted seg input object}
+
+\item{ov.name}{The name of the formatted seg input object}
+
+\item{ov.output.dir}{The output directory for the overlaps and visualization
+results}
+
+\item{ov.routine}{The specific routine that was run to produce the results}
+
+\item{ov.split.field}{The split.by field specified earlier in the analysis
+from the Sample Sheet}
+
+\item{ov.keep.extra.columns}{Keep the extra metadata columns in the output}
+
+\item{ov.overlap.density}{The populationRanges desnity value to use when
+caluclating overlaping CNV regions}
+
+\item{ov.estimate.recurrence}{Whether or not to use esitmate recursion
+(generates a p-value) for the overlaps regions identified by populationRanges}
+
+\item{ov.simplify.reduce}{The reduction function used to reduce the overlaps
+results}
+
+\item{ov.less.stringent.ra.setting}{Whether or not to use the more or less
+stringent overlaps filltering (ra denotes "Ragged Experiment" object)}
+
+\item{ov.pvalue}{The incoming CNV call p-value threshold to filter by
+before any overlaps caluclations are performed}
+
+\item{ov.plot.individual}{Whether to plot individual plots for the the sesame
+routine}
+
+\item{...}{Additional parameters to pass to methyl_master_olaps_and_visualize}
+}
 \value{
-#seg.out
+Output overlaps regions .CSVs and images
 }
 \description{
-perform overlaps analysis and visualization
-##Michael Mariani Dartmouth College 2021
+perform overlaps analysis and visualization for the various
+routines.
 }

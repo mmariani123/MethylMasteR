@@ -2,15 +2,20 @@
 % Please edit documentation in R/methyl_master_helper_functions.R
 \name{binding_frames_mm}
 \alias{binding_frames_mm}
-\title{Bind individual sesame frames together}
+\title{binding_frames_mm}
 \usage{
-binding_frames_mm(x)
+binding_frames_mm(x, auto.corrected, add.col)
 }
 \arguments{
-\item{x}{sesame-style data frame}
+\item{x}{Wesame-style data frame}
+
+\item{auto.corrected}{Whether or not data went through AutoCorrecPeaks}
+
+\item{add.col}{Addtional (numeric) column to add to output dataframe to be
+used in downstream analysis/plotting}
 }
 \value{
-segment dataframe output of multiple dfs bound together
+Segment dataframe output of multiple dfs bound together
 }
 \description{
 Bind individual sesame frames together

@@ -6,9 +6,17 @@
 \usage{
 GenStatM(dnaM.m, pheno.v, chiptype = "450k")
 }
+\arguments{
+\item{dnaM.m}{The dnaM.m parameter}
+
+\item{pheno.v}{The pheno.v parameter}
+
+\item{chiptype}{The chiptype parameter}
+}
 \value{
-A matrix of the infile
+A results list
 }
 \description{
+MethylMaster of the GenStatM.R function see:
 https://rdrr.io/bioc/FEM/src/R/GenStatM.R
 }

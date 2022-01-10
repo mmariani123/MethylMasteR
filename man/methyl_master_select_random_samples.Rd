@@ -6,8 +6,13 @@
 \usage{
 methyl_master_select_random_samples(normal.path, tumor.path)
 }
+\arguments{
+\item{normal.path}{The normal path}
+
+\item{tumor.path}{The tumor path}
+}
 \value{
-#Return randomly sampled TCGA IDAT samples
+Return randomly sampled TCGA IDAT samples
 }
 \description{
 Possible function for loading data objects

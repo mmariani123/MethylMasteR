@@ -2,20 +2,18 @@
 
 #' @title methyl_master_prepare_sample_sheet
 #' @description compare results from different routine outputs
-#' Michael Mariani PhD Dartmouth College 2021
 #' For example, create a MethylMaster style sample sheet
-#' from sekected 3p-del (positive control) KIRC samples
+#' from selected 3p-del (positive control) KIRC samples
 #' from the firehose collection on CBioPortal
-#' @param compare.list.files
-#' @param prep.output.path.name
-#' @param prep.file.sep
-#' @param prep.idat.dir
-#' @param prep.sample.sheet
-#' @param prep.primary.samples
-#' @param prep.sample.group
-#' @param prep.platform
-#' @param prep.batch
-#' @return #A sample sheet for use with methyl master
+#' @param prep.output.path.name The output file destination
+#' @param prep.file.sep The file separator to use
+#' @param prep.idat.dir The .idat file directory
+#' @param prep.sample.sheet The sample sheet to use
+#' @param prep.primary.samples The specified primary sample IDs
+#' @param prep.sample.group The specified sample groups
+#' @param prep.platform The platform
+#' @param prep.batch the batch variable
+#' @return A sample sheet for use with MethylMaster
 #' @export
 methyl_master_prepare_sample_sheet <- function(prep.output.path.name=NULL,
                                                prep.file.sep=NULL,
@@ -26,7 +24,7 @@ methyl_master_prepare_sample_sheet <- function(prep.output.path.name=NULL,
                                                prep.platform=NULL,
                                                prep.batch=1
                                               ){
-  
+
 file.sep <- prep.file.sep
 
 idat.dir.base <- list.dirs(idat.dir)
@@ -42,9 +40,9 @@ colm.names <- c("Sample_Name",
                 "Batch",
                 "gender_reported"
                 )
-  
-##sample.sheet.df <- data.frame(matrix(data=0, 
-##                                     ncol = 9, 
+
+##sample.sheet.df <- data.frame(matrix(data=0,
+##                                     ncol = 9,
 ##                                     nrow = length(select.cbio.primaries)),
 ##                              stringsAsFactors = FALSE)
 

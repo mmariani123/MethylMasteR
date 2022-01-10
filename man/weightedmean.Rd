@@ -2,7 +2,7 @@
 % Please edit documentation in R/methyl_master_helper_functions.R
 \name{weightedmean}
 \alias{weightedmean}
-\title{Weighted-mean function}
+\title{weightedmean}
 \usage{
 weightedmean(scores, ranges, qranges)
 }
@@ -18,4 +18,5 @@ weighted mean values
 }
 \description{
 Weighted-mean function
+Original function from Epicopy by Cho et al., 2019
 }

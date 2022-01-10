@@ -6,10 +6,15 @@
 \usage{
 visualizeSegments.mm(seg, to.plot = NULL)
 }
+\arguments{
+\item{seg}{The sesame segmentation object}
+
+\item{to.plot}{the to.plot parameter}
+}
 \value{
-#A ggplot
+A ggplot
 }
 \description{
-modified sesame::visualizeSegments function
-Michael Mariani PhD Dartmouth College 2021, originally by SeSAMe team
+Methyl master modified sesame::visualizeSegments function
+from SeSAMe
 }

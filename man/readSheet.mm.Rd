@@ -2,13 +2,18 @@
 % Please edit documentation in R/methyl_master_epicopy_helper_functions.R
 \name{readSheet.mm}
 \alias{readSheet.mm}
-\title{Modified readSheet from minfi}
+\title{readSheet.mm}
 \usage{
 readSheet.mm(file, recursive = TRUE)
 }
+\arguments{
+\item{file}{The file parameter}
+
+\item{recursive}{The recursive parameter}
+}
 \value{
-formatted csv as df
+Formatted csv as dataframe
 }
 \description{
-Modified readSheet from minfi
+MethylMaster version of readSheet() from Minfi
 }

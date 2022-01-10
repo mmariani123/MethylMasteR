@@ -2,16 +2,19 @@
 % Please edit documentation in R/methyl_master_helper_functions.R
 \name{infer_sex_karyotype}
 \alias{infer_sex_karyotype}
-\title{Use sesame to infer sex karyotype}
+\title{infer_sex_karyotype}
 \usage{
 infer_sex_karyotype(sset, ref.sset)
 }
 \arguments{
-\item{sset}{Path to the input file}
+\item{sset}{SeSAMe sset}
+
+\item{ref.sset}{SeSAMe reference sset}
 }
 \value{
 sset with inferred sex data
 }
 \description{
 Use sesame to infer sex karyotype
+functionality by Jennifer Chen Dartmouth College 2021
 }

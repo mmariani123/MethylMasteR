@@ -6,9 +6,19 @@
 \usage{
 DoIntEpi450k(statM.o, adj.m, c, dmaMode = "avbeta")
 }
+\arguments{
+\item{statM.o}{The statM.o parameter}
+
+\item{adj.m}{The adj.m parameter}
+
+\item{c}{The c parameter}
+
+\item{dmaMode}{The dmaMode parameter}
+}
 \value{
-A matrix of the infile
+A list of results
 }
 \description{
-##https://rdrr.io/bioc/FEM/src/R/DoIntEpi450k.R
+The MethylMaster version of the DoIntEpi450k function
+See https://rdrr.io/bioc/FEM/src/R/DoIntEpi450k.R
 }

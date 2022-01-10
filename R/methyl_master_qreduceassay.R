@@ -1,18 +1,15 @@
 #usr/bin/env Rscript
 
-#' @title ##methyl_master_qreduceassay
-#' @description MethylMasteR qreduceAssay function
-#' Originally from the RaggedExperiment Package
-#' I have modified my own version here for debugging
-#' and tighter control
-#'
-#' @param sesame.idat.files.dir
-#' @param x
-#' @param query
-#' @param simplifyReduce
-#' @param i
-#' @param withDimnames
-#' @param background
+#' @title methyl_master_qreduceassay
+#' @description MethylMaster version of the qreduceAssay function
+#' Originally from the RaggedExperiment Package by Martin Morgan and
+#' Marcel Ramos 2021.
+#' @param x The x parameter
+#' @param query The query parameter
+#' @param simplifyReduce The simplifyReduce parameter
+#' @param i The i parameter
+#' @param withDimnames The withDimnames parameter
+#' @param background the background parameter
 #' @return A reduced ReaggedExperiment assay object
 #' @export
 methyl_master_qreduceassay <- function(x,

@@ -1,34 +1,31 @@
 #!/usr/bin/env Rscript
 
 #' @title methyl_master_formatting_sesame
-#' @description Main function:
-#' MultiMethylv1.0 : CNV calling from methylation data
-#' Michael Mariani PhD Dartmouth College 2021
-#' Possible routines:
-#' "test"            ##Run a quick test
-#' "process_sesame", ##Preprocess the TCGA and cord data in sesame format
-#' "sesame",         ##Run Sesame  CNV calling (get segments)
-#' "hm450" ,         ##Run 450K    CNV calling (get segments)
-#' "champ" ,         ##Run ChAMP   CNV calling (get segments)
-#' "epicopy" ,       ##Run EpiCopy CNV calling (get segments)
-#' "compare"         ##Run algorithm comparison functionality
-#' @param sesame.form.seg
-#' @param sesame.form.output.dir
-#' @param output.form.dir
-#' @param sample.form.sample.sheet.path
-#' @param sesame.form.reference
-#' @param sesame.form.split.by
-#' @param sesame.form.comparison
-#' @param sesame.form.save.seg
-#' @param sesame.form.plot.individual
-#' @param sesame.form.auto.corrected
-#' @param sesame.form.thresholds
-#' @param sesame.form.add.meta
-#' @param ...
+#' @description formatting the results of the sesame functionality to prepare
+#' for comparison and output
+#' @param sesame.form.seg The input sesame segmentation list for formatting
+#' @param sesame.form.output.dir The output dir for sesame formatting
+#' @param sample.form.sample.sheet.path The path to the MethylMaster
+#' sample sheet
+#' @param sesame.form.reference The sesame reference used in the analysis
+#' @param sesame.form.split.by The split.by field used in the sesame routine
+#' in the MethylMaster sample sheet
+#' @param sesame.form.comparison The MethylMaster comparison vector used in the
+#' Sesame routine analysis
+#' @param sesame.form.save.seg Whether or not to save the formatted seg output
+#' @param sesame.form.plot.individual Whether to plot the individual sesame
+#' sample signal plots
+#' @param sesame.form.auto.corrected whether the hm450 AutoCorrectionPeak method
+#' was applied during the sesame routine
+#' @param sesame.form.thresholds The sesame thresholds used to determine the CNV
+#' state, if NULL, the equation  seg.state <- round(2^seg.means * 2) is used
+#' @param sesame.form.add.meta An additional metadata column (numeric) to plot
+#' in the output heatmap of the sesame routine
+#' @param ... additional parameters to pass to methyl_master_formatting_sesame
 #' @import CNVRanger
 #' @import matter
 #' @importFrom magrittr %>%
-#' @return #Formatted seg list object for visualizing
+#' @return Formatted seg list object for visualizing etc.
 #' @export
 methyl_master_formatting_sesame <- function(sesame.form.seg=NULL,
                                             sesame.form.output.dir=getwd(),

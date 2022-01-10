@@ -54,10 +54,55 @@ methyl_master_champ(
   ...
 )
 }
+\arguments{
+\item{champ.input.dir}{The input idat files dir}
+
+\item{champ.output.dir}{The output dir for ChAMP output files}
+
+\item{champ.sample.sheet}{The MethylMaster sample sheet path}
+
+\item{champ.array.type}{The array type being used, default is "hm450"}
+
+\item{champ.batch.name}{The field in the sample sheet used as batch field
+for batch correction with combat, default is c("Batch")}
+
+\item{champ.padj}{The p.adj value to filter ChAMP result by (default is 0.05)}
+
+\item{champ.ncores}{The number of cores to use with ChAMP, note that more
+than 1, i.e. parallel processing, may not work on all systems.}
+
+\item{champ.control}{The champ control to use}
+
+\item{champ.control.group}{The specific ChAMP control group}
+
+\item{champ.comparison}{The MethylMaster comparison 2 element vector}
+
+\item{champ.runimpute}{Whether to run Champ.runimpute or not}
+
+\item{champ.runQC}{Whether to run champ.runQC or not}
+
+\item{champ.runnorm}{Whether to run champ.runnorm or not}
+
+\item{champ.runSVD}{Whether to run champ.runSVD or not}
+
+\item{champ.runCombat}{Whether to run combat in champ (champ.runCombat)}
+
+\item{champ.runDMP}{Whether to run champ.runDMP}
+
+\item{champ.runDMR}{Whether to run champ.DMR}
+
+\item{champ.runBlock}{Whether to run champ.runBlock}
+
+\item{champ.runGSEA}{Whether to run champ.runGSEA}
+
+\item{champ.runEpiMod}{Whether to run champ.runEpiMod}
+
+\item{...}{Additional parameter to pass to ChAMP}
+}
 \value{
 #NULL
 
-#champ results
+ChAMP results stored in a list
 }
 \description{
 The full pipeline can be run at once with one command:
@@ -77,10 +122,24 @@ myLoad$pd$Pool_ID
 myLoad$pd$Pool_ID
 myLoad$pd$Sample_Group
 
-My version of hm450 analyses
-############ Samples and ref also need to be in same order ##########
-"CpG probe IDs not in the same order in data and ctrl!"
-Modified by Michael Mariani PhD Dartmouth College 2021
+My function to call the ChAMP::champ.process() function
+For ChAMP refs see:
+Tian Y, Morris TJ, Webster AP, Yang Z, Beck S, Andrew F, Teschendorff AE
+(2017). "ChAMP: updated methylation analysis pipeline for Illumina
+BeadChips." \emph{Bioinformatics}, btx513. doi: 10.1093/bioinformatics/btx513
+(URL: https://doi.org/10.1093/bioinformatics/btx513).
+
+Morris TJ, Butcher LM, Teschendorff AE, Chakravarthy AR, Wojdacz TK, Beck S
+(2014). "ChAMP: 450k Chip Analysis Methylation Pipeline." \emph{Bioinformatics},
+\emph{30}(3), 428-430. doi: 10.1093/bioinformatics/btt684 (URL:
+https://doi.org/10.1093/bioinformatics/btt684).
+
+champ.lasso method is described in:
+
+Butcher LM, Beck S (2015). "Probe Lasso: A novel method to rope in
+differentially methylated regions with 450K DNA methylation data."
+\emph{Methods}, \emph{72}, 21-28. doi: 10.1016\%2Fj.ymeth.2014.10.036 (URL:
+https://doi.org/10.1016\%2Fj.ymeth.2014.10.036).
 }
 \details{
 Can test ChAMP with the test data: data(EPICSimData)

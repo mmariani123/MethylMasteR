@@ -1,4 +1,4 @@
-#1/usr/bin/file Rscript
+#/usr/bin/file Rscript
 
 ##Methyl Master Extra and Notes
 

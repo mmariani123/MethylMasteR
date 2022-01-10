@@ -11,10 +11,18 @@ methyl_master_plot_individual(
   ...
 )
 }
+\arguments{
+\item{pi.seg}{The input sesame segmentation objects}
+
+\item{pi.output.dir}{The output directory}
+
+\item{pi.name}{The names to use}
+
+\item{...}{Additional parameters passed to methyl_master_plot_individual}
+}
 \value{
-#NULL
+Individual plots
 }
 \description{
-output signal inensity plots for individual samples
-##Michael Mariani PhD Dartmouth College 2021
+Function to output signal inensity plots for individual samples
 }

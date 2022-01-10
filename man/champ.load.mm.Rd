@@ -27,13 +27,50 @@ champ.load.mm(
   arraytype = "450K"
 )
 }
+\arguments{
+\item{directory}{The input directory}
+
+\item{sample.sheet}{The MethylMaster sample sheet}
+
+\item{compare.group}{The MethylMaster comparison vector}
+
+\item{control}{Whether to specify control or not}
+
+\item{method}{Specify the method parameter}
+
+\item{methValue}{Specify the methValue parameter}
+
+\item{autoimpute}{Specify the autoimpute parameter}
+
+\item{filterDetP}{Specify the filterDetP parameter}
+
+\item{ProbeCutoff}{Specify the ProbeCutoff parameter}
+
+\item{SampleCutoff}{Specify the SampleCutoff parameter}
+
+\item{detPcut}{Specify the detPcut parameter}
+
+\item{filterBeads}{Specify the filterBeads parameter}
+
+\item{beadCutoff}{Specify the beadCutoff parameter}
+
+\item{filterNoCG}{Specify the NoCG parameter}
+
+\item{filterSNPs}{Specify the filterSNPs parameter}
+
+\item{population}{Specify the population parameter}
+
+\item{filterMultiHit}{Specify the filterMultiHit parameter}
+
+\item{filterXY}{Specify the filterXY parameter}
+
+\item{force}{Specify the force parameter}
+
+\item{arraytype}{Specify the arraytype parameter}
+}
 \value{
 Return a list of loaded data
 }
 \description{
-champ.load function modified by Michael Mariani
-This function loads a file as a matrix. It assumes that the first column
-contains the rownames and the subsequent columns are the sample identifiers.
-Any rows with duplicated row names will be dropped with the first one being
-kept.
+MethylMaster modified champ.load() function
 }
