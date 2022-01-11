@@ -12,7 +12,6 @@
 #' @param epic.manifest.path The EPIC manifest file path
 #' @param epi.reference.group The reference group to use
 #' @param epi.comparison The MehtylMaster comparison vector
-#' @param epi.split.by The MethylMaster split.by field selected from the sample
 #' sheet
 #' @param epi.ncores The number of cores to use, multiple cores may not be
 #' supported on all systems
@@ -40,7 +39,6 @@ methyl_master_epicopy <- function(epi.input.dir,
                                   epic.manifest.path,
                                   epi.reference.group,
                                   epi.comparison,
-                                  epi.split.by,
                                   epi.ncores,
                                   epi.ref,
                                   epi.normals,
@@ -87,7 +85,6 @@ epicopy_results <- Epicopy::epicopy(target_dir = epi.input.dir,
                            epic.manifest.path  = epic.manifest.path,
                            reference_group     = epi.reference.group,
                            comparison          = epi.comparison,
-                           split.by            = epi.split.by,
                            ncores              = epi.ncores,
                            Ref                 = epi.ref,
                            Normals             = epi.normals,
