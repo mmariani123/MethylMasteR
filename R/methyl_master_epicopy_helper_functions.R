@@ -728,7 +728,8 @@ read.metharray.sheet.mm <- function(base,
                                     recursive = TRUE,
                                     single.file = TRUE,
                                     single.file.path = NULL,
-                                    verbose = TRUE)
+                                    verbose = TRUE,
+                                    ...)
 {
   if(single.file==TRUE){
     if(is.null (single.file.path) | !file.exists(single.file.path))
