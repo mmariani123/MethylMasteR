@@ -12,7 +12,7 @@
 #' @param sesame.data.cache the sesame data cache to use
 #' @param sesame.data.normal the sesame normal data set to use,
 #' e.g. Epic.5.Normal
-#' @param sesame.ref.version the sesame reference version (default is hg38)
+#' @param sesame.genome.version the sesame reference version (default is hg38)
 #' @param sesame.reference the sesame reference to use
 #' @param sesame.split.by which column, if any, to split the analyses by
 #' @param sesame.save.seg save the segmentation results as .RData object
@@ -34,7 +34,7 @@ methyl_master_sesame <- function(sesame.idat.files.dir       = NULL,
                                  sesame.file.sep             = NULL,
                                  sesame.data.cache           = "EPIC",
                                  sesame.data.normal          = "EPIC.5.normal",
-                                 sesame.ref.version          = "hg38",
+                                 sesame.genome.version              = "hg38",
                                  sesame.reference            = "internal",
                                  sesame.split.by             = NULL,
                                  sesame.save.seg             = FALSE,
@@ -94,7 +94,7 @@ if(sesame.reference=="internal"){
     sesame_seg <- foreach(i = 1:length(names(sesame_sset))) %do% {
       sesame::cnSegmentation(sesame_sset[[i]],
                             sesame_ssets_normal,
-                            refversion = sesame.ref.version)
+                            refversion = sesame.genome.version)
     }
     names(sesame_seg) <- names(sesame_sset)
 
@@ -163,7 +163,7 @@ if(sesame.reference=="internal"){
     sesame_seg <- foreach(i = 1:length(names(sesame_sset.treatment))) %do% {
       sesame::cnSegmentation(sesame_sset.treatment[[i]],
                              sesame_sset.control,
-                             refversion = sesame.ref.version)
+                             refversion = sesame.genome.version)
     }
     names(sesame_seg) <- names(sesame_sset.treatment)
 

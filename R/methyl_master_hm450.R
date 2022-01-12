@@ -14,7 +14,7 @@
 #' a sesame dataset as the reference
 #' @param hm450.sesame.data.normal The sesame data normal data set: if using a
 #' sesame dataset as the reference
-#' @param hm450.sesame.ref.version The sesame ref version (e.g. hg38) if using
+#' @param hm450.genome.version The sesame ref version (e.g. hg38) if using
 #' a sesame dataset as the reference
 #' @param hm450.save.seg Whether to save the HM450 routine segmentatin results
 #' @param ... Additional parameters to pass to methyl_master_hm450
@@ -38,7 +38,7 @@ methyl_master_hm450 <- function(hm450.input.dir=NULL,
                                 hm450.file.sep="/",
                                 hm450.sesame.data.cache="EPIC",
                                 hm450.sesame.data.normal="EPIC.5.normal",
-                                hm450.sesame.ref.version="hg38",
+                                hm450.genome.version="hg38",
                                 hm450.save.seg=FALSE,
                                 ...
                                 ){

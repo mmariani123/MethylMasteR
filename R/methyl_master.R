@@ -13,31 +13,28 @@
 #' "champ" ,         ##Run ChAMP   CNV calling (get segments)
 #' "epicopy" ,       ##Run EpiCopy CNV calling (get segments)
 #' "compare"         ##Run algorithm comparison functionality
-#' @param input.dir input directory
-#' @param output.dir output directory
-#' @param sample.sheet.path path to sample sheet
-#' @param file.sep file separator
-#' @param r.lib.path path to r library default is .libPaths()
-#' @param n.cores number of cores to run
-#' @param os.type the os type running the software
-#' @param proj the project name
-#' @param visualize visualize the output
-#' @param visualize.individual visualize individual sample plots for sesame
-#' @param simplify.reduce the reduction function being applied to the output
-#' @param routine the specific routine to run
-#' @param reference the reference to use
-#' @param reference.name the reference name, for the epicopy routine
-#' @param split.by which additional metadata column to split the analysis by
-#' @param comparison which groups from the metadata "Sample_Group" to compare
-#' @param form.thresholds the thresholds for cnv state calling
-#' @param overlap.density the overlap density applied to final results from
+#' @param input.dir Input directory
+#' @param output.dir Output directory
+#' @param sample.sheet.path Path to sample sheet
+#' @param file.sep File separator
+#' @param r.lib.path Path to r library default is .libPaths()
+#' @param n.cores Number of cores to run
+#' @param os.type The os type running the software
+#' @param proj The project name
+#' @param visualize Visualize the output
+#' @param visualize.individual Visualize individual sample plots for sesame
+#' @param simplify.reduce The reduction function being applied to the output
+#' @param routine The specific routine to run
+#' @param genome.version The genome version
+#' @param reference The reference to use
+#' @param reference.name The reference name, for the epicopy routine
+#' @param split.by Which additional metadata column to split the analysis by
+#' @param comparison Which groups from the metadata "Sample_Group" to compare
+#' @param form.thresholds The thresholds for cnv state calling
+#' @param overlap.density The overlap density applied to final results from
 #' the modified population ranges function
-#' @param sesame.data.cache the sesame data cache to use
-#' @param sesame.data.normal which sesame normal data to use e.g."EPIC.5.Normal"
-#' @param sesame.ref.version which sesame reference version, default is hg38
-#' @param sesame.hm450.mean.correct hm450 style auto-correction centering
-#' @param sesame.form.add.meta additional metadata column to be plotted with
-#' final heatmap
+#' @param sesame.data.cache The sesame data cache to use
+#' @param sesame.data.normal Which sesame normal data to use e.g."EPIC.5.Normal"
 #' @param hm450.workflow which hm450 workflow to use with the hm450 routine:
 #' "A", "B", or "C"
 #' @param champ.padj adjusted p-value threshold for the ChAMP routine
@@ -99,9 +96,7 @@ methyl_master <- function(input.dir            = NULL,
                           overlap.density      = 0.1,
                           sesame.data.cache    = "EPIC",
                           sesame.data.normal   = 'EPIC.5.normal',
-                          sesame.ref.version   = "hg38",
-                          sesame.hm450.mean.correct = TRUE,
-                          sesame.form.add.meta = NULL,
+                          genome.version       = "hg38",
                           hm450.workflow       = "B",
                           champ.padj           = 0.05,
                           champ.control        = FALSE,
@@ -266,12 +261,10 @@ sesame = {
                        sesame.file.sep              = file.sep,
                        sesame.data.cache            = "EPIC",
                        sesame.data.normal           = "EPIC.5.normal",
-                       sesame.ref.version           = "hg38",
+                       sesame.genome.version        = genome.version,
                        sesame.reference             = reference,##"Sample_Group"
                        sesame.split.by              = split.by,
                        sesame.save.seg              = save.seg,
-                       sesame.hm450.mean.correct    = sesame.hm450.mean.correct,
-                       sesame.form.add.meta         = sesame.form.add.meta,
                        ...
                        )
 
@@ -295,7 +288,7 @@ hm450 = {
                              hm450.workflow           = hm450.workflow,
                              hm450.sesame.data.cache  = "EPIC",
                              hm450.sesame.data.normal = 'EPIC.5.normal',
-                             hm450.sesame.ref.version = "hg38",
+                             hm450.genome.version     = genome.version,
                              hm.450.save.seg          = save.seg,
                              ...)
 

@@ -841,9 +841,9 @@ epicopy.mm <- function(target_dir,
                                           single.file = single.file,
                                           single.file.path = single.file.path)
 
-  if(!is.null(split.by)){
-    split.groups <- unique(target_sheet[[split.by]])
-  }
+  ##if(!is.null(split.by)){
+  ##  split.groups <- unique(target_sheet[[split.by]])
+  ##}
 
   #########################################################################
 

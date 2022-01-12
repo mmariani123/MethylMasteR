@@ -9,6 +9,8 @@
 #' @param champ.form.reference The reference that was used
 #' @param champ.form.split.by The splt.by variable in the sample sheet that was
 #' used
+#' @param champ.form.thresholds The thresholds used to determine the CNV
+#' state, if NULL, the equation  seg.state <- round(2^seg.means * 2) is used
 #' @param champ.form.save.seg Whether to save the formatted ChAMP results
 #' @param champ.form.comparison The MethylMaster comparison vector
 #' @param champ.form.padj The padj that was used in the ChAMP routine
@@ -25,7 +27,8 @@ methyl_master_formatting_champ <- function(champ.form.seg=NULL,
                                            champ.form.split.by=NULL,
                                            champ.form.save.seg=FALSE,
                                            champ.form.comparison=NULL,
-                                           champ.form.padj=NULL
+                                           champ.form.padj=NULL,
+                                           champ.form.thresholds
                                            ){
 
     ##For testing:
