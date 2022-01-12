@@ -257,7 +257,7 @@ sesame = {
                        ...
                        )
 
-},
+}, ##End SeSAMe routine
 
 ################# segmentation: cnv450k analysis ############################
 #############################################################################
@@ -281,7 +281,7 @@ hm450 = {
                              hm.450.save.seg          = save.seg,
                              ...)
 
-}, ##End K450
+}, ##End HM450 routine
 
 ############################# ChAMP ##########################################
 ##############################################################################
@@ -315,7 +315,7 @@ champ = {
                              ...
                              )
 
-}, ##End ChAMP
+}, ##End ChAMP routine
 
 ############################# Epicopy ########################################
 ##############################################################################
@@ -350,9 +350,27 @@ epicopy = {
                                ...
                                )
 
-}, ##End Epicopy
+}, ##End Epicopy routine
 
-) ##End switch routine
+custom = {
+  seg <- methyl_master_custom(custom.idat.files.dir=input.dir,
+                              custom.output.dir=output.dir,
+                              custom.sample.sheet.path=sample.sheet.path,
+                              custom.comparison=comparison,
+                              custom.file.sep=file.sep,
+                              custom.data.cache="EPIC",
+                              custom.data.normal="EPIC.5.normal",
+                              custom.ref.version="hg38",
+                              custom.reference=reference,
+                              custom.split.by=split.by,
+                              custom.save.seg=seg,
+                              custom.hm450.mean.correct=FALSE,
+                              custom.form.add.meta = sesame.form.add.meta,
+                              ...)
+
+} ##End custom routine
+
+) ##End switch statement
 
 ################### TIME/MEM PROFILE ####################
 #########################################################
@@ -500,50 +518,21 @@ if(routine=="sesame"){
 
 #################### VISUALISE INDIVIDUAL ######################################
 ##load(paste0(output.dir,.Platform$file.sep,"seg.RData"))
-mapply(x=seg,y=names(seg),
-  function(x=x,
-           y=y,
-           output.dir1=output.dir,
-           routine1=routine,
-           olaps.split.field1=olaps.split.field,
-           ov.keep.extra.columns1=ov.keep.extra.columns,
-           overlap.density1=overlap.density,
-           estimate.recurrence1=estimate.recurrence,
-           ov.simplify.reduce1=ov.simplify.reduce,
-           ov.less.stringent.ra.setting1=ov.less.stringent.ra.setting,
-           ov.pvalue1=ov.pvalue,
-           ov.plot.individual1=visualize.individual){
-    methyl_master_olaps_and_visualize(
-       ov.seg                       = x,
-       ov.name                      = y,
-       ov.output.dir                = output.dir1,
-       ov.routine                   = routine1,
-       ov.split.field               = olaps.split.field1,
-       ov.keep.extra.columns        = ov.keep.extra.columns1,
-       ov.overlap.density           = overlap.density1,
-       ov.estimate.recurrence       = estimate.recurrence1,
-       ov.simplify.reduce           = ov.simplify.reduce1,
-       ov.less.stringent.ra.setting = ov.less.stringent.ra.setting1,
-       ov.pvalue                    = ov.pvalue1,
-       ov.plot.individual           = ov.plot.individual1
-       )})
 
-##The visualize individual functionality has been moved to
-##methyl_master_formatting_sesame for the time being
-##if(visualize.individual==TRUE){
-##  ##load(paste0(output.dir,.Platform$file.sep,"seg.RData"))
-##  mapply(x=seg,y=names(seg),
-##         function(x=x,
-##                  y=y,
-##                  output.dir1=output.dir
-##                  ){
-##                 methyl_master_plot_individual(
-##                   pi.seg=x,
-##                   pi.name=y,
-##                   pi.output.dir=output.dir1
-##                 )})
-##
-##}##End visualize individual
+methyl_master_olaps_and_visualize(
+       ov.seg                       = seg,
+       ov.name                      = names(seg),
+       ov.output.dir                = output.dir,
+       ov.routine                   = routine,
+       ov.split.field               = olaps.split.field,
+       ov.keep.extra.columns        = ov.keep.extra.columns,
+       ov.overlap.density           = overlap.density,
+       ov.estimate.recurrence       = estimate.recurrence,
+       ov.simplify.reduce           = ov.simplify.reduce,
+       ov.less.stringent.ra.setting = ov.less.stringent.ra.setting,
+       ov.pvalue                    = ov.pvalue,
+       ov.plot.individual           = ov.plot.individual
+       )
 
 ##################### Write Session Info #####################################
 

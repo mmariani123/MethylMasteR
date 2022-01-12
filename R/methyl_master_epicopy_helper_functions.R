@@ -777,8 +777,6 @@ read.metharray.sheet.mm <- function(base,
 #' @param epic.manifest.path The path to the epic.manifest file
 #' @param comparison The MehtylMaster comparison vector
 #' @param reference_group The reference group to specify
-#' @param split.by The MethylMaster split.by field form the sample sheet to
-#' split up the epicopy analysis by
 #' @param project_name The project name
 #' @param Normals The specified Normals see documentaion
 #' @param sampNames Customize the sample names here
@@ -814,7 +812,6 @@ epicopy.mm <- function(target_dir,
                        epic.manifest.path = getwd(),
                        comparison = NULL,
                        reference_group = "internal", ##comparison
-                       split.by = NULL,
                        project_name = NULL,
                        Normals = NULL,
                        sampNames = NULL,
@@ -849,12 +846,7 @@ epicopy.mm <- function(target_dir,
   }
 
   #########################################################################
-  cnas.out <- list() ##Final list of cnas to be output
-  final.list.length <- ifelse(is.null(split.by),1,2)
-  for(i in 1:final.list.length){
-    if(!is.null(split.by)){
-    target_sheet <- target_sheet[target_sheet[[split.by]] %in% split.groups[i],]
-    }
+
   if(reference_group=="internal"){
     target_sheet <- target_sheet[target_sheet$Sample_Group %in% comparison[1],]
   }else{
@@ -984,9 +976,8 @@ epicopy.mm <- function(target_dir,
 
   }
 
-  cnas.out[[i]] <- cna
+  cnas.out <- list(cna)
 
-  } ##end for loop
 
   return(cnas.out)
 
