@@ -11,7 +11,8 @@ read.metharray.sheet.mm(
   recursive = TRUE,
   single.file = TRUE,
   single.file.path = NULL,
-  verbose = TRUE
+  verbose = TRUE,
+  ...
 )
 }
 \arguments{

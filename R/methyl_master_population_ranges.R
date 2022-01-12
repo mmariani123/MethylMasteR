@@ -3,132 +3,6 @@
 #' @title methyl_master_population_ranges
 #' @description MwthylMaster version of the populatonRanges function
 #' originally by Ludwig Geistlinger 2017
-###########################################################
-#
-# author: Ludwig Geistlinger
-# date: 2017-08-12 22:31:59
-#
-# descr: Functionality for summarizing individual calls
-#   across the population under study
-#   e.g. defining CNV regions from CNV calls
-#
-############################################################
-#' Summarizing CNV ranges across a population
-#'
-#' In CNV analysis, it is often of interest to summarize individual calls across
-#' the population, (i.e. to define CNV regions), for subsequent association
-#' analysis with e.g. phenotype data.
-#'
-#' @details
-#' \itemize{
-#' \item CNVRuler procedure that trims region margins based on regional density
-#'
-#' Trims low-density areas (usually <10\% of the total contributing individual
-#' calls within a summarized region).
-#'
-#' An illustration of the concept can be found here:
-#' https://www.ncbi.nlm.nih.gov/pubmed/22539667 (Figure 1)
-#'
-#' \item Reciprocal overlap (RO) approach (e.g. Conrad et al., Nature, 2010)
-#'
-#' Reciprocal overlap of 0.51 between two genomic regions A and B:
-#'
-#' requires that B overlaps at least 51\% of A,
-#'   *and* that A also overlaps at least 51\% of B
-#'
-#' Approach:
-#'
-#' At the top level of the hierarchy, all contiguous bases overlapping at least
-#' 1bp of individual calls are merged into one region.
-#' Within each region, we further define reciprocally overlapping regions with
-#' the following algorithm:
-#'
-#' \itemize{
-#' \item Calculate reciprocal overlap (RO) between all remaining calls.
-#' \item Identify pair of calls with greatest RO. If RO > threshold, merge and
-#'       create a new CNV. If not, exit.
-#' \item Continue adding unclustered calls to the region, in order of best overlap.
-#'       In order to add a call, the new call must have > threshold to all calls
-#'       within the region to be added. When no additional calls may be added,
-#'       move to next step.
-#' \item If calls remain, return to 1. Otherwise exit.
-#' }
-#'
-#' \item  GISTIC procedure (Beroukhim et al., PNAS, 2007) to identify recurrent
-#' CNV regions
-#'
-#' GISTIC scores each CNV region with a G-score that is proportional to the total
-#' magnitude of CNV calls in each CNV region.
-#' In addition, by permuting the locations in each sample, GISTIC determines
-#' the frequency with which a given score would be attained if the events were
-#' due to chance and therefore randomly distributed.
-#' A significance threshold can then be used to determine scores / regions that
-#' are unlikely to occur by chance alone.
-#' }
-#'
-#' @param grl A \code{\linkS4class{GRangesList}}.
-#' @param mode Character. Should population ranges be computed based on regional
-#' density ("density") or reciprocal overlap ("RO"). See Details.
-#' @param density Numeric. Defaults to 0.1.
-#' @param ro.thresh Numeric. Threshold for reciprocal overlap required for merging
-#' two overlapping regions. Defaults to 0.5.
-#' @param multi.assign Logical. Allow regions to be assigned to several region clusters?
-#' Defaults to \code{FALSE}.
-#' @param verbose Logical. Report progress messages? Defaults to \code{FALSE}.
-#' @param min.size Numeric. Minimum size of a summarized region to be included.
-#' Defaults to 2 bp.
-#' @param classify.ranges Logical. Should CNV frequency (number of samples
-#' overlapping the region) and CNV type (gain, loss, or both) be annotated?
-#' Defaults to \code{TRUE}.
-#' @param type.thresh Numeric. Required minimum relative frequency of each CNV
-#' type (gain / loss) to be taken into account when assigning CNV type to a region.
-#' Defaults to 0.1. That means for a region overlapped by individual gain and
-#' loss calls that both types must be present in >10% of the corresponding samples
-#' in order to be typed as 'both'. If gain or loss calls are present below the
-#' threshold they are ignored.
-#' @param est.recur Logical. Should recurrence of regions be assessed via a
-#' permutation test? Defaults to \code{FALSE}. See Details.
-#' @return A \code{\linkS4class{GRanges}} object containing the summarized
-#' CNV ranges.
-#'
-#' @references
-#' Kim et al. (2012) CNVRuler: a copy number variation-based case-control
-#' association analysis tool. Bioinformatics, 28(13):1790-2.
-#'
-#' Conrad et al. (2010) Origins and functional impact of copy number variation
-#' in the human genome. Nature, 464(7289):704-12.
-#'
-#' Beroukhim et al. (2007) Assessing the significance of chromosomal aberrations
-#' in cancer: methodology and application to glioma. PNAS, 104(50):20007-12.
-#'
-#' @author Ludwig Geistlinger, Martin Morgan
-#' @seealso \code{\link{findOverlaps}}
-#'
-#' @examples
-#'
-#' grl <- GRangesList(
-#'      sample1 = GRanges( c("chr1:1-10", "chr2:15-18", "chr2:25-34") ),
-#'      sample2 = GRanges( c("chr1:1-10", "chr2:11-18" , "chr2:25-36") ),
-#'      sample3 = GRanges( c("chr1:2-11", "chr2:14-18", "chr2:26-36") ),
-#'      sample4 = GRanges( c("chr1:1-12", "chr2:18-35" ) ),
-#'      sample5 = GRanges( c("chr1:1-12", "chr2:11-17" , "chr2:26-34") ) ,
-#'      sample6 = GRanges( c("chr1:1-12", "chr2:12-18" , "chr2:25-35") )
-#' )
-#'
-#' # default as chosen in the original CNVRuler procedure
-#' populationRanges(grl, density=0.1, classify.ranges=FALSE)
-#'
-#' # density = 0 merges all overlapping regions,
-#' # equivalent to: reduce(unlist(grl))
-#' populationRanges(grl, density=0, classify.ranges=FALSE)
-#'
-#' # density = 1 disjoins all overlapping regions,
-#' # equivalent to: disjoin(unlist(grl))
-#' populationRanges(grl, density=1, classify.ranges=FALSE)
-#'
-#' # RO procedure
-#' populationRanges(grl, mode="RO", ro.thresh=0.5, classify.ranges=FALSE)
-#'
 #' @param data The data parameter
 #' @param grl The grl parameter
 #' @param mode The mode parameter
@@ -200,43 +74,19 @@ methyl_master_population_ranges <- function(grl,
   grl
 }
 
-#' Plot recurrent CNV regions
-#'
-#' Illustrates summarized CNV regions along a chromosome.
-#'
-#' @param regs A \code{\linkS4class{GRanges}}. Typically the result of
-#' \code{\link{populationRanges}} with \code{est.recur=TRUE}.
-#' @param genome Character. A valid UCSC genome assembly ID such as 'hg19'
-#' or 'bosTau6'.
-#' @param chr Character. A UCSC-style chromosome name such as 'chr1'.
-#' @param pthresh Numeric. Significance threshold for recurrence. Defaults
-#' to 0.05.
-#' @return None. Plots to a graphics device.
-#'
-#' @author Ludwig Geistlinger
-#' @seealso \code{Gviz::plotTracks}
-#'
-#' @examples
-#'
-#' # read in example CNV calls
-#' data.dir <- system.file("extdata", package="CNVRanger")
-#' call.file <- file.path(data.dir, "Silva16_PONE_CNV_calls.csv")
-#' calls <- read.csv(call.file, as.is=TRUE)
-#'
-#' # store in a GRangesList
-#' grl <- GenomicRanges::makeGRangesListFromDataFrame(calls,
-#'    split.field="NE_id", keep.extra.columns=TRUE)
-#'
-#' # summarize CNV regions
-#' cnvrs <- populationRanges(grl, density=0.1, est.recur=TRUE)
-#'
-#' # plot
-#' plotRecurrentRegions(cnvrs, genome="bosTau6", chr="chr1")
-#'
+#' @title plotRecurrentRegions
+#' @description MethylMasteR version of plotReccurentRegions function
+#' "Plot recurrent CNV regions
+#' Illustrates summarized CNV regions along a chromosome."
+#' @param regs The regs Parameter
+#' @param genome The genome parameter
+#' @param chr The chr parameter
+#' @param pthresh The pthresh parameter
 #' @export
-
-plotRecurrentRegions <- function(regs, genome, chr, pthresh=0.05)
-{
+plotRecurrentRegions <- function(regs,
+                                 genome,
+                                 chr,
+                                 pthresh=0.05){
   if (!requireNamespace("Gviz", quietly = TRUE))
     stop(paste("Required package \'Gviz\' not found.",
                "Use \'BiocManager::install(\"Gviz\") to install it."))
@@ -304,61 +154,25 @@ plotRecurrentRegions <- function(regs, genome, chr, pthresh=0.05)
   Gviz::plotTracks(tracklist, ylim=ylim)
 }
 
-#' OncoPrint plot for CNV regions
-#'
+#' @title cnvOncoPrint
+#' @description The MethylMaster version of the OncoPrint() function
+#' to:
+#' "plot for CNV regions
 #' Illustrates overlaps between CNV calls and genomic features across a
-#' sample population.
-#'
-#' @param calls Either a \code{\linkS4class{GRangesList}} or
-#' \code{\linkS4class{RaggedExperiment}} storing the individual CNV calls for
-#' each sample.
-#' @param features A \code{\linkS4class{GRanges}} object containing
-#' the genomic features of interest, typically genes. Feature names
-#' are either expected as a meta-column \code{symbol} or as the \code{names}
-#' of the object.
-#' @param multi.calls A function. Determines how to summarize the
-#' CN state in a CNV region when there are multiple (potentially conflicting)
-#' calls for one sample in that region. Defaults to \code{.largest}, which
-#' assigns the CN state of the call that covers the largest part of the CNV
-#' region tested. A user-defined function that is passed on to
-#' \code{\link{qreduceAssay}} can also be provided for customized behavior.
-#' @param top.features integer. Restricts the number of features for plotting to
-#' features experiencing highest alteration frequency. Defaults to 25.
-#' Use \code{-1} to display all features.
-#' @param top.samples integer. Restricts the number of samples for plotting to
-#' samples experiencing highest alteration frequency. Defaults to 100.
-#' Use \code{-1} to display all samples.
-#' @param ... Additional arguments passed on to \code{ComplexHeatmap::oncoPrint}
-#' @return None. Plots to a graphics device.
-#'
-#' @author Ludwig Geistlinger
-#' @seealso \code{ComplexHeatmap::oncoPrint}
-#'
-#' @examples
-#'
-#' # read in example CNV calls
-#' data.dir <- system.file("extdata", package="CNVRanger")
-#' call.file <- file.path(data.dir, "Silva16_PONE_CNV_calls.csv")
-#' calls <- read.csv(call.file, as.is=TRUE)
-#'
-#' # store in a GRangesList
-#' calls <- makeGRangesListFromDataFrame(calls,
-#'    split.field="NE_id", keep.extra.columns=TRUE)
-#'
-#' # three example genes
-#' genes <- c(  "chr1:140368053-140522639:-",
-#'              "chr2:97843887-97988140:+",
-#'              "chr2:135418586-135422028:-")
-#' names(genes) <- c("ATP2C1", "MAP2", "ACTL8")
-#' genes <- GRanges(genes)
-#'
-#' # plot
-#' cnvOncoPrint(calls, genes, top.samples = 25)
-#'
+#' sample population."
+#' @param calls The calls parameter
+#' @param features The features parameter
+#' @param multi.calls The multi.calls parameter
+#' @param top.features The top.features parameter
+#' @param top.samples The top.samples parameter
+#' @param ... Additional parameters passed to cnvOncoPrint
 #' @export
-cnvOncoPrint <- function(calls, features, multi.calls=.largest,
-                         top.features = 25, top.samples = 100, ...)
-{
+cnvOncoPrint <- function(calls,
+                         features,
+                         multi.calls=.largest,
+                         top.features = 25,
+                         top.samples = 100,
+                         ...){
   if (!requireNamespace("ComplexHeatmap", quietly = TRUE))
     stop(paste("Required package \'ComplexHeatmap\' not found.",
                "Use \'BiocManager::install(\"ComplexHeatmap\") ",
@@ -398,7 +212,6 @@ cnvOncoPrint <- function(calls, features, multi.calls=.largest,
   qassay[qassay == "1"] <- "HETDEL"
   qassay[qassay == "3"] <- "GAIN1"
   qassay[qassay == "4"] <- "GAIN2+"
-
 
   # assign colors to genotypes
   cb.red <- "#D55E00"
@@ -485,9 +298,12 @@ cnvOncoPrint <- function(calls, features, multi.calls=.largest,
   return(regs)
 }
 
-# @param states integer vector
-# @param state.thresh numeric
-# @return character
+#' @title .getType.mm
+#' @description The MethylMaster version of .getType() function
+#' @param states integer vector
+#' @param state.thresh numeric
+#' @return character
+#' @export
 .getType.mm <- function(states, type.thresh=0.1)
 {
   ##if(any(states!=2)){
@@ -504,13 +320,15 @@ cnvOncoPrint <- function(calls, features, multi.calls=.largest,
   return(type)
 }
 
-## (2) RO approach
-#
-# @param grl GenomicRanges::GRangesList
-# @param ro.tresh numeric
-# @param multi.assign logical
-# @param verbose logical
-# @return GenomicRanges::GRanges
+#' @title .roPopRanges
+#' @description  MethylMaster version of the .roPopRanges function
+#' "(2) RO approach"
+#' @param grl The grl parameter
+#' @param ro.tresh The ro.thresh parameter
+#' @param multi.assign The multu.assign parameter
+#' @param verbose The verbose parameter
+#' @return GenomicRanges::GRanges
+#' @export
 .roPopRanges <- function(grl,
                          ro.thresh=0.5,
                          multi.assign=FALSE,
@@ -551,15 +369,16 @@ cnvOncoPrint <- function(calls, features, multi.calls=.largest,
   return(ro.ranges)
 }
 
-
-# the clustering itself then goes sequentially through the identified RO hits,
-# touching each hit once, and checks whether this hit could be merged to
-# already existing clusters
-#
-# @param calls GenomicRanges::GRanges
-# @param ro.thresh numeric
-# @param multi.assign logical
-# @return list of integer vectors
+#' @title .clusterCalls
+#' @description  MethylMaster version of the .clusterCalls function
+#' "the clustering itself then goes sequentially through the identified RO hits,
+#' touching each hit once, and checks whether this hit could be merged to
+#' already existing clusters"
+#' @param calls GenomicRanges::GRanges
+#' @param ro.thresh numeric
+#' @param multi.assign logical
+#' @return list of integer vectors
+#' @export
 .clusterCalls <- function(calls, ro.thresh=0.5, multi.assign=FALSE)
 {
   hits <- .getROHits(calls, ro.thresh)
@@ -612,12 +431,13 @@ cnvOncoPrint <- function(calls, features, multi.calls=.largest,
   return(call.clusters)
 }
 
-# given a set individual calls, returns overlaps (hits) between them
-# that satisfy the RO threshold
-#
-# @param calls GenomicRanges::GRanges
-# @param ro.thresh numeric
-# @return S4Vectors::Hits
+#' @title .getROHits
+#' @desscription The MethylMaster version of the .getROHits function
+#'' "given a set individual calls, returns overlaps (hits) between them
+#' that satisfy the RO threshold"
+#' @param calls GenomicRanges::GRanges
+#' @param ro.thresh numeric
+#' @return S4Vectors::Hits
 .getROHits <- function(calls, ro.thresh=0.5)
 {
   # calculate pairwise ro
@@ -656,14 +476,16 @@ cnvOncoPrint <- function(calls, features, multi.calls=.largest,
   return(hits)
 }
 
-# decides whether a given hit can be merged to an already existing cluster
-# mergeability requires that all cluster members satisfy the pairwise RO
-# threshold
-#
-# @param hit S4Vectors::Hits
-# @param cluster S4Vectors::Hits
-# @param hits S4Vectors::Hits
-# @return integer vector
+# ' @ttitle .getMergeIndex
+#' @description the MethylMaster version of the .getMergeIndex function
+#' "decides whether a given hit can be merged to an already existing cluster
+#' mergeability requires that all cluster members satisfy the pairwise RO
+#' threshold"
+#' @param hit S4Vectors::Hits
+#' @param cluster S4Vectors::Hits
+#' @param hits S4Vectors::Hits
+#' @return integer vector
+#' @export
 .getMergeIndex <- function(hit, cluster, hits)
 {
   # (1) check whether query / S4Vectors::subject of hit is part of cluster
@@ -700,13 +522,15 @@ cnvOncoPrint <- function(calls, features, multi.calls=.largest,
   return(mergeIndex)
 }
 
-# as the outlined procedure can assign a call to multiple clusters
+#' @title .pruneMultiAssign
+#' @description the MethylMaster version of the .pruneMultiAssign function
+# "as the outlined procedure can assign a call to multiple clusters
 # (in the most basic case a call A that has sufficient RO with a call B and
 # a call C, but B and C do not have sufficient RO), this allows to optionally
-# strip away such multi-assignments
-#
-# @param clusters list of integer vectors
-# @return list of integer vectors
+# strip away such multi-assignments"
+#' @param clusters list of integer vectors
+#' @return list of integer vectors
+#' @export
 .pruneMultiAssign <- function(clusters)
 {
   cid <- seq_along(clusters)
@@ -809,10 +633,12 @@ cnvOncoPrint <- function(calls, features, multi.calls=.largest,
   return(pvals)
 }
 
-# @param r GenomicRanges::GRanges
-# @param calls GenomicRanges::GRanges
-# @param fract.thresh numeric
-# @return numeric
+#' @title .scoreRegion
+#' @description The MethylMasteR version of the .scoreRegion function
+#' @param r GenomicRanges::GRanges
+#' @param calls GenomicRanges::GRanges
+#' @param fract.thresh numeric
+#' @return numeric
 .scoreRegion <- function(r, calls, fract.thresh=0.1)
 {
   chr <- GenomicRanges::seqnames(r)
@@ -834,9 +660,12 @@ cnvOncoPrint <- function(calls, features, multi.calls=.largest,
   return(score)
 }
 
-# @param calls GenomicRanges::GRanges
-# @param type character
-# @return numeric
+#' @title .getfreq.mm
+#' @description MethylMaster version of the .getFreq() function
+#' @param calls GenomicRanges::GRanges
+#' @param type character
+#' @return numeric
+#' @export
 ##.getFreq.mm <- function(calls, type=c("gain", "loss", "neutral"))
 .getFreq.mm <- function(calls, type=c("gain", "loss"))
 {
