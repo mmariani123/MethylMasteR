@@ -54,11 +54,11 @@ methyl_master(\
   sesame.ref.version        = "hg38", #The default SeSAMe platform\
   sesame.hm450.mean.correct = FALSE, #Run mean correction for SeSAMe\
   sesame.form.thresholds    = NULL, # If NULL equation is is used,\
-                              otherwise specify threshold vector such\ 
+                              otherwise specify threshold vector such\
                               as c(-0.3,0.3),\
   sesame.form.add.meta      = NULL #Can specify addtional metadata\
                               columns to keep, c("Tumor score") etc.\
-  hm450.workflow            = "B", #The HM450 subworkflow to use 9Only B is running currently:\ 
+  hm450.workflow            = "B", #The HM450 subworkflow to use 9Only B is running currently:\
                               #"A" no correct,\
                               #"B" median correction (default),\
                               #"C" run Conumee\
