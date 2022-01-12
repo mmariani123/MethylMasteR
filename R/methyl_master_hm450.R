@@ -152,7 +152,6 @@ methyl_master_hm450 <- function(hm450.input.dir=NULL,
       rm(hm450_cn_methylset.treatment)
       proc_treatment_B[is.infinite(proc_treatment_B)] <- NA
       proc_treatment_B <- scale(proc_treatment_B)
-      med_treatment_B <- apply(proc_treatment_B, 1, "median")
 
       candidates_data_treatment_B <-
         findSegments2(proc_treatment_B[, , drop = FALSE],

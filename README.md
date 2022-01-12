@@ -44,14 +44,9 @@ methyl_master(\
   visualize.individual      = FALSE, #Indvidual sample plots only works for routine sesame\
   reference                 = "internal", #"comparison" or 'internal"\
   reference.name            = NA, #NA for median, "all" is not currently supported by Epicopy
-  split.by                  = NULL, #or specifiy sample sheet column such as "gender"\
-                              #For splitting analysis across two factors\
-                              #in a field, note MethylMaster only\
-                              #supports splitting on a signal metadata\
-                              #containing ONLY two factors currently\
-                              #e.g. 'male' and 'female' in the\
-                              #'gender' field\
   comparison                = c("tumor","cord"), #Always required treatment first then control\
+                              #can also be more specific when designing sample sheet and use values like\
+                              such as c("tumor_male","cord_male etc") etc.\
                               #in routines where internal reference is used, second argument is ignored\
   overlap.density           = 0.1, #For combining final CNV calls for confidence\
   sesame.data.cache         = "EPIC", #The default sesame reference platform\
@@ -63,7 +58,7 @@ methyl_master(\
                               as c(-0.3,0.3),\
   sesame.form.add.meta      = NULL #Can specify addtional metadata\
                               columns to keep, c("Tumor score") etc.\
-  hm450.workflow            = "B", #The HM450 subworkflow to use:\ 
+  hm450.workflow            = "B", #The HM450 subworkflow to use 9Only B is running currently:\ 
                               #"A" no correct,\
                               #"B" median correction (default),\
                               #"C" run Conumee\
