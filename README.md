@@ -29,7 +29,7 @@ results folders from the other four routines
 
 ## Select the other parameters and run!
 
-methyl_master(
+methyl_master(\
   routine                   = "sesame",          #The routine to run\
   input.dir                 = input.dir,         #The input (idat.files) directory\
   output.dir                = output.dir,        #The output directory\
