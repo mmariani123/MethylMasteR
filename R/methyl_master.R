@@ -29,19 +29,17 @@
 #' @param reference.name the reference name, for the epicopy routine
 #' @param split.by which additional metadata column to split the analysis by
 #' @param comparison which groups from the metadata "Sample_Group" to compare
+#' @param form.thresholds the thresholds for cnv state calling
 #' @param overlap.density the overlap density applied to final results from
 #' the modified population ranges function
 #' @param sesame.data.cache the sesame data cache to use
 #' @param sesame.data.normal which sesame normal data to use e.g."EPIC.5.Normal"
 #' @param sesame.ref.version which sesame reference version, default is hg38
 #' @param sesame.hm450.mean.correct hm450 style auto-correction centering
-#' @param sesame.form.thresholds the thresholds for cnv state calling
 #' @param sesame.form.add.meta additional metadata column to be plotted with
 #' final heatmap
 #' @param hm450.workflow which hm450 workflow to use with the hm450 routine:
 #' "A", "B", or "C"
-#' @param hm450.anno.file.path the path to the hm450 annotation file for the
-#' hm450 routine
 #' @param champ.padj adjusted p-value threshold for the ChAMP routine
 #' @param champ.control select the champ control to use
 #' @param champ.run.combat run combat batch correction in the champ routine
@@ -97,15 +95,14 @@ methyl_master <- function(input.dir            = NULL,
                           reference.name       = "all",
                           split.by             = NULL,
                           comparison           = NULL,
+                          form.thresholds      = NULL,
                           overlap.density      = 0.1,
                           sesame.data.cache    = "EPIC",
                           sesame.data.normal   = 'EPIC.5.normal',
                           sesame.ref.version   = "hg38",
                           sesame.hm450.mean.correct = TRUE,
-                          sesame.form.thresholds = NULL, ##c(-0.3,0.3),
                           sesame.form.add.meta = NULL,
                           hm450.workflow       = "B",
-                          hm450.anno.file.path = NULL,
                           champ.padj           = 0.05,
                           champ.control        = FALSE,
                           champ.run.combat     = TRUE,
@@ -133,6 +130,27 @@ methyl_master <- function(input.dir            = NULL,
                           ){
 
 #################### Load global variables ####################################
+
+##cat(
+##paste(
+##"###############################################################",
+##"###############################################################",
+##"###############################################################",
+##"###############################################################",
+##"###############################################################",
+##" __  __      _   _           _ __  __           _       ____   ",
+##"|  \/  | ___| |_| |__  _   _| |  \/  | __ _ ___| |_ ___|  _ \  ",
+##"| |\/| |/ _ \ __| '_ \| | | | | |\/| |/ _` / __| __/ _ \ |_\) | ",
+##"| |  | |  __/ |_| | | | |_| | | |  | |\(_| \__ \ ||  __/  _ <  ",
+##"|_|  |_|\___|\__|_| |_|\__, |_|_|  |_|\__,_|___/\__\___|_| \_\ ",
+##"                       |___/                                   ",
+##"                                                               ",
+##"###############################################################",
+##"###############################################################",
+##"###############################################################",
+##"###############################################################",
+##"###############################################################",
+##sep="\n"))
 
 .libPaths(r.lib.path)
 
@@ -444,10 +462,10 @@ if(routine=="sesame"){
               sesame.form.reference=reference,
               sesame.form.split.by=split.by,
               sesame.form.comparison=comparison,
+              sesame.form.thresholds=form.thresholds,
               sesame.form.save.seg=save.seg,
               sesame.form.plot.individual=visualize.individual,
               sesame.form.auto.corrected=sesame.hm450.mean.correct,
-              sesame.form.thresholds=sesame.form.thresholds,
               sesame.form.add.meta=sesame.form.add.meta,
               ...)
 }else if(routine=="hm450"){
@@ -457,6 +475,7 @@ if(routine=="sesame"){
                                  hm450.form.reference=reference,
                                  hm450.form.split.by=split.by,
                                  hm450.form.workflow=hm450.workflow,
+                                 hm450.form.thresholds=form.thresholds,
                                  hm450.form.comparison=comparison,
                                  hm450.form.save.seg=save.seg,
                                  hm450.form.anno.file.path=hm450.anno.file.path)
@@ -465,6 +484,7 @@ if(routine=="sesame"){
                                         champ.form.output.dir=output.dir,
                                         champ.form.reference=reference,
                                         champ.form.split.by=split.by,
+                                        champ.form.thresholds=form.thresholds,
                                         champ.form.save.seg=save.seg,
                                         champ.form.comparison=comparison,
                                         champ.form.padj=champ.padj)
@@ -473,6 +493,7 @@ if(routine=="sesame"){
                                           epi.form.output.dir=output.dir,
                                           epi.form.reference=reference,
                                           epi.form.split.by=split.by,
+                                          epi.form.thresholds=form.thresholds,
                                           epi.form.save.seg=save.seg,
                                           epi.form.comparison=comparison)
 }else{

@@ -52,6 +52,19 @@ methyl_master_hm450 <- function(hm450.input.dir=NULL,
 
   ##candidates_data_treatment_B.1 <-
   ##readRDS(file="C:\\Users\\Mike\\Desktop\\candidates_data_treatment_B.1.RDS")
+
+  ##hm450.anno.file.path <- paste0("G:\\My Drive\\dartmouth",
+  ##                                 "\\salas_lab\\cnv",
+  ##                                 "\\hm450.manifest.hg38.rda")
+  ##load(hm450.anno.file.path)
+  ##load("G:\\My Drive\\dartmouth\\salas_lab_working\\cnv
+  ##\\cnv_testing\\probe450kfemanno.rda")
+  ##load("G:\\My Drive\\dartmouth\\salas_lab_working\\cnv
+  ##\\cnv_testing\\hm450.manifest.hg38.rda")
+  ##https://www.bioconductor.org/packages/release/BiocViews.html#___IlluminaChip
+  ##annotation1 <- getAnnotation(IlluminaHumanMethylation450kanno.ilmn12.hg19)
+  ##annotation1 <- as.data.frame(annotation1)
+
   library(IlluminaHumanMethylation450kanno.ilmn12.hg19)
   annotation1 <- getAnnotation(IlluminaHumanMethylation450kanno.ilmn12.hg19)
   annotation1 <- as.data.frame(annotation1)

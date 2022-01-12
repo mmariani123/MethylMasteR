@@ -15,7 +15,7 @@
 #' @param sesame.form.save.seg Whether or not to save the formatted seg output
 #' @param sesame.form.plot.individual Whether to plot the individual sesame
 #' sample signal plots
-#' @param sesame.form.thresholds The sesame thresholds used to determine the CNV
+#' @param sesame.form.thresholds The thresholds used to determine the CNV
 #' state, if NULL, the equation  seg.state <- round(2^seg.means * 2) is used
 #' @param ... additional parameters to pass to methyl_master_formatting_sesame
 #' @import CNVRanger
@@ -54,15 +54,17 @@ methyl_master_plot_individual(pi.seg = sesame.form.seg[[1]],
 sesame.seg <- sesame.form.seg[[1]]
 rm(sesame.form.seg)
 
-sesame.form.col <- sesame.form.sample.sheet.df[[sesame.form.add.meta]]
+##sesame.form.col <- sesame.form.sample.sheet.df[[sesame.form.add.meta]]
 
-names(sesame.form.col) <-
-  rep(sesame.form.add.meta,times=length(sesame.form.col))
+##names(sesame.form.col) <-
+##  rep(sesame.form.add.meta,times=length(sesame.form.col))
 
 sesame_seg_treatment.df <- binding_frames_mm(
   x=sesame.seg,
-  auto.corrected=sesame.form.auto.corrected,
-  add.col=sesame.form.col
+  auto.corrected=FALSE,
+  ##auto.corrected=sesame.form.auto.corrected,
+  ##add.col=sesame.form.col
+  add.col=NULL
 )
 
 sesame_seg_treatment.df <- sesame_seg_treatment.df[
@@ -113,8 +115,7 @@ preferred.column.names <- c("Sample_ID",
                             "state",
                             "treatment",
                             "method",
-                            "sub.method",
-                            sesame.form.add.meta)
+                            "sub.method")
 
 seg <- seg[,preferred.column.names]
 

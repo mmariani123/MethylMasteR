@@ -5,10 +5,11 @@
 #' @param hm450.form.seg The hm450 routine seg results as input to be formatted
 #' @param hm450.form.output.dir The output dir for the formatting results
 #' @param hm450.form.sample.sheet.path The MehtylMaster sample sheet path
+#' @param hm450.form.thresholds The thresholds used to determine the CNV
+#' state, if NULL, the equation  seg.state <- round(2^seg.means * 2) is used
 #' @param hm450.form.workflow The specific HM450 workflow that was used
 #' @param hm450.form.comparison The MethylMaster two-element comparison vector
 #' @param hm450.form.save.seg Whether to save the formatted HM450 results
-#' @param hm450.form.anno.file.path The hm450 annotation file path
 #' @param ... Additional parameters passed to methyl_master_formatting_hm450
 #' @import CNVRanger
 #' @import matter
@@ -19,22 +20,13 @@ methyl_master_formatting_hm450 <- function(hm450.form.seg=NULL,
                                     hm450.form.output.dir=getwd(),
                                     hm450.form.sample.sheet.path=NULL,
                                     hm450.form.reference="internal",
+                                    hm450.form.thresholds=NULL,
                                     hm450.form.split.by=NULL,
                                     hm450.form.workflow="B",
                                     hm450.form.comparison=NULL,
                                     hm450.form.save.seg=FALSE,
-                                    hm450.form.anno.file.path,
                                     ...
                                   ){
-
-##load(hm450.anno.file.path)
-##load("G:\\My Drive\\dartmouth\\salas_lab_working\\cnv
-##\\cnv_testing\\probe450kfemanno.rda")
-##load("G:\\My Drive\\dartmouth\\salas_lab_working\\cnv
-##\\cnv_testing\\hm450.manifest.hg38.rda")
-##https://www.bioconductor.org/packages/release/BiocViews.html#___IlluminaChip
-##annotation1 <- getAnnotation(IlluminaHumanMethylation450kanno.ilmn12.hg19)
-##annotation1 <- as.data.frame(annotation1)
 
 candidates_data_treatment_B <- hm450.form.seg[[1]]
 rm(hm450.form.seg)
@@ -84,10 +76,11 @@ colnames(candidates_data_treatment_B_sig)[
 
 candidates_data_treatment_B_sig$num.mark  <- NA
 candidates_data_treatment_B_sig$bstat     <- NA
+
 candidates_data_treatment_B_sig$state <-
-  round(2^candidates_data_treatment_B_sig$seg.mean * 2)
-candidates_data_treatment_B_sig$state[
-  candidates_data_treatment_B_sig$state > 4] <- 4
+    calc_seg_state(seg.means = candidates_data_treatment_B_sig$seg.mean,
+                               upper.thresh = 4,
+                               cutoff = hm450.form.thresholds)
 candidates_data_treatment_B_sig$treatment <- hm450.form.comparison[1]
 candidates_data_treatment_B_sig$method <- "hm450"
 candidates_data_treatment_B_sig$sub.method <- "B"

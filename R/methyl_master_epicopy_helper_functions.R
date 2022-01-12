@@ -890,59 +890,59 @@ epicopy.mm <- function(target_dir,
 
   platforms <- unique(target_sheet$Platform)
 
-  if(length(unique(platforms))>1){
+  ##if(length(unique(platforms))>1){
+  ##
+  ##treatment.platform <- unique(target_sheet[target_sheet$Sample_Group %in%
+  ##                                              comparison[1],"Platform"])
+  ##
+  ##control.platform   <- unique(target_sheet[target_sheet$Sample_Group %in%
+  ##                                              comparison[2],"Platform"])
+  ##
+  ##rgsets <- list()
+  ##foreach(i=1:length(comparison),.combine=rbind, .packages=c("foreach",
+  ##                                                            "minfi")) %do% {
+  ##  sub.target.sheet <- target_sheet[target_sheet$Sample_Group==comparison[i],]
+  ##  rgset <-
+  ##    read.metharray.exp(targets = sub.target.sheet,
+  ##                         verbose = verbose)
+  ##  rgsets[i] <- rgset
+  ##}
+  ##  ##"IlluminaHumanMethylation450k
+  ##  ##"IlluminaHumanMethylationEPIC
+  ##  rgset <- minfi::combineArrays(rgsets[[1]],
+  ##                                rgsets[[2]],
+  ##                          outType = ifelse(control.platform=="EPIC",
+  ##                                    "IlluminaHumanMethylationEPIC",
+  ##                                    "IlluminaHumanMethylation450k"),
+  ##                                verbose=TRUE)
 
-  treatment.platform <- unique(target_sheet[target_sheet$Sample_Group %in%
-                                                comparison[1],"Platform"])
+    ##lrr <- getLRR.mm(rgSet = rgset[,rgset$Sample_Group %in% comparison[1]],
+    ##                 ifelse(is.na(Normals),
+    ##                        Normals = NA,
+    ##                        Normals = rgset[,rgset$Sample_Group %in%
+    ##                                          comparison[2]]),
+    ##                 sampNames = sampNames,
+    ##                 QN = QN,
+    ##                 Ref = Ref,
+    ##                 mode.bw = mode.bw,
+    ##                 mode.method = mode.method,
+    ##                 normal.cnv = normal.cnv,
+    ##                 mean.center = mean.center,
+    ##                 filterProbes = filterProbes,
+    ##                 ...
+    ##)
 
-  control.platform   <- unique(target_sheet[target_sheet$Sample_Group %in%
-                                                comparison[2],"Platform"])
-
-  rgsets <- list()
-  foreach(i=1:length(comparison),.combine=rbind, .packages=c("foreach",
-                                                              "minfi")) %do% {
-    sub.target.sheet <- target_sheet[target_sheet$Sample_Group==comparison[i],]
-    rgset <-
-      read.metharray.exp(targets = sub.target.sheet,
-                           verbose = verbose)
-    rgsets[i] <- rgset
-  }
-    ##"IlluminaHumanMethylation450k
-    ##"IlluminaHumanMethylationEPIC
-    rgset <- minfi::combineArrays(rgsets[[1]],
-                                  rgsets[[2]],
-                            outType = ifelse(control.platform=="EPIC",
-                                      "IlluminaHumanMethylationEPIC",
-                                      "IlluminaHumanMethylation450k"),
-                                  verbose=TRUE)
-
-    lrr <- getLRR.mm(rgSet = rgset[,rgset$Sample_Group %in% comparison[1]],
-                     ifelse(is.na(Normals),
-                            Normals = NA,
-                            Normals = rgset[,rgset$Sample_Group %in%
-                                              comparison[2]]),
-                     sampNames = sampNames,
-                     QN = QN,
-                     Ref = Ref,
-                     mode.bw = mode.bw,
-                     mode.method = mode.method,
-                     normal.cnv = normal.cnv,
-                     mean.center = mean.center,
-                     filterProbes = filterProbes,
-                     ...
-    )
-
-    cna <- LRRtoCNA.mm(lrr,
-                       ncores = ncores,
-                       seg.undo.splits = seg.undo.splits,
-                       seg.undo.SD = seg.undo.SD,
-                       epic.manifest.path = epic.manifest.path,
-                       platform = control.platform
-    )
+    ##cna <- LRRtoCNA.mm(lrr,
+    ##                   ncores = ncores,
+    ##                   seg.undo.splits = seg.undo.splits,
+    ##                   seg.undo.SD = seg.undo.SD,
+    ##                   epic.manifest.path = epic.manifest.path,
+    ##                   platform = control.platform
+   ## )
 
     ##return(cna)
 
-  }else{
+  ##}else{
 
   control.platform <- unique(target_sheet$Platform)
 
@@ -974,7 +974,7 @@ epicopy.mm <- function(target_dir,
 
   ##return(cna)
 
-  }
+  ##}
 
   cnas.out <- list(cna)
 

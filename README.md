@@ -14,7 +14,6 @@ library(MethylMasteR)
 input.dir <- "path.to.idat.dir"\
 output.dir <- "path.to.output.dir"\
 sample.sheet.path <- "path.to.sample.sheet"\
-hm450.anno.file.path <- "path.to.hm450.manifest.hg38.rda"
 
 ## Select your routine :
 
@@ -43,26 +42,23 @@ methyl_master(\
   visualize                 = TRUE, #output plots,
   visualize.individual      = FALSE, #Indvidual sample plots only works for routine sesame\
   reference                 = "internal", #"comparison" or 'internal"\
-  reference.name            = NA, #NA for median, "all" is not currently supported by Epicopy
+  reference.name            = NA, #For Epicopy use NA for median, "all" is not currently supported by Epicopy\
   comparison                = c("tumor","cord"), #Always required treatment first then control\
                               #can also be more specific when designing sample sheet and use values like\
                               such as c("tumor_male","cord_male etc") etc.\
                               #in routines where internal reference is used, second argument is ignored\
+  form.thresholds           = NULL, # Used to calculate final CNV state. If NULL, equation is is used,\
+                              otherwise specify threshold vector of lower and upper beta values such\
+                              as c(-0.3,0.3),\
   overlap.density           = 0.1, #For combining final CNV calls for confidence\
+  save.seg                  = TRUE, #Whether to save segmentation results\
   sesame.data.cache         = "EPIC", #The default sesame reference platform\
   sesame.data.normal        = 'EPIC.5.normal', #The default sesame and hm450 internal reference samples\
-  sesame.ref.version        = "hg38", #The default SeSAMe platform\
-  sesame.hm450.mean.correct = FALSE, #Run mean correction for SeSAMe\
-  sesame.form.thresholds    = NULL, # If NULL equation is is used,\
-                              otherwise specify threshold vector such\
-                              as c(-0.3,0.3),\
-  sesame.form.add.meta      = NULL #Can specify addtional metadata\
-                              columns to keep, c("Tumor score") etc.\
+  sesame.ref.version        = "hg19", #Or can set to "hg38"\
   hm450.workflow            = "B", #The HM450 subworkflow to use 9Only B is running currently:\
                               #"A" no correct,\
                               #"B" median correction (default),\
                               #"C" run Conumee\
-  hm450.anno.file.path      = hm450.anno.file.path, ##Needed for hm450\
   champ.padj                = 0.05, #padj to filter champ results\
   champ.control             = FALSE, #run champ.control etc.\
   champ.run.combat          = FALSE, #run champ.run.combat etc.\
@@ -72,7 +68,6 @@ methyl_master(\
   champ.run.gsea            = FALSE, #Requires dmp and dmr results\
   champ.run.epimod          = FALSE, #If only one pheno var must = FALSE\
   epi.run.gistic            = TRUE, #Whether to Run GISTIC in Epicopy workflow\
-  save.seg                  = TRUE, #Whether to save segmentation results\
   olaps.split.field         = "Sample_ID", #Split field to ise during overlaps\
                                       #Don't change unless you know what you are doing\
   estimate.recurrence       = TRUE, #Estimate recursion to produce p values when finding overlaps\
