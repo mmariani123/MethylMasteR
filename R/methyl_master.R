@@ -222,7 +222,7 @@ if(reference=="internal" &
 ####################################################################
 ####################################################################
 
-if(routine!="compare"){
+##if(routine!="compare"){
 
 ##profvis.out <- profvis({
 
@@ -479,16 +479,15 @@ if(routine=="sesame"){
                                           epi.form.thresholds=form.thresholds,
                                           epi.form.save.seg=save.seg,
                                           epi.form.comparison=comparison)
-}}else if(routine=="custom"){
-  methyl_master_formatting_custom(custom.form.seg=seg,
-                                  custom.form.output.dir=output.dir,
-                                  custom.form.sample.sheet.path=sample.sheet.path,
-                                  custom.form.comparison=comparison,
-                                  custom.form.thresholds=form.thresholds,
-                                  custom.form.save.seg=save.seg,
-                                  custom.form.plot.individual=visualize.individual,
-                                  custom.form.auto.corrected=sesame.hm450.mean.correct,
-                                  ...))
+}else if(routine=="custom"){
+  seg <- methyl_master_formatting_custom(custom.form.seg=seg,
+                          custom.form.output.dir=output.dir,
+                          custom.form.sample.sheet.path=sample.sheet.path,
+                          custom.form.comparison=comparison,
+                          custom.form.thresholds=form.thresholds,
+                          custom.form.save.seg=save.seg,
+                          custom.form.plot.individual=visualize.individual,
+                          ...)
 }else{
   stop(paste0("Error you must select a valid <routine> value"))
 }
@@ -560,16 +559,16 @@ writeLines(capture.output(sessionInfo()),
                   ".txt")
 )
 
-}else{
-
-  methyl_master_compare(compare.list.files=compare.list.files,
-                        compare.files.in=compare.files.in,
-                        compare.input.dir=input.dir,
-                        compare.output.dir=output.dir,
-                        compare.names=compare.names,
-                        compare.olaps.size=compare.olaps.size)
-
-}
+##}else{
+##
+##  methyl_master_compare(compare.list.files=compare.list.files,
+##                        compare.files.in=compare.files.in,
+##                        compare.input.dir=input.dir,
+##                        compare.output.dir=output.dir,
+##                        compare.names=compare.names,
+##                        compare.olaps.size=compare.olaps.size)
+##
+##}
 
 ##################### End pipeline ###########################################
 ##############################################################################

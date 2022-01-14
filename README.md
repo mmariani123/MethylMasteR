@@ -36,6 +36,8 @@ methyl_master(\
                                                  sample sheet\
   r.lib.path                = .libPaths()[1],    #The path to the R Library path\
   file.sep                  = "\\\\\\\\", #for windows or "/" for Linux\
+    create.dir              = TRUE, #create directory if does not exist?\
+      save.seg              = TRUE, #Whether to save segmentation results\
   n.cores                   = 1, #Multicore does not work for all software on all platforms
   os.type                   = "windows", #or "linux"\
   proj                      = "TCGA-KIRC", #"TCGA-BLCA" etc.\
@@ -51,7 +53,6 @@ methyl_master(\
                               otherwise specify threshold vector of lower and upper beta values such\
                               as c(-0.3,0.3),\
   overlap.density           = 0.1, #For combining final CNV calls for confidence\
-  save.seg                  = TRUE, #Whether to save segmentation results\
   sesame.data.cache         = "EPIC", #The default sesame reference platform\
   sesame.data.normal        = 'EPIC.5.normal', #The default sesame and hm450 internal reference samples\
   sesame.ref.version        = "hg19", #Or can set to "hg38"\
@@ -75,12 +76,4 @@ methyl_master(\
   ov.pvalue                 = 0.05, #pvalue threshold for overlaps identified\
   ov.keep.extra.columns     = TRUE, #Keep extra metadata columns when finding overlaps\
   simplify.reduce           = weightedmean, #Equation to use during reduction\
-  create.dir                = TRUE, #create directory if does not exist?\
-  compare.list.files        = FALSE, #Set to true to list files below, otherwise\
-                              The "compare" routine will search the input.dir\
-                              recursively for output to compare\
-  compare.files.in          = compare.files.in, #vector list of individual files for the compare routine\
-  compare.names             = compare.names, #Specify name of each comparison result\
-  compare.olaps.size        = 1 #Overlap of one or more base pairs\
-                              #considered as an overlap in the "compare" routine\
 )
