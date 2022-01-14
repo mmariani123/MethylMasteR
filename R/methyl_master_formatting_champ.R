@@ -6,8 +6,6 @@
 #' Michael Mariani PhD Dartmouth College 2021
 #' @param champ.form.seg The input ChAMP CNV segmentation results
 #' @param champ.form.output.dir The output directory
-#' @param champ.form.reference The reference that was used
-#' @param champ.form.split.by The splt.by variable in the sample sheet that was
 #' used
 #' @param champ.form.thresholds The thresholds used to determine the CNV
 #' state, if NULL, the equation  seg.state <- round(2^seg.means * 2) is used
@@ -23,8 +21,6 @@
 #' @export
 methyl_master_formatting_champ <- function(champ.form.seg=NULL,
                                            champ.form.output.dir=getwd(),
-                                           champ.form.reference=NULL,
-                                           champ.form.split.by=NULL,
                                            champ.form.save.seg=FALSE,
                                            champ.form.comparison=NULL,
                                            champ.form.padj=NULL,

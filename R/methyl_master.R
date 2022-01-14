@@ -344,7 +344,6 @@ epicopy = {
                                epi.run.gistic=epi.run.gistic,
                                epi.comparison=comparison,
                                epi.ncores=n.cores,
-                               epi.split.by=split.by,
                                epi.ref="median",
                                epi.normals=reference.name,
                                epi.samp.names=NULL,
@@ -364,20 +363,19 @@ epicopy = {
 }, ##End Epicopy routine
 
 custom = {
-  seg <- methyl_master_custom(custom.idat.files.dir=input.dir,
-                              custom.output.dir=output.dir,
-                              custom.sample.sheet.path=sample.sheet.path,
-                              custom.comparison=comparison,
-                              custom.file.sep=file.sep,
-                              custom.data.cache="EPIC",
-                              custom.data.normal="EPIC.5.normal",
-                              custom.ref.version="hg38",
-                              custom.reference=reference,
-                              custom.split.by=split.by,
-                              custom.save.seg=seg,
-                              custom.hm450.mean.correct=FALSE,
-                              custom.form.add.meta = sesame.form.add.meta,
-                              ...)
+
+  seg <- methyl_master_custom(custom.idat.files.dir = input.dir,
+                              custom.output.dir        = output.dir,
+                              custom.sample.sheet.path = sample.sheet.path,
+                              custom.comparison        = comparison,
+                              custom.file.sep          = file.sep,
+                              custom.data.cache        = "EPIC",
+                              custom.data.normal       = "EPIC.5.normal",
+                              custom.genome.version    = genome.version,
+                              custom.reference         = reference,
+                              custom.save.seg          = save.seg,
+                              ...
+  )
 
 } ##End custom routine
 
@@ -452,8 +450,6 @@ if(routine=="sesame"){
     methyl_master_formatting_sesame(sesame.form.seg=seg,
               sesame.form.output.dir=output.dir,
               sesame.form.sample.sheet.path=sample.sheet.path,
-              sesame.form.reference=reference,
-              sesame.form.split.by=split.by,
               sesame.form.comparison=comparison,
               sesame.form.thresholds=form.thresholds,
               sesame.form.save.seg=save.seg,
@@ -465,8 +461,6 @@ if(routine=="sesame"){
   seg <- methyl_master_formatting_hm450(hm450.form.seg=seg,
                                  hm450.form.output.dir=output.dir,
                                  hm450.form.sample.sheet.path=sample.sheet.path,
-                                 hm450.form.reference=reference,
-                                 hm450.form.split.by=split.by,
                                  hm450.form.workflow=hm450.workflow,
                                  hm450.form.thresholds=form.thresholds,
                                  hm450.form.comparison=comparison,
@@ -475,8 +469,6 @@ if(routine=="sesame"){
 }else if(routine=="champ"){
   seg <- methyl_master_formatting_champ(champ.form.seg=seg,
                                         champ.form.output.dir=output.dir,
-                                        champ.form.reference=reference,
-                                        champ.form.split.by=split.by,
                                         champ.form.thresholds=form.thresholds,
                                         champ.form.save.seg=save.seg,
                                         champ.form.comparison=comparison,
@@ -484,11 +476,19 @@ if(routine=="sesame"){
 }else if(routine=="epicopy"){
   seg <- methyl_master_formatting_epicopy(epi.form.seg=seg,
                                           epi.form.output.dir=output.dir,
-                                          epi.form.reference=reference,
-                                          epi.form.split.by=split.by,
                                           epi.form.thresholds=form.thresholds,
                                           epi.form.save.seg=save.seg,
                                           epi.form.comparison=comparison)
+}}else if(routine=="custom"){
+  methyl_master_formatting_custom(custom.form.seg=seg,
+                                  custom.form.output.dir=output.dir,
+                                  custom.form.sample.sheet.path=sample.sheet.path,
+                                  custom.form.comparison=comparison,
+                                  custom.form.thresholds=form.thresholds,
+                                  custom.form.save.seg=save.seg,
+                                  custom.form.plot.individual=visualize.individual,
+                                  custom.form.auto.corrected=sesame.hm450.mean.correct,
+                                  ...))
 }else{
   stop(paste0("Error you must select a valid <routine> value"))
 }

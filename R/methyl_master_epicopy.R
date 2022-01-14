@@ -123,6 +123,14 @@ epicopy_results <- Epicopy::epicopy(target_dir = epi.input.dir,
                           min_probes = 50)
   }
 
-  return(epicopy_results)
+gistic.df <- read.table(
+  file=paste0(gistic.output.dir,.Platform$file.sep,"segmentation_output.txt"),
+                        header=TRUE,
+                        sep="\t",
+                        stringsAsFactors = FALSE)
+
+seg <- list(gistic.df)
+
+return(seg)
 
 }
