@@ -4,7 +4,7 @@ Michael Mariani PhD, Salas Lab, Dartmouth College 2022
 #Install
 
 require(devtools)\
-devtools::install_github("mmariani123/MethylMasteR")
+devtools::install_github("mmariani123/MethylMasteR")\
 library(MethylMasteR)
 
 ## Run MethylMasteR
