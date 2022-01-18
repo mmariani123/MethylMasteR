@@ -23,11 +23,11 @@ sample.sheet.path <- "path.to.sample.sheet"
 
 ```r
 routine.run <- "sesame"
-1.) "sesame" for SeSAMEe
-2.) "hm450" for HM450
-3.) "champ" for ChAMP
-4.) "epicopy" for Epicopy
-5.) "custom" for custom routine
+#1.) "sesame" for SeSAMEe
+#2.) "hm450" for HM450
+#3.) "champ" for ChAMP
+#4.) "epicopy" for Epicopy
+#5.) "custom" for custom routine
 ```
 
 ## Select the other parameters and run!
