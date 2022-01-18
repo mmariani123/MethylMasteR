@@ -15,7 +15,7 @@ Imports:
   data.table (>= 1.9.4),
   stats (>= 1.16.0),
   ChAMP (>= 2.20.1),
-  limma (>= 3.50.0),
+  limma (>= 3.46.0),
   igraph (>= 1.2.6),
   org.Hs.eg.db (>= 3.12.0),
   marray (>= 1.72.0),
