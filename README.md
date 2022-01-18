@@ -1,7 +1,7 @@
 # MethylMasteR
 Michael Mariani PhD, Salas Lab, Dartmouth College 2022
 
-#Install
+##Install
 
 ```r
 require(devtools)
