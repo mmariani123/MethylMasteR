@@ -3,9 +3,11 @@ Michael Mariani PhD, Salas Lab, Dartmouth College 2022
 
 #Install
 
+```r
 require(devtools)\
 devtools::install_github("mmariani123/MethylMasteR")\
 library(MethylMasteR)
+```
 
 ## Run MethylMasteR
 
@@ -28,6 +30,7 @@ results folders from the other four routines
 
 ## Select the other parameters and run!
 
+```r
 methyl_master(\
   routine                   = "sesame",          #The routine to run\
   input.dir                 = input.dir,         #The input (idat.files) directory\
@@ -77,3 +80,4 @@ methyl_master(\
   ov.keep.extra.columns     = TRUE, #Keep extra metadata columns when finding overlaps\
   simplify.reduce           = weightedmean, #Equation to use during reduction\
 )
+```
