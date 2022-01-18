@@ -15,7 +15,7 @@ methyl_master_hm450(
   hm450.file.sep = "/",
   hm450.sesame.data.cache = "EPIC",
   hm450.sesame.data.normal = "EPIC.5.normal",
-  hm450.sesame.ref.version = "hg38",
+  hm450.genome.version = "hg38",
   hm450.save.seg = FALSE,
   ...
 )
@@ -25,9 +25,7 @@ methyl_master_hm450(
 
 \item{hm450.output.dir}{The output directory for the HM450 routine}
 
-\item{hm450.comparison}{The two-element MethylMaster comparison vector}
-
-\item{hm450.split.by}{The split.by column in the MethylMaster sample sheet
+\item{hm450.comparison}{The two-element MethylMaster comparison vector
 to splut up the HM450 analysis by}
 
 \item{hm450.reference}{The reference to use for the HM450 routine}
@@ -42,7 +40,7 @@ a sesame dataset as the reference}
 \item{hm450.sesame.data.normal}{The sesame data normal data set: if using a
 sesame dataset as the reference}
 
-\item{hm450.sesame.ref.version}{The sesame ref version (e.g. hg38) if using
+\item{hm450.genome.version}{The sesame ref version (e.g. hg38) if using
 a sesame dataset as the reference}
 
 \item{hm450.save.seg}{Whether to save the HM450 routine segmentatin results}

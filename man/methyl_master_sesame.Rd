@@ -2,7 +2,7 @@
 % Please edit documentation in R/methyl_master_sesame.R
 \name{methyl_master_sesame}
 \alias{methyl_master_sesame}
-\title{##methyl_master_Sesame}
+\title{##methyl_master_sesame}
 \usage{
 methyl_master_sesame(
   sesame.idat.files.dir = NULL,
@@ -13,11 +13,10 @@ methyl_master_sesame(
   sesame.file.sep = NULL,
   sesame.data.cache = "EPIC",
   sesame.data.normal = "EPIC.5.normal",
-  sesame.ref.version = "hg38",
+  sesame.genome.version = "hg38",
   sesame.reference = "internal",
   sesame.split.by = NULL,
   sesame.save.seg = FALSE,
-  sesame.hm450.mean.correct = FALSE,
   ...
 )
 }
@@ -39,15 +38,13 @@ if "reference" is set to "internal" the second element is ignored}
 \item{sesame.data.normal}{the sesame normal data set to use,
 e.g. Epic.5.Normal}
 
-\item{sesame.ref.version}{the sesame reference version (default is hg38)}
+\item{sesame.genome.version}{the sesame reference version (default is hg38)}
 
 \item{sesame.reference}{the sesame reference to use}
 
 \item{sesame.split.by}{which column, if any, to split the analyses by}
 
 \item{sesame.save.seg}{save the segmentation results as .RData object}
-
-\item{sesame.hm450.mean.correct}{apply the hm450 AutoCorrectPeak algorithm}
 
 \item{...}{additional parameters to passs to methyl_master_sesame}
 }

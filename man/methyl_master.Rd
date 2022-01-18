@@ -21,15 +21,12 @@ methyl_master(
   reference.name = "all",
   split.by = NULL,
   comparison = NULL,
+  form.thresholds = NULL,
   overlap.density = 0.1,
   sesame.data.cache = "EPIC",
   sesame.data.normal = "EPIC.5.normal",
-  sesame.ref.version = "hg38",
-  sesame.hm450.mean.correct = TRUE,
-  sesame.form.thresholds = NULL,
-  sesame.form.add.meta = NULL,
+  genome.version = "hg38",
   hm450.workflow = "B",
-  hm450.anno.file.path = NULL,
   champ.padj = 0.05,
   champ.control = FALSE,
   champ.run.combat = TRUE,
@@ -56,59 +53,51 @@ methyl_master(
 )
 }
 \arguments{
-\item{input.dir}{input directory}
+\item{input.dir}{Input directory}
 
-\item{output.dir}{output directory}
+\item{output.dir}{Output directory}
 
-\item{sample.sheet.path}{path to sample sheet}
+\item{sample.sheet.path}{Path to sample sheet}
 
-\item{file.sep}{file separator}
+\item{file.sep}{File separator}
 
-\item{r.lib.path}{path to r library default is .libPaths()}
+\item{r.lib.path}{Path to r library default is .libPaths()}
 
-\item{n.cores}{number of cores to run}
+\item{n.cores}{Number of cores to run}
 
-\item{os.type}{the os type running the software}
+\item{os.type}{The os type running the software}
 
-\item{proj}{the project name}
+\item{proj}{The project name}
 
-\item{visualize}{visualize the output}
+\item{visualize}{Visualize the output}
 
-\item{visualize.individual}{visualize individual sample plots for sesame}
+\item{visualize.individual}{Visualize individual sample plots for sesame}
 
-\item{simplify.reduce}{the reduction function being applied to the output}
+\item{simplify.reduce}{The reduction function being applied to the output}
 
-\item{routine}{the specific routine to run}
+\item{routine}{The specific routine to run}
 
-\item{reference}{the reference to use}
+\item{reference}{The reference to use}
 
-\item{reference.name}{the reference name, for the epicopy routine}
+\item{reference.name}{The reference name, for the epicopy routine}
 
-\item{split.by}{which additional metadata column to split the analysis by}
+\item{split.by}{Which additional metadata column to split the analysis by}
 
-\item{comparison}{which groups from the metadata "Sample_Group" to compare}
+\item{comparison}{Which groups from the metadata "Sample_Group" to compare}
 
-\item{overlap.density}{the overlap density applied to final results from
+\item{form.thresholds}{The thresholds for cnv state calling}
+
+\item{overlap.density}{The overlap density applied to final results from
 the modified population ranges function}
 
-\item{sesame.data.cache}{the sesame data cache to use}
+\item{sesame.data.cache}{The sesame data cache to use}
 
-\item{sesame.data.normal}{which sesame normal data to use e.g."EPIC.5.Normal"}
+\item{sesame.data.normal}{Which sesame normal data to use e.g."EPIC.5.Normal"}
 
-\item{sesame.ref.version}{which sesame reference version, default is hg38}
-
-\item{sesame.hm450.mean.correct}{hm450 style auto-correction centering}
-
-\item{sesame.form.thresholds}{the thresholds for cnv state calling}
-
-\item{sesame.form.add.meta}{additional metadata column to be plotted with
-final heatmap}
+\item{genome.version}{The genome version}
 
 \item{hm450.workflow}{which hm450 workflow to use with the hm450 routine:
 "A", "B", or "C"}
-
-\item{hm450.anno.file.path}{the path to the hm450 annotation file for the
-hm450 routine}
 
 \item{champ.padj}{adjusted p-value threshold for the ChAMP routine}
 

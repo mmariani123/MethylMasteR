@@ -13,9 +13,7 @@ methyl_master_formatting_sesame(
   sesame.form.comparison = NULL,
   sesame.form.save.seg = FALSE,
   sesame.form.plot.individual = FALSE,
-  sesame.form.auto.corrected = FALSE,
   sesame.form.thresholds = NULL,
-  sesame.form.add.meta = NULL,
   ...
 )
 }
@@ -37,14 +35,8 @@ Sesame routine analysis}
 \item{sesame.form.plot.individual}{Whether to plot the individual sesame
 sample signal plots}
 
-\item{sesame.form.auto.corrected}{whether the hm450 AutoCorrectionPeak method
-was applied during the sesame routine}
-
-\item{sesame.form.thresholds}{The sesame thresholds used to determine the CNV
+\item{sesame.form.thresholds}{The thresholds used to determine the CNV
 state, if NULL, the equation  seg.state <- round(2^seg.means * 2) is used}
-
-\item{sesame.form.add.meta}{An additional metadata column (numeric) to plot
-in the output heatmap of the sesame routine}
 
 \item{...}{additional parameters to pass to methyl_master_formatting_sesame}
 

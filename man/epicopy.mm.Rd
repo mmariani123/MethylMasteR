@@ -12,7 +12,6 @@ epicopy.mm(
   epic.manifest.path = getwd(),
   comparison = NULL,
   reference_group = "internal",
-  split.by = NULL,
   project_name = NULL,
   Normals = NULL,
   sampNames = NULL,
@@ -49,9 +48,6 @@ epicopy.mm(
 \item{comparison}{The MehtylMaster comparison vector}
 
 \item{reference_group}{The reference group to specify}
-
-\item{split.by}{The MethylMaster split.by field form the sample sheet to
-split up the epicopy analysis by}
 
 \item{project_name}{The project name}
 

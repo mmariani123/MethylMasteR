@@ -8,12 +8,10 @@ methyl_master_formatting_hm450(
   hm450.form.seg = NULL,
   hm450.form.output.dir = getwd(),
   hm450.form.sample.sheet.path = NULL,
-  hm450.form.reference = "internal",
-  hm450.form.split.by = NULL,
+  hm450.form.thresholds = NULL,
   hm450.form.workflow = "B",
   hm450.form.comparison = NULL,
   hm450.form.save.seg = FALSE,
-  hm450.form.anno.file.path,
   ...
 )
 }
@@ -24,17 +22,14 @@ methyl_master_formatting_hm450(
 
 \item{hm450.form.sample.sheet.path}{The MehtylMaster sample sheet path}
 
-\item{hm450.form.reference}{The hm450 reference that was used}
-
-\item{hm450.form.split.by}{The split.by sample sheet field that was used}
+\item{hm450.form.thresholds}{The thresholds used to determine the CNV
+state, if NULL, the equation  seg.state <- round(2^seg.means * 2) is used}
 
 \item{hm450.form.workflow}{The specific HM450 workflow that was used}
 
 \item{hm450.form.comparison}{The MethylMaster two-element comparison vector}
 
 \item{hm450.form.save.seg}{Whether to save the formatted HM450 results}
-
-\item{hm450.form.anno.file.path}{The hm450 annotation file path}
 
 \item{...}{Additional parameters passed to methyl_master_formatting_hm450}
 }

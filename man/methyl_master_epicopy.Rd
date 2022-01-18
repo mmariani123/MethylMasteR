@@ -12,7 +12,6 @@ methyl_master_epicopy(
   epic.manifest.path,
   epi.reference.group,
   epi.comparison,
-  epi.split.by,
   epi.ncores,
   epi.ref,
   epi.normals,
@@ -43,9 +42,7 @@ methyl_master_epicopy(
 
 \item{epi.reference.group}{The reference group to use}
 
-\item{epi.comparison}{The MehtylMaster comparison vector}
-
-\item{epi.split.by}{The MethylMaster split.by field selected from the sample
+\item{epi.comparison}{The MehtylMaster comparison vector
 sheet}
 
 \item{epi.ncores}{The number of cores to use, multiple cores may not be

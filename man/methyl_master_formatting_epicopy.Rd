@@ -7,10 +7,9 @@
 methyl_master_formatting_epicopy(
   epi.form.seg = NULL,
   epi.form.output.dir = getwd(),
-  epi.form.reference = NULL,
-  epi.form.split.by = NULL,
   epi.form.save.seg = FALSE,
-  epi.form.comparison = NULL
+  epi.form.comparison = NULL,
+  epi.form.thresholds = NULL
 )
 }
 \arguments{
@@ -18,14 +17,12 @@ methyl_master_formatting_epicopy(
 
 \item{epi.form.output.dir}{The output dir for the formatted seg object}
 
-\item{epi.form.reference}{The reference that was used in the Epicopy routine}
-
-\item{epi.form.split.by}{The split.by field from the Sample Sheet that was
-used earlier in the analysis}
-
 \item{epi.form.save.seg}{Whether to save the formatted Epicopy seg results}
 
 \item{epi.form.comparison}{The comparison vector used earlier in the anlysis}
+
+\item{epi.form.thresholds}{The thresholds used to determine the CNV
+state, if NULL, the equation  seg.state <- round(2^seg.means * 2) is used}
 }
 \value{
 Formatted epicopy result as a MethylMaster seg object
