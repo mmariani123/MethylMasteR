@@ -33,7 +33,7 @@ Imports:
   minfi (>= 1.18.0),
   GEOquery (>= 2.62.1),
   DNAcopy (>= 2.0),
-  CNVRanger (>= 1.10.0),
+  CNVRanger (>= 1.6.1),
   cnAnalysis450k (>= 0.99.26),
   CNAclinic (>= 1.0),
   IlluminaHumanMethylation450kanno.ilmn12.hg19 (>= 0.6.0),
