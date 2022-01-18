@@ -44,7 +44,7 @@ Imports:
   ungeviz (>= 0.1.0),
   AnnotationDbi (>= 1.56.2),
   Biobase (>= 2.50.0),
-  BiocGenerics (>= 0.40.0),
+  BiocGenerics (>= 0.36.1),
   BiocParallel (>= 1.28.1),
   ChAMPdata (>= 2.26.0),
   CopyNumber450kCancer (>= 1.0.6),
