@@ -14,7 +14,7 @@ RoxygenNote: 7.1.2
 Imports:
   data.table (>= 1.9.4),
   stats (>= 1.16.0),
-  ChAMP (>= 2.26.0),
+  ChAMP (>= 2.20.1),
   limma (>= 3.50.0),
   igraph (>= 1.2.8),
   org.Hs.eg.db (>= 3.13.0),
