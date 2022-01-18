@@ -22,7 +22,7 @@ Imports:
   shape (>= 1.4.6),
   Epicopy (>= 0.99.0),
   foreach (>= 1.5.1),
-  ggplot2 (>= 3.3.5),
+  ggplot2 (>= 3.3.3),
   magrittr (>= 2.0.1),
   plyr (>= 1.8.6),
   dplyr (>= 1.0.7),
