@@ -29,7 +29,7 @@ Imports:
   TCGAbiolinks (>= 1.14.0),
   ExperimentHub (>= 1.16.1),
   sesame (>= 1.8.10),
-  sesameData (>= 1.12.0),
+  sesameData (>= 1.8.10),
   minfi (>= 1.18.0),
   GEOquery (>= 2.62.1),
   DNAcopy (>= 2.0),
