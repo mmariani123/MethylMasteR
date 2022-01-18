@@ -46,7 +46,7 @@ Imports:
   Biobase (>= 2.50.0),
   BiocGenerics (>= 0.36.1),
   BiocParallel (>= 1.24.1),
-  ChAMPdata (>= 2.26.0),
+  ChAMPdata (>= 2.22.0),
   CopyNumber450kCancer (>= 1.0.6),
   DelayedArray (>= 0.20.0),
   GenomicRanges (>= 1.46.1),
