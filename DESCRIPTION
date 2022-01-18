@@ -37,7 +37,7 @@ Imports:
   cnAnalysis450k (>= 0.99.26),
   CNAclinic (>= 1.0),
   IlluminaHumanMethylation450kanno.ilmn12.hg19 (>= 0.6.0),
-  ENmix (>= 1.30.0),
+  ENmix (>= 1.26.10),
   profmem (>= 0.6.0),
   profvis (>= 0.3.7), 
   htmlwidgets (>= 1.5.4),
