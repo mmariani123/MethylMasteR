@@ -41,9 +41,9 @@ methyl_master(
                                                  sample sheet
   r.lib.path                = .libPaths()[1], #The path to the R Library path
   file.sep                  = "\\\\\\\\", #For windows or "/" for Linux
-    create.dir              = TRUE, #Whether to cretae directory if does not 
+  create.dir                = TRUE, #Whether to cretae directory if does not 
                                     #exist?
-      save.seg              = TRUE, #Whether to save segmentation results
+  save.seg                  = TRUE, #Whether to save segmentation results
   n.cores                   = 1, #Multicore does not work for all routines 
                                  #on all operating systems
   os.type                   = "windows", #Or "linux"
