@@ -33,7 +33,7 @@ routine.run <- "sesame"
 ## Select the other parameters and run!
 
 ```r
-methyl_master(\
+methyl_master(
   routine                   = routine.run, #The routine to run
   input.dir                 = input.dir, #The input (idat.files) directory
   output.dir                = output.dir, #The output directory
