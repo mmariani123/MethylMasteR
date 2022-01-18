@@ -12,7 +12,7 @@
 
 ############################ debug sesame ##################################
 ##debug(methyl_master)
-debug(methyl_master_sesame)
+##debug(methyl_master_sesame)
 ##undebug(AutoCorrectPeak.mm)
 ##undebug(methyl_master_formatting_sesame)
 ##debug(methyl_master_olaps_and_visualize)
@@ -89,31 +89,17 @@ debug(methyl_master_sesame)
 
 ########################### KIRC 3p ##################################
 
-input.dir <-
-  "G:\\My Drive\\dartmouth\\salas_lab\\cnv\\kirc_idat_and_cord_files_pooled"
-##input.dir <-
-##"G:\\My Drive\\dartmouth\\salas_lab\\cnv\\kirc_cbio_3p_select"
-##input.dir <-
-##  "G:\\My Drive\\dartmouth\\salas_lab\\cnv\\blca_idat_and_cord_files_pooled"
-##input.dir <-
-##  "C:\\Users\\Mike\\Desktop\\update_01102022"
+input.dir <- "data"
 
-output.dir <-
-  "G:\\My Drive\\dartmouth\\salas_lab\\cnv\\test_sesame_internal"
-##output.dir <-
-##  "G:\\My Drive\\dartmouth\\salas_lab\\working\\cnv\\kirc_3p_sesame_internal_mean_correct_compare"
-##output.dir <-
-##"C:\\Users\\Mike\\Desktop\\update_01102022\\kirc_3p_sesame_internal_mean_correct_thresholding_compare"
+output.dir <- "test"
 
-sample.sheet.path <-
-  "G:\\My Drive\\dartmouth\\salas_lab\\cnv\\Sample_Sheet_KIRC_and_cord.csv"
-##sample.sheet.path <-
-##"G:\\My Drive\\dartmouth\\salas_lab\\working\\cnv\\Sample_Sheet_kirc_cbio_3p_small.csv"
-##sample.sheet.path <- "G:\\My Drive\\dartmouth\\salas_lab\\cnv\\Sample_Sheet_kirc_cbio_3p_tum_cont.csv"
+sample.sheet.path <- paste0("data",
+                            .Platform$file.sep,
+                            Sample_Sheet_Test.csv)
 
-hm450.anno.file.path <- paste0("G:\\My Drive\\dartmouth\\salas_lab\\cnv\\hm450.manifest.hg38.rda")
-
-##compare.names <- c("thresh_0.2","thresh_0.3","equation")
+hm450.anno.file.path <- paste0("data",
+                               .Platform$file.sep,
+                               "hm450.manifest.hg38.rda")
 
 methyl_master(input.dir            = input.dir,
               output.dir           = output.dir,
@@ -175,64 +161,80 @@ methyl_master(input.dir            = input.dir,
 ###############################################################################
 ###############################################################################
 
-##First get primary ids from sample names from cbioportal
-
-clin.tcga.file.path <- paste0("C:\\Users\\User\\Desktop",
-                              "\\select_kidney_samples_cbioportal_vhl_01042021.xlsx")
-
-clin.tcga.file.path <- paste0("C:\\Users\\User",
-                              "\\Desktop\\clinical_info.csv")
-
-clin.sub.dir <- paste0("G:\\My Drive\\dartmouth\\salas_lab",
-                       "\\working\\cnv\\kirc_cbio_3p_select")
-
-methyl_master_tcga_clin_data()
-
-##Then create a sample sheet with the primary ids
-
-output.path.name <- paste0("C:\\Users\\User\\Desktop",
-                           "\\Sample_Sheet_kirc_cbio_3p.csv")
-
-file.sep <- "\\"
-
-idat.dir <- paste0("G:\\My Drive\\dartmouth",
-                   "\\salas_lab\\working\\cnv",
-                   "\\kirc_idat_files_pooled")
-
-sample.sheet.path <-
-  "C:\\Users\\User\\Desktop\\Sample_Sheet_testing.csv"
-
-Sample_Group <- c("tumor")
-
-methyl_master_create_sample_sheet()
-
-########################### Compare testing ###################################
-
-work.dir <- "G:\\My Drive\\dartmouth\\salas_lab\\working\\cnv\\cnv_testing"
-
-time.1  <- paste0(work.dir, "\\", "test_sesame_internal\\time_mem.sesame.2021.12.31.12.57.13.txt")
-time.2  <- paste0(work.dir, "\\", "test_sesame_internal\\sesame_tumor_overlaps_filt.csv")
-time.3  <- paste0(work.dir, "\\", "test_hm450_internal\\time_mem.hm450.2021.12.29.18.20.28.txt")
-time.4  <- paste0(work.dir, "\\", "test_hm450_internal\\hm450_tumor_overlaps_filt.csv")
-olaps.1 <- paste0(work.dir, "\\", "test_champ_internal\\time_mem.champ.2021.12.29.12.08.41.txt")
-olaps.2 <- paste0(work.dir, "\\", "test_champ_internal\\champ_tumor_overlaps_filt.csv")
-olaps.3 <- paste0(work.dir, "\\", "test_epicopy_internal\\time_mem.epicopy.2021.12.29.14.22.02.txt")
-olaps.4 <- paste0(work.dir, "\\", "test_epicopy_internal\\epicopy_tumor_overlaps_filt.csv")
-
-compare.files.in <- c(time.1,
-                      time.2,
-                      time.3,
-                      time.4,
-                      olaps.1,
-                      olaps.2,
-                      olaps.3,
-                      olaps.4)
-
-compare.names <- c("sesame_internal",
-                   "hm450_internal",
-                   "champ_internal",
-                   "epicopy_internal"
-                   )
+####First get primary ids from sample names from cbioportal
+##
+##clin.tcga.file.path <- paste0("C:\\Users\\User\\Desktop",
+##                      "\\select_kidney_samples_cbioportal_vhl_01042021.xlsx")
+##
+##clin.tcga.file.path <- paste0("C:\\Users\\User",
+##                              "\\Desktop\\clinical_info.csv")
+##
+##clin.sub.dir <- paste0("G:\\My Drive\\dartmouth\\salas_lab",
+##                       "\\working\\cnv\\kirc_cbio_3p_select")
+##
+##methyl_master_tcga_clin_data()
+##
+####Then create a sample sheet with the primary ids
+##
+##output.path.name <- paste0("C:\\Users\\User\\Desktop",
+##                           "\\Sample_Sheet_kirc_cbio_3p.csv")
+##
+##file.sep <- "\\"
+##
+##idat.dir <- paste0("G:\\My Drive\\dartmouth",
+##                   "\\salas_lab\\working\\cnv",
+##                   "\\kirc_idat_files_pooled")
+##
+##sample.sheet.path <-
+##  "C:\\Users\\User\\Desktop\\Sample_Sheet_testing.csv"
+##
+##Sample_Group <- c("tumor")
+##
+##methyl_master_create_sample_sheet()
+##
+############################# Compare testing ###################################
+##
+##work.dir <- "G:\\My Drive\\dartmouth\\salas_lab\\working\\cnv\\cnv_testing"
+##
+##time.1  <- paste0(work.dir,
+##                  "\\",
+##          "test_sesame_internal\\time_mem.sesame.2021.12.31.12.57.13.txt")
+##time.2  <- paste0(work.dir,
+##                  "\\",
+##          "test_sesame_internal\\sesame_tumor_overlaps_filt.csv")
+##time.3  <- paste0(work.dir,
+##                  "\\",
+##          "test_hm450_internal\\time_mem.hm450.2021.12.29.18.20.28.txt")
+##time.4  <- paste0(work.dir,
+##                  "\\",
+##          "test_hm450_internal\\hm450_tumor_overlaps_filt.csv")
+##olaps.1 <- paste0(work.dir,
+##                  "\\",
+##          "test_champ_internal\\time_mem.champ.2021.12.29.12.08.41.txt")
+##olaps.2 <- paste0(work.dir,
+##                  "\\",
+##                  "test_champ_internal\\champ_tumor_overlaps_filt.csv")
+##olaps.3 <- paste0(work.dir,
+##                  "\\",
+##          "test_epicopy_internal\\time_mem.epicopy.2021.12.29.14.22.02.txt")
+##olaps.4 <- paste0(work.dir,
+##                  "\\",
+##          "test_epicopy_internal\\epicopy_tumor_overlaps_filt.csv")
+##
+##compare.files.in <- c(time.1,
+##                      time.2,
+##                      time.3,
+##                      time.4,
+##                      olaps.1,
+##                      olaps.2,
+##                      olaps.3,
+##                      olaps.4)
+##
+##compare.names <- c("sesame_internal",
+##                   "hm450_internal",
+##                   "champ_internal",
+##                   "epicopy_internal"
+##                   )
 
 ###############################################################################
 
