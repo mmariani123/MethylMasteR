@@ -43,7 +43,7 @@ Imports:
   htmlwidgets (>= 1.5.4),
   ungeviz (>= 0.1.0),
   AnnotationDbi (>= 1.56.2),
-  Biobase (>= 2.54.0),
+  Biobase (>= 2.50.0),
   BiocGenerics (>= 0.40.0),
   BiocParallel (>= 1.28.1),
   ChAMPdata (>= 2.26.0),
