@@ -54,7 +54,7 @@ Imports:
   RaggedExperiment (>= 1.14.2),
   S4Vectors (>= 0.28.1),
   cowplot (>= 1.1.1),
-  dendextend (>= 1.15.2),
+  dendextend (>= 1.15.1),
   doParallel (>= 1.0.16),
   future (>= 1.23.0),
   gtools (>= 3.9.2),
