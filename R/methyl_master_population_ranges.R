@@ -261,10 +261,18 @@ cnvOncoPrint <- function(calls,
   )
 }
 
-## (1) Density approach
-.densityPopRanges <- function(grl, density)
+#' @title .densityPopRanges
+#' @description The MethylMaster version of .densityPopRanges() function
+#' @param grl param grl
+#' @param density param density
+#' @import GenomicRanges
+#' @importFrom S4Vectors subjectHits
+#' @return ranges
+#' @export
+.densityPopRanges <- function(grl,
+                              density)
 {
-  gr <- unlist(grl)
+  gr <- unlist(GenomicRanges::GRangesList(grl))
   cover <- GenomicRanges::reduce(gr)
   disjoint <- GenomicRanges::disjoin(gr)
 
@@ -277,23 +285,35 @@ cnvOncoPrint <- function(calls,
   return(pranges)
 }
 
-.classifyRegs.mm <- function(regs, calls, type.thresh=0.1)
-{
+#' @title .classifyRegs.mm
+#' @description The MethylMaster version of .classifyRegs() function
+#' @param regs param regs
+#' @param calls param calls
+#' @param type.thresh param type.thresh
+#' @importFrom GenomicRanges findOverlaps
+#' @importFrom S4Vectors queryHits
+#' @importFrom S4Vectors subjectHits
+#' @return regs
+#' @export
+.classifyRegs.mm <- function(regs,
+                             calls,
+                             type.thresh=0.1
+                             ){
   olaps <- GenomicRanges::findOverlaps(regs, calls)
   qh <- S4Vectors::queryHits(olaps)
   sh <- S4Vectors::subjectHits(olaps)
 
   # number of samples
-  sampL <- split(names(calls)[sh], qh)
+  sampL      <- split(names(calls)[sh], qh)
   .nrSamples <- function(x) length(unique(x))
-  samples <- vapply(sampL, .nrSamples, numeric(1), USE.NAMES=FALSE)
-  regs$freq <- samples
+  samples    <- vapply(sampL, .nrSamples, numeric(1), USE.NAMES=FALSE)
+  regs$freq  <- samples
 
   # type: gain, loss, both
-  stateL <- split(calls$state[sh], qh)
-  types <- vapply(stateL, .getType.mm, character(1),
+  stateL     <- split(calls$state[sh], qh)
+  types      <- vapply(stateL, .getType.mm, character(1),
                   type.thresh=type.thresh, USE.NAMES=FALSE)
-  regs$type <- types
+  regs$type  <- types
 
   return(regs)
 }

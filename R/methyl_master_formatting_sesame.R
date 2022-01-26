@@ -96,8 +96,7 @@ seg$chrom <-
 seg$bstat      <- NA
 seg$state      <- calc_seg_state(seg.means = seg$seg.mean,
                                  upper.thresh = 4,
-                                 cutoff = sesame.form.thresholds
-)
+                                 cutoff = sesame.form.thresholds)
 seg$treatment  <- sesame.form.comparison[1]
 seg$method <- "sesame"
 seg$sub.method <- NA

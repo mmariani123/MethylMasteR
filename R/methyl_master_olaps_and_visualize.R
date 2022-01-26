@@ -29,6 +29,7 @@
 #' @importFrom gtools mixedorder
 #' @importFrom GenomicRanges as.data.frame
 #' @importFrom GenomicRanges makeGRangesListFromDataFrame
+#' @importFrom GenomicRanges sort
 #' @importFrom ramify flatten
 #' @importFrom cowplot plot_grid
 #' @return Output overlaps regions .CSVs and images
@@ -168,7 +169,7 @@ methyl_master_olaps_and_visualize <- function(ov.seg   = NULL,
                                         "white",
                                         "blue")) +
 
-    theme(legend.position="bottom")
+    ggplot2::theme(legend.position="bottom")
 
   ##seg.output <- cowplot::plot_grid(seg.heatmap,
   ##                                 tumor.plot,

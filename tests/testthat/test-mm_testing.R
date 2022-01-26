@@ -2,18 +2,24 @@
 ##  expect_equal(2 * 2, 4)
 ##})
 
-print(getwd())
-input.dir <- "/data"
+##print(getwd())
 
-output.dir <- "/test"
+input.dir <- system.file("data",
+                         package = 'MethylMasteR')
 
-sample.sheet.path <- paste0("/data",
+##output.dir <- system.file("test",
+##                          package = 'MethylMasteR')
+output.dir <- "test"
+
+sample.sheet.path <- system.file(paste0("data",
                             .Platform$file.sep,
-                            "Sample_Sheet_Test.csv")
+                            "Sample_Sheet_Test.csv"),
+                            package = 'MethylMasteR')
 
-hm450.anno.file.path <- paste0("/data",
-                               .Platform$file.sep,
-                               "hm450.manifest.hg38.rda")
+hm450.anno.file.path <- system.file(paste0("data",
+                                           .Platform$file.sep,
+                                           "hm450.manifest.hg38.rda"),
+                                    package = 'MethylMasteR')
 
 methyl_master(input.dir            = input.dir,
               output.dir           = output.dir,
@@ -36,12 +42,12 @@ methyl_master(input.dir            = input.dir,
               ##e.g. 'male' and 'female' in the
               ##'gender_reported' field
               comparison           = c("tumor","normal"),
+              form.thresholds      = NULL, ##c(-0.3,0.3),
               overlap.density      = 0.1,
               sesame.data.cache    = "EPIC",
               sesame.data.normal   = 'EPIC.5.normal',
               sesame.ref.version   = "hg38",
               sesame.hm450.mean.correct = FALSE,
-              sesame.form.thresholds = NULL, ##c(-0.3,0.3),
               sesame.form.add.meta = NULL, ##c("Tumor"), ##NULL
               hm450.workflow       = "B",
               hm450.anno.file.path = hm450.anno.file.path, ##Needed for hm450
