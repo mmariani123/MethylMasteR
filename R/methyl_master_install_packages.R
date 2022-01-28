@@ -20,7 +20,8 @@ BiocManager::install("ChAMP",
                      version = "2.20.1",
                      lib="C:\\Users\\Mike\\Desktop\\methyl_master_r_lib",
                      update=FALSE)
-'2.24.0'
+##'2.24.0'
+
 ##install.packages("limma",
 ##                     version = "3.46.0",
 ##                     lib="C:\\Users\\Mike\\Desktop\\methyl_master_r_lib",
@@ -44,9 +45,9 @@ BiocManager::install("ChAMP",
 ##                     update=FALSE)
 
 install.packages("shape",
-                  version = "1.4.6",
-                  lib="C:\\Users\\Mike\\Desktop\\methyl_master_r_lib",
-                  update=FALSE,
+                 version = "1.4.6",
+                 lib="C:\\Users\\Mike\\Desktop\\methyl_master_r_lib",
+                 update=FALSE,
                  destdir="C:\\Users\\Mike\\Desktop\\methyl_master_r_lib")
 
 BiocManager::install("Epicopy",
