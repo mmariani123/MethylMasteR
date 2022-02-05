@@ -1,0 +1,311 @@
+R Under development (unstable) (2021-03-05 r80073)
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+Running under: Windows 10 x64 (build 22000)
+
+Matrix products: default
+
+locale:
+[1] LC_COLLATE=English_United States.1252 
+[2] LC_CTYPE=English_United States.1252   
+[3] LC_MONETARY=English_United States.1252
+[4] LC_NUMERIC=C                          
+[5] LC_TIME=English_United States.1252    
+system code page: 65001
+
+attached base packages:
+[1] stats4    parallel  stats     graphics  grDevices utils    
+[7] datasets  methods   base     
+
+other attached packages:
+ [1] DNAcopy_1.67.0          GenomicRanges_1.43.3   
+ [3] GenomeInfoDb_1.27.6     IRanges_2.26.0         
+ [5] S4Vectors_0.30.0        sesameData_1.11.2      
+ [7] rmarkdown_2.10          ExperimentHub_2.2.0    
+ [9] AnnotationHub_3.1.5     BiocFileCache_2.1.1    
+[11] dbplyr_2.1.1            BiocGenerics_0.38.0    
+[13] MethylMasteR_0.0.0.9000 testthat_3.0.4         
+
+loaded via a namespace (and not attached):
+  [1] lattice_0.20-44                                    
+  [2] vctrs_0.3.8                                        
+  [3] fastICA_1.2-2                                      
+  [4] sesame_1.8.10                                      
+  [5] usethis_2.0.1                                      
+  [6] mgcv_1.8-36                                        
+  [7] beanplot_1.2                                       
+  [8] rmutil_1.1.5                                       
+  [9] DSS_2.41.0                                         
+ [10] blob_1.2.2                                         
+ [11] survival_3.2-12                                    
+ [12] later_1.3.0                                        
+ [13] DBI_1.1.1                                          
+ [14] R.utils_2.11.0                                     
+ [15] rappdirs_0.3.3                                     
+ [16] peakRAM_1.0.2                                      
+ [17] jpeg_0.1-9                                         
+ [18] zlibbioc_1.37.0                                    
+ [19] fBasics_3042.89.1                                  
+ [20] timeSeries_3062.100                                
+ [21] htmlwidgets_1.5.3                                  
+ [22] future_1.23.0                                      
+ [23] irlba_2.3.3                                        
+ [24] illuminaio_0.35.0                                  
+ [25] Rcpp_1.0.7                                         
+ [26] readr_2.0.1                                        
+ [27] KernSmooth_2.23-20                                 
+ [28] promises_1.2.0.1                                   
+ [29] DelayedArray_0.17.9                                
+ [30] methylumi_2.39.0                                   
+ [31] irr_0.84.1                                         
+ [32] limma_3.49.4                                       
+ [33] pkgload_1.2.1                                      
+ [34] Hmisc_4.5-0                                        
+ [35] ChAMPdata_2.25.0                                   
+ [36] geneLenDataBase_1.29.0                             
+ [37] fs_1.5.0                                           
+ [38] textshaping_0.3.5                                  
+ [39] digest_0.6.27                                      
+ [40] png_0.1-7                                          
+ [41] CopyNumber450kCancer_1.0.6                         
+ [42] nor1mix_1.3-0                                      
+ [43] cowplot_1.1.1                                      
+ [44] nleqslv_3.3.2                                      
+ [45] pkgconfig_2.0.3                                    
+ [46] GO.db_3.13.0                                       
+ [47] DelayedMatrixStats_1.15.2                          
+ [48] iterators_1.0.13                                   
+ [49] conumee_1.27.0                                     
+ [50] DMRcate_2.7.0                                      
+ [51] SummarizedExperiment_1.23.1                        
+ [52] biglm_0.9-2.1                                      
+ [53] xfun_0.21                                          
+ [54] tidyselect_1.1.1                                   
+ [55] reshape2_1.4.4                                     
+ [56] purrr_0.3.4                                        
+ [57] TxDb.Hsapiens.UCSC.hg38.knownGene_3.13.0           
+ [58] viridisLite_0.4.0                                  
+ [59] rtracklayer_1.51.5                                 
+ [60] marray_1.71.0                                      
+ [61] pkgbuild_1.2.0                                     
+ [62] rlang_0.4.10                                       
+ [63] glue_1.4.2                                         
+ [64] ensembldb_2.17.4                                   
+ [65] RColorBrewer_1.1-2                                 
+ [66] matrixStats_0.60.0                                 
+ [67] MatrixGenerics_1.5.3                               
+ [68] stringr_1.4.0                                      
+ [69] sva_3.41.0                                         
+ [70] labeling_0.4.2                                     
+ [71] httpuv_1.6.2                                       
+ [72] preprocessCore_1.55.2                              
+ [73] isva_1.9                                           
+ [74] annotate_1.71.0                                    
+ [75] bsseq_1.29.0                                       
+ [76] jsonlite_1.7.2                                     
+ [77] XVector_0.31.1                                     
+ [78] ROC_1.69.1                                         
+ [79] systemfonts_1.0.2                                  
+ [80] bit_4.0.4                                          
+ [81] mime_0.11                                          
+ [82] CNVRanger_1.9.0                                    
+ [83] gridExtra_2.3                                      
+ [84] gplots_3.1.1                                       
+ [85] Rsamtools_2.7.1                                    
+ [86] stringi_1.5.3                                      
+ [87] processx_3.5.2                                     
+ [88] wateRmelon_1.37.0                                  
+ [89] TCGAbiolinksGUI.data_1.13.1                        
+ [90] quadprog_1.5-8                                     
+ [91] bitops_1.0-6                                       
+ [92] cli_3.0.1                                          
+ [93] rhdf5filters_1.5.0                                 
+ [94] RSQLite_2.2.3                                      
+ [95] randomForest_4.6-14                                
+ [96] spatial_7.3-14                                     
+ [97] tidyr_1.1.3                                        
+ [98] pheatmap_1.0.12                                    
+ [99] data.table_1.14.0                                  
+[100] ChAMP_2.23.0                                       
+[101] bumphunter_1.35.0                                  
+[102] rstudioapi_0.13                                    
+[103] GenomicAlignments_1.27.2                           
+[104] nlme_3.1-152                                       
+[105] qvalue_2.25.0                                      
+[106] locfit_1.5-9.4                                     
+[107] VariantAnnotation_1.38.0                           
+[108] listenv_0.8.0                                      
+[109] lpSolve_5.6.15                                     
+[110] R.oo_1.24.0                                        
+[111] stable_1.1.4                                       
+[112] Illumina450ProbeVariants.db_1.29.0                 
+[113] TCGAbiolinks_2.21.3                                
+[114] readxl_1.3.1                                       
+[115] sessioninfo_1.1.1                                  
+[116] lifecycle_1.0.0                                    
+[117] timeDate_3043.102                                  
+[118] cellranger_1.1.0                                   
+[119] munsell_0.5.0                                      
+[120] R.methodsS3_1.8.1                                  
+[121] statip_0.2.3                                       
+[122] caTools_1.18.2                                     
+[123] codetools_0.2-18                                   
+[124] Biobase_2.51.0                                     
+[125] htmlTable_2.2.1                                    
+[126] missMethyl_1.27.1                                  
+[127] xtable_1.8-4                                       
+[128] BiocManager_1.30.16                                
+[129] minfiDataEPIC_1.19.0                               
+[130] QDNAseq_1.28.0                                     
+[131] farver_2.1.0                                       
+[132] parallelly_1.27.0                                  
+[133] askpass_1.1                                        
+[134] biovizBase_1.40.0                                  
+[135] CGHbase_1.52.0                                     
+[136] CGHcall_2.54.0                                     
+[137] BiocIO_1.3.0                                       
+[138] IlluminaHumanMethylationEPICanno.ilm10b4.hg19_0.6.0
+[139] GEOquery_2.61.0                                    
+[140] shinythemes_1.2.0                                  
+[141] tibble_3.1.0                                       
+[142] profvis_0.3.7                                      
+[143] dichromat_2.0-0                                    
+[144] cluster_2.1.2                                      
+[145] future.apply_1.8.1                                 
+[146] dendextend_1.15.1                                  
+[147] Matrix_1.3-4                                       
+[148] ellipsis_0.3.2                                     
+[149] cnAnalysis450k_0.99.26                             
+[150] prettyunits_1.1.1                                  
+[151] goseq_1.45.0                                       
+[152] mclust_5.4.7                                       
+[153] igraph_1.2.6                                       
+[154] multtest_2.49.0                                    
+[155] minfi_1.39.1                                       
+[156] remotes_2.4.0                                      
+[157] htmltools_0.5.2                                    
+[158] yaml_2.2.1                                         
+[159] GenomicFeatures_1.45.1                             
+[160] utf8_1.1.4                                         
+[161] plotly_4.9.4.1                                     
+[162] interactiveDisplayBase_1.31.2                      
+[163] XML_3.99-0.5                                       
+[164] foreign_0.8-81                                     
+[165] ramify_0.3.3                                       
+[166] withr_2.4.2                                        
+[167] BiocParallel_1.25.4                                
+[168] bit64_4.0.5                                        
+[169] BiasedUrn_1.07                                     
+[170] rngtools_1.5                                       
+[171] doRNG_1.8.2                                        
+[172] affyio_1.63.1                                      
+[173] foreach_1.5.1                                      
+[174] ProtGenerics_1.25.1                                
+[175] Biostrings_2.59.2                                  
+[176] combinat_0.0-8                                     
+[177] ragg_1.1.3                                         
+[178] devtools_2.4.2                                     
+[179] memoise_2.0.0                                      
+[180] evaluate_0.14                                      
+[181] globaltest_5.47.0                                  
+[182] geneplotter_1.71.0                                 
+[183] tzdb_0.1.2                                         
+[184] permute_0.9-5                                      
+[185] callr_3.7.0                                        
+[186] ps_1.6.0                                           
+[187] curl_4.3                                           
+[188] fansi_0.4.2                                        
+[189] TxDb.Hsapiens.UCSC.hg19.knownGene_3.2.2            
+[190] QDNAseq.hg19_1.22.0                                
+[191] edgeR_3.35.0                                       
+[192] checkmate_2.0.0                                    
+[193] cachem_1.0.4                                       
+[194] org.Hs.eg.db_3.13.0                                
+[195] desc_1.3.0                                         
+[196] Gviz_1.37.2                                        
+[197] impute_1.67.0                                      
+[198] ggplot2_3.3.5                                      
+[199] rjson_0.2.20                                       
+[200] rlist_0.4.6.1                                      
+[201] lumi_2.45.0                                        
+[202] clue_0.3-59                                        
+[203] rprojroot_2.0.2                                    
+[204] tools_4.1.0                                        
+[205] stabledist_0.7-1                                   
+[206] magrittr_2.0.1                                     
+[207] RCurl_1.98-1.2                                     
+[208] ParDNAcopy_2.0                                     
+[209] xml2_1.3.2                                         
+[210] httr_1.4.2                                         
+[211] assertthat_0.2.1                                   
+[212] globals_0.14.0                                     
+[213] R6_2.5.1                                           
+[214] Rhdf5lib_1.15.2                                    
+[215] AnnotationFilter_1.17.1                            
+[216] nnet_7.3-16                                        
+[217] progress_1.2.2                                     
+[218] genefilter_1.75.1                                  
+[219] KEGGREST_1.33.0                                    
+[220] gtools_3.9.2                                       
+[221] shape_1.4.6                                        
+[222] statmod_1.4.36                                     
+[223] minfiData_0.39.0                                   
+[224] BiocVersion_3.14.0                                 
+[225] HDF5Array_1.21.0                                   
+[226] rhdf5_2.37.0                                       
+[227] splines_4.1.0                                      
+[228] colorspace_2.0-0                                   
+[229] generics_0.1.0                                     
+[230] base64enc_0.1-3                                    
+[231] pillar_1.6.2                                       
+[232] IlluminaHumanMethylationEPICmanifest_0.3.0         
+[233] ENmix_1.30.0                                       
+[234] affy_1.71.0                                        
+[235] GenomeInfoDbData_1.2.6                             
+[236] plyr_1.8.6                                         
+[237] gtable_0.3.0                                       
+[238] wheatmap_0.1.0                                     
+[239] rvest_1.0.1                                        
+[240] restfulr_0.0.13                                    
+[241] ungeviz_0.1.0                                      
+[242] knitr_1.33                                         
+[243] latticeExtra_0.6-29                                
+[244] biomaRt_2.49.4                                     
+[245] fastmap_1.1.0                                      
+[246] modeest_2.4.0                                      
+[247] doParallel_1.0.16                                  
+[248] AnnotationDbi_1.55.1                               
+[249] profmem_0.6.0                                      
+[250] openssl_1.4.4                                      
+[251] BSgenome_1.61.0                                    
+[252] scales_1.1.1                                       
+[253] filelock_1.0.2                                     
+[254] backports_1.2.1                                    
+[255] RaggedExperiment_1.17.3                            
+[256] base64_2.0                                         
+[257] kpmt_0.1.0                                         
+[258] hms_1.1.0                                          
+[259] scrime_1.3.5                                       
+[260] dplyr_1.0.7                                        
+[261] shiny_1.6.0                                        
+[262] Epicopy_0.99.0                                     
+[263] IlluminaHumanMethylation450kanno.ilmn12.hg19_0.6.0 
+[264] RPMM_1.25                                          
+[265] grid_4.1.0                                         
+[266] strapgod_0.0.4.9000                                
+[267] siggenes_1.67.1                                    
+[268] lazyeval_0.2.2                                     
+[269] dynamicTreeCut_1.63-1                              
+[270] Formula_1.2-4                                      
+[271] JADE_2.0-3                                         
+[272] crayon_1.4.1                                       
+[273] matter_1.20.0                                      
+[274] MASS_7.3-54                                        
+[275] downloader_0.4                                     
+[276] IlluminaHumanMethylationEPICanno.ilm10b2.hg19_0.6.0
+[277] sparseMatrixStats_1.5.2                            
+[278] viridis_0.6.1                                      
+[279] IlluminaHumanMethylation450kmanifest_0.4.0         
+[280] reshape_0.8.8                                      
+[281] rpart_4.1-15                                       
+[282] compiler_4.1.0                                     
+[283] CNAclinic_1.0                                      

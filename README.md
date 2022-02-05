@@ -14,12 +14,18 @@ library(MethylMasteR)
 ## Set your paths:
 
 ```r
-input.dir <- "path.to.idat.dir"
-output.dir <- "path.to.output.dir"
-sample.sheet.path <- "path.to.sample.sheet"
+input.dir <- system.file("data",
+              package = 'MethylMasteR')
+output.dir <- "path/to/output/dir"
+sample.sheet.path <- sample.sheet.path <- system.file(paste0("data",
+                   .Platform$file.sep,
+                   "Sample_Sheet_Test.csv"),
+                   package = 'MethylMasteR')
 ```
 
 ## Select your routine :
+
+Run SeSAMe with the test data specified above
 
 ```r
 routine.run <- "sesame"

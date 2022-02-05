@@ -9,7 +9,7 @@
 #' @param clin.idat.dir The idat dir
 #' @param clin.sub.dir The sub directory
 #' @importFrom readxl read_excel
-#' @return #outputs a vector or excel of
+#' @return outputs a vector or excel of
 #' primary ids for input tcga smamples names
 #' @export
 methyl_master_tcga_clin_data <- function(clin.tcga.file.path=NULL,
@@ -17,15 +17,14 @@ methyl_master_tcga_clin_data <- function(clin.tcga.file.path=NULL,
                                          clin.copy.files=FALSE,
                                          clin.sample.sheet=TRUE,
                                          clin.idat.dir=getwd(),
-                                         clin.sub.dir=NULL
-                                        ){
+                                         clin.sub.dir=NULL){
 
   clin.data <- read.table(file = clin.tcga.file.path,
                           header=TRUE,
                           sep=",",
                           stringsAsFactors = FALSE)
 
-  if(clin.sample.shee==TRUE){
+  if(clin.sample.sheet==TRUE){
 
     select.cbio.samples <-
       readxl::read_excel(path = clin.tcga.file.path,
@@ -39,7 +38,8 @@ methyl_master_tcga_clin_data <- function(clin.tcga.file.path=NULL,
   }
 
   select.cbio.primaries <-
-    clin.data[clin.data$submitter_id %in% select.cbio.samples$sample,"primary"]
+    clin.data[clin.data$submitter_id %in%
+                select.cbio.samples$sample,"primary"]
 
   kirc.sample.paths <- list.files(idat.dir,
                                   full.names = TRUE,
@@ -50,8 +50,15 @@ methyl_master_tcga_clin_data <- function(clin.tcga.file.path=NULL,
   ##length(unique.primary.samples) ##487
   ##kirc.sample.paths[grepl(select.cbio.primaries, select.cbio.primaries)]
 
-  copy.samples <- unlist(lapply(select.cbio.primaries, FUN = function(x){
-    grep(x,kirc.sample.paths,value=TRUE)}))
+  copy.samples <-
+    unlist(lapply(select.cbio.primaries,
+                  FUN = function(x,kirc.sample.paths){
+                    grep(x,
+                         kirc.sample.paths,
+                         value=TRUE)
+                    }
+                  )
+           )
 
   if(clin.copy.files==TRUE){
 
