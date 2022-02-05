@@ -111,7 +111,15 @@ methyl_master_hm450 <- function(hm450.input.dir=NULL,
 
     sesame_ssets_normal <- sesameData::sesameDataGet(hm450.sesame.data.normal)
 
-    ExperimentHub::setExperimentHubOption("CACHE", hm450.input.dir)
+    tmp.dir <- paste0(hm450.output.dir,
+                      .Platform$file.sep,
+                      "tmp")
+
+    dir.create(path=tmp.dir)
+
+    ExperimentHub::setExperimentHubOption("CACHE",
+                                          ##hm450.input.dir,
+                                          tmp.dir)
 
     ExperimentHub::ExperimentHub()
 
@@ -189,11 +197,20 @@ methyl_master_hm450 <- function(hm450.input.dir=NULL,
     sample.sheet.df <- sample.sheet.df[sample.sheet.df$Sample_Group %in%
                                        hm450.comparison,]
 
-    ExperimentHub::setExperimentHubOption("CACHE", idat.files.dir)
+    tmp.dir <- paste0(hm450.output.dir,
+                      .Platform$file.sep,
+                      "tmp")
+
+    dir.create(path=tmp.dir)
+
+    ExperimentHub::setExperimentHubOption("CACHE",
+                                          ##hm450.input.dir,
+                                          tmp.dir)
 
     ExperimentHub::ExperimentHub()
 
-    idat_prefixes <- searchIDATprefixes(idat.files.dir, recursive=TRUE)
+    idat_prefixes <- searchIDATprefixes(hm450.input.dir,
+                                        recursive=TRUE)
 
     sesameData::sesameDataCacheAll()
 
@@ -268,6 +285,9 @@ methyl_master_hm450 <- function(hm450.input.dir=NULL,
 
 
   } ##End hm450.reference
+
+  ##remove the temp dir for cached files:
+  unlink(tmp.dir, recursive = TRUE)
 
   return(seg)
 

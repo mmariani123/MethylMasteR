@@ -61,7 +61,13 @@ if(sesame.reference=="internal"){
     ##sesameData::sesameDataCache(sesame.data.cache)
 
     sesame_ssets_normal <- sesameData::sesameDataGet(sesame.data.normal)
-    ExperimentHub::setExperimentHubOption("CACHE", sesame.idat.files.dir)
+    tmp.dir <- paste0(sesame.output.dir,
+                      .Platform$file.sep,
+                      "tmp")
+    dir.create(path=tmp.dir)
+    ExperimentHub::setExperimentHubOption("CACHE",
+                                          ##sesame.idat.files.dir,
+                                          tmp.dir)
     ExperimentHub::ExperimentHub()
     ##sesameData::sesameDataCache("EPIC")
     sesameDataCacheAll()
@@ -128,8 +134,13 @@ if(sesame.reference=="internal"){
       sesame.sample.sheet.df$Sample_Group==sesame.comparison[2],
       "Platform"])
 
+    tmp.dir <- paste0(sesame.output.dir,
+                      .Platform$file.sep,
+                      "tmp")
+    dir.create(path=tmp.dir)
     ExperimentHub::setExperimentHubOption("CACHE",
-                         sesame.idat.files.dir)
+                                          ##sesame.idat.files.dir,
+                                          tmp.dir)
 
     ExperimentHub::ExperimentHub()
 
@@ -170,5 +181,10 @@ if(sesame.reference=="internal"){
     seg <- list(sesame_seg)
 
 } ##End reference
+
+##remove the temp dir for cached files:
+unlink(tmp.dir, recursive = TRUE)
+
+return(seg)
 
 } ##End methyl_master_sesame
