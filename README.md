@@ -21,7 +21,6 @@ library(MethylMasteR)
 input.dir <- system.file("extdata",
               package = 'MethylMasteR')
               
-
 output.dir <- "path/to/output/dir"
 
 sample.sheet.path <- system.file("extdata",
