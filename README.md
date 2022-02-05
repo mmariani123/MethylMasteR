@@ -1,12 +1,15 @@
 # MethylMasteR
+
 Michael Mariani PhD, Salas Lab, Dartmouth College 2022
 
 ## Install
 
 ```r
+
 require(devtools)
 devtools::install_github("mmariani123/MethylMasteR")
 library(MethylMasteR)
+
 ```
 
 ## Run MethylMasteR
@@ -14,13 +17,17 @@ library(MethylMasteR)
 ## Set your paths:
 
 ```r
-input.dir <- system.file("data",
+
+input.dir <- system.file("extdata",
               package = 'MethylMasteR')
+              
+
 output.dir <- "path/to/output/dir"
-sample.sheet.path <- sample.sheet.path <- system.file(paste0("data",
-                   .Platform$file.sep,
-                   "Sample_Sheet_Test.csv"),
+
+sample.sheet.path <- system.file("extdata",
+                   "Sample_Sheet_Test.csv",
                    package = 'MethylMasteR')
+
 ```
 
 ## Select your routine :
@@ -28,17 +35,20 @@ sample.sheet.path <- sample.sheet.path <- system.file(paste0("data",
 Run SeSAMe with the test data specified above
 
 ```r
+
 routine.run <- "sesame"
 #1.) "sesame" for SeSAMEe
 #2.) "hm450" for HM450
 #3.) "champ" for ChAMP
 #4.) "epicopy" for Epicopy
 #5.) "custom" for custom routine
+
 ```
 
 ## Select the other parameters and run!
 
 ```r
+
 methyl_master(
   routine                   = routine.run, #The routine to run
   input.dir                 = input.dir, #The input (idat.files) directory
@@ -102,4 +112,5 @@ methyl_master(
                                     #overlaps
   simplify.reduce           = weightedmean, #Equation to use during reduction
 )
+
 ```

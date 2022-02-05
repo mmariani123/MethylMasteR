@@ -4,7 +4,7 @@
 
 ##print(getwd())
 
-input.dir <- system.file("data",
+input.dir <- system.file("extdata",
                          package = 'MethylMasteR')
 
 ##output.dir <- system.file("test",
