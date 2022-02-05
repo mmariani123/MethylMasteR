@@ -1,23 +1,23 @@
----
-title: "Get MM R Packages"
-author: "Michael Mariani PhD"
-date: "2/5/2022"
-output: html_document
----
-
-```{r setup, include=FALSE}
-
-knitr::opts_chunk$set(echo = TRUE)
-
-```
-
-## Old packages for MethylMasteR
-
-Getting as many of the originally MethylMasteR packages as 
-possible, focus now will be on getting evrything up to date.
-
-```{r installs, inlcude=TRUE}
-
+#---
+#title: "Get MM R Packages"
+#author: "Michael Mariani PhD"
+#date: "2/5/2022"
+#output: html_document
+#---
+#
+#```{r setup, include=FALSE}
+#
+#knitr::opts_chunk$set(echo = TRUE)
+#
+#```
+#
+### Old packages for MethylMasteR
+#
+#Getting as many of the originally MethylMasteR packages as
+#possible, focus now will be on getting evrything up to date.
+#
+#```{r installs, inlcude=TRUE}
+#
 #install.packages(pkgs="data.table",
 #                 lib=paste0("C:\\Users\\Mike_2\\Desktop",
 #                          "\\methyl_master_packages"),
@@ -34,7 +34,7 @@ possible, focus now will be on getting evrything up to date.
 #                 update=FALSE,
 #                 version="1.16.0")
 #
-#devtools::install_version("stats", 
+#devtools::install_version("stats",
 #                          version = "1.16.0",
 #                          upgrade="never",
 #                          repos = "http://cran.us.r-project.org",
@@ -50,63 +50,63 @@ possible, focus now will be on getting evrything up to date.
 #                     update=FALSE,
 #                     version="2.20.1")
 #
-#download.file("https://www.bioconductor.org/packages/release/bioc/s#rc/contrib/ChAMP_2.24.0.tar.gz", 
+#download.file("https://www.bioconductor.org/packages/release/bioc/s#rc/contrib/ChAMP_2.24.0.tar.gz",
 #              destdir=paste0("C:\\Users\\Mike_2\\Desktop",
-#                                "\\methyl_master_packages"), 
-#              method="wget", 
-#              quiet = FALSE, 
+#                                "\\methyl_master_packages"),
+#              method="wget",
+#              quiet = FALSE,
 #              mode = "w",
 #              cacheOK = TRUE,
 #              extra = getOption("download.file.extra"),
 #              headers = NULL)
 #
-#devtools::install_version("limma", 
+#devtools::install_version("limma",
 #                          version = "3.46.0",
 #                          upgrade="never",
 #                          repos = "http://cran.us.r-project.org",
 #                          type="source")
 #
 ##3.45.0 can't be foiund, jusr downloaded newest: 3.5.0
-#download.file("https://www.bioconductor.org/packages/3.4/bioc/src/c#ontrib/limma_3.46.0.tar.gz", 
+#download.file("https://www.bioconductor.org/packages/3.4/bioc/src/c#ontrib/limma_3.46.0.tar.gz",
 #              destfile=paste0("C:\\Users\\Mike_2\\Desktop",
 #                                "\\methyl_master_packages",
-#                              "limma_3.46.0.tar.gz"), 
-#              method="auto", 
-#              quiet = FALSE, 
+#                              "limma_3.46.0.tar.gz"),
+#              method="auto",
+#              quiet = FALSE,
 #              mode = "w",
 #              cacheOK = TRUE,
 #              extra = options(repos = c(CRAN = #"https://cloud.r-project.org/")),
 #              headers = NULL)
 #
-#download.file("https://cran.r-project.org/src/contrib/igraph_1.2.11#.tar.gz", 
+#download.file("https://cran.r-project.org/src/contrib/igraph_1.2.11#.tar.gz",
 #              destfile=paste0("C:\\Users\\Mike_2\\Desktop",
 #                                "\\methyl_master_packages",
-#                              "\\igraph_1.2.6.tar.gz"), 
-#              method="curl", 
-#              quiet = FALSE, 
+#                              "\\igraph_1.2.6.tar.gz"),
+#              method="curl",
+#              quiet = FALSE,
 #              mode = "w",
 #              cacheOK = TRUE,
 #              extra = getOption("download.file.extra"),
 #              headers = NULL)
 #
 ##I am not sure where to find 3.12.0
-#download.file("https://bioconductor.org/packages/release/data/annot#ation/src/contrib/org.Hs.eg.db_3.14.0.tar.gz", 
+#download.file("https://bioconductor.org/packages/release/data/annot#ation/src/contrib/org.Hs.eg.db_3.14.0.tar.gz",
 #              destfile=paste0("C:\\Users\\Mike_2\\Desktop",
 #                                "\\methyl_master_packages",
-#                              "\\org.Hs.eg.db_3.14.0.tar.gz"), 
-#              method="curl", 
-#              quiet = FALSE, 
+#                              "\\org.Hs.eg.db_3.14.0.tar.gz"),
+#              method="curl",
+#              quiet = FALSE,
 #              mode = "w",
 #              cacheOK = TRUE,
 #              extra = getOption("download.file.extra"),
 #              headers = NULL)
 #
-#download.file("https://bioconductor.org/packages/release/data/annot#ation/src/contrib/org.Hs.eg.db_3.14.0.tar.gz", 
+#download.file("https://bioconductor.org/packages/release/data/annot#ation/src/contrib/org.Hs.eg.db_3.14.0.tar.gz",
 #              destfile=paste0("C:\\Users\\Mike_2\\Desktop",
 #                                "\\methyl_master_packages",
-#                              "\\org.Hs.eg.db_3.14.0.tar.gz"), 
-#              method="curl", 
-#              quiet = FALSE, 
+#                              "\\org.Hs.eg.db_3.14.0.tar.gz"),
+#              method="curl",
+#              quiet = FALSE,
 #              mode = "w",
 #              cacheOK = TRUE,
 #              extra = getOption("download.file.extra"),
@@ -121,18 +121,18 @@ possible, focus now will be on getting evrything up to date.
 ##This will install all dependencies as well:
 #withr::with_libpaths(
 #  new = paste0("C:\\Users\\Mike_2\\Desktop",
-#             "\\methyl_master_packages"), 
+#             "\\methyl_master_packages"),
 #  devtools::install_github('sean-cho/Epicopy',
 #  upgrade = "never"))
 #
 ##Epicopy (== 0.99.0)
 ##I believe this output the newest .tar.gz
-#download.file("https://github.com/sean-cho/Epicopy/branches/master.#tar.gz", 
+#download.file("https://github.com/sean-cho/Epicopy/branches/master.#tar.gz",
 #              destfile=paste0("C:\\Users\\Mike_2\\Desktop",
 #                              "\\methyl_master_packages",
-#                              "\\Epicopy.tar.gz"), 
-#              method="curl", 
-#              quiet = FALSE, 
+#                              "\\Epicopy.tar.gz"),
+#              method="curl",
+#              quiet = FALSE,
 #              mode = "w",
 #              cacheOK = TRUE,
 #              extra = getOption("download.file.extra"),
@@ -182,12 +182,12 @@ possible, focus now will be on getting evrything up to date.
 
 #cnAnalysis450k (== 0.99.26)
 #this is the version at mknoll/cnAnalysis450k
-#download.file("https://github.com/mknoll/cnAnalysis450k/branches/ma#ster.tar.gz", 
+#download.file("https://github.com/mknoll/cnAnalysis450k/branches/ma#ster.tar.gz",
 #              destfile=paste0("C:\\Users\\Mike_2\\Desktop",
 #                              "\\methyl_master_packages",
-#              "\\cnAnalysis450k_0.99.26.tar.gz"), 
-#              method="curl", 
-#              quiet = FALSE, 
+#              "\\cnAnalysis450k_0.99.26.tar.gz"),
+#              method="curl",
+#              quiet = FALSE,
 #              mode = "w",
 #              cacheOK = TRUE,
 #              extra = getOption("download.file.extra"),
@@ -195,12 +195,12 @@ possible, focus now will be on getting evrything up to date.
 #
 ##CNAclinic (== 1.0)
 ##this is the version at sdchandra/CNAclinic
-#download.file("https://github.com/sdchandra/CNAclinic/branches/mast#er.tar.gz", 
+#download.file("https://github.com/sdchandra/CNAclinic/branches/mast#er.tar.gz",
 #              destfile=paste0("C:\\Users\\Mike_2\\Desktop",
 #                              "\\methyl_master_packages",
-#              "\\CNAclinic_1.0.tar.gz"), 
-#              method="curl", 
-#              quiet = FALSE, 
+#              "\\CNAclinic_1.0.tar.gz"),
+#              method="curl",
+#              quiet = FALSE,
 #              mode = "w",
 #              cacheOK = TRUE,
 #              extra = getOption("download.file.extra"),
@@ -222,15 +222,15 @@ possible, focus now will be on getting evrything up to date.
 #default version on CRAN
 
 #ungeviz (== 0.1.0)
-#this is the current github 
+#this is the current github
 #version at https://github.com/wilkelab/ungeviz
 
-#download.file("https://github.com/wilkelab/ungeviz/blob/master.tar.#gz", 
+#download.file("https://github.com/wilkelab/ungeviz/blob/master.tar.#gz",
 #              destfile=paste0("C:\\Users\\Mike_2\\Desktop",
 #                              "\\methyl_master_packages",
-#              "\\ungeviz_0.1.0.tar.gz"), 
-#              method="curl", 
-#              quiet = FALSE, 
+#              "\\ungeviz_0.1.0.tar.gz"),
+#              method="curl",
+#              quiet = FALSE,
 #              mode = "w",
 #              cacheOK = TRUE,
 #              extra = getOption("download.file.extra"),
@@ -305,7 +305,7 @@ possible, focus now will be on getting evrything up to date.
 #readxl (== 1.3.1)
 #Newest version on CRANs
 
-#rlist (== 0.4.6.2) 
+#rlist (== 0.4.6.2)
 #Newest version on CRAN
 
 #scales (== 1.1.1)
