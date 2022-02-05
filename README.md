@@ -109,7 +109,7 @@ methyl_master(
   ov.pvalue                 = 0.05, #pvalue threshold for overlaps identified
   ov.keep.extra.columns     = TRUE, #Keep extra metadata columns when finding 
                                     #overlaps
-  simplify.reduce           = weightedmean, #Equation to use during reduction
+  simplify.reduce           = weightedmean #Equation to use during reduction
 )
 
 ```
