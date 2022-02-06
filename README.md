@@ -52,8 +52,7 @@ methyl_master(
   routine                   = routine.run, #The routine to run
   input.dir                 = input.dir, #The input (idat.files) directory
   output.dir                = output.dir, #The output directory
-  sample.sheet.path         = sample.sheet.path, #The path to the MethylMasteR 
-                                                 sample sheet
+  sample.sheet.path         = sample.sheet.path, #The path to the MethylMasteR sample sheet
   r.lib.path                = .libPaths()[1], #The path to the R Library path
   file.sep                  = "\\\\", #For windows or "/" for Linux
   create.dir                = TRUE, #Whether to cretae directory if does not 
