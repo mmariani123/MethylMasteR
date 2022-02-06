@@ -13,7 +13,7 @@ library(MethylMasteR)
 ```
 ## Run MethylMasteR
 
-## Set your paths:
+## Load the test data:
 
 ```r
 
@@ -77,7 +77,8 @@ methyl_master(
                                     #If NULL, equation is is used;
                                     #otherwise, specify threshold vector 
                                     #of lower and upper beta values such
-                                    #as c(-0.3,0.3),
+                                    #as c(-0.3,0.3), we used c(-0.2,0.2) 
+                                    #in the paper
   overlap.density           = 0.1, #For combining final CNV calls for confidence
   sesame.data.cache         = "EPIC", #The default sesame reference platform
   sesame.data.normal        = 'EPIC.5.normal', #The default sesame and hm450 
