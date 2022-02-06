@@ -11,7 +11,6 @@ devtools::install_github("mmariani123/methylmaster")
 library(MethylMasteR)
 
 ```
-
 ## Run MethylMasteR
 
 ## Set your paths:
@@ -43,7 +42,6 @@ routine.run <- "sesame"
 #5.) "custom" for custom routine
 
 ```
-
 ## Select the other parameters and run!
 
 ```r
