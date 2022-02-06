@@ -7,7 +7,7 @@ Michael Mariani PhD, Salas Lab, Dartmouth College 2022
 ```r
 
 require(devtools)
-devtools::install_github("mmariani123/MethylMasteR")
+devtools::install_github("mmariani123/methylmaster")
 library(MethylMasteR)
 
 ```
