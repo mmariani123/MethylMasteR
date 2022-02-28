@@ -2,13 +2,19 @@
 
 Michael Mariani PhD, Salas Lab, Dartmouth College 2022
 
-## Install
+## Install 
+
+Follow the commands below
 
 ```r
 
-require(devtools)
-devtools::install_github("mmariani123/methylmaster")
-library(MethylMasteR)
+1,) install Docker on your OS of choice
+2.) Then run docker pull mmariani123/methylmaster:lastest
+3.) Then start the container with local_path set to the desired output directory
+    e.g., local_path=C:\Users\<user_name>\Desktop\rocker_test
+    docker run --rm -v <local_path>:/home/rstudio -p 127.0.0.1:8787:8787 -e DISABLE_AUTH=true methylmaster
+4.) Open your web browser of choice and navigate to http://127.0.0.1:8787/
+5.) Follow the commands below in the Rocker RStudio session ...
 
 ```
 ## Run MethylMasteR
@@ -17,11 +23,13 @@ library(MethylMasteR)
 
 ```r
 
+library(MethylMasteR)
+
 input.dir <- system.file("extdata",
               package = 'MethylMasteR')
-              
-output.dir <- "path/to/output/dir"
 
+output.dir <- getwd()
+              
 sample.sheet.path <- system.file("extdata",
                    "Sample_Sheet_Test.csv",
                    package = 'MethylMasteR')

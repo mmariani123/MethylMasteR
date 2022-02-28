@@ -70,7 +70,7 @@ if(sesame.reference=="internal"){
                                           tmp.dir)
     ExperimentHub::ExperimentHub()
     ##sesameData::sesameDataCache("EPIC")
-    sesameDataCacheAll()
+    sesameData::sesameDataCacheAll()
 
     treatment_idat_prefixes <- sesame::searchIDATprefixes(sesame.idat.files.dir,
                                                         recursive=TRUE)
