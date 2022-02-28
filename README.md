@@ -48,7 +48,8 @@ library(MethylMasteR)
 input.dir <- system.file("extdata",
               package = 'MethylMasteR')
 
-output.dir <- getwd()
+#Create an output dir for the SeSAMe test data:
+output.dir <- paste0(getwd(),.Platform$file.sep,"sesame")
               
 sample.sheet.path <- system.file("extdata",
                    "Sample_Sheet_Test.csv",
