@@ -7,7 +7,8 @@ Michael Mariani PhD, Salas Lab, Dartmouth College 2022
 Follow the commands below
 
 1.) install Docker on your OS of choice <br>
-2.) Then run "docker pull mmariani123/methylmaster:lastest" <br>
+2.) Then run: <br>
+    docker pull mmariani123/methylmaster:lastest <br>
 3.) Then start the container with local_path set to the desired output directory <br>
     e.g.: <br>
     user_name=<your_user_name> <br>
