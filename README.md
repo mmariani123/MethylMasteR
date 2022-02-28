@@ -23,6 +23,27 @@ Follow the commands below
 
 ```r
 
+# If you are having SeSAMe caching issues the below update code from:
+# https://bioconductor.org/packages/devel/bioc/vignettes/ExperimentHub/inst/doc/ExperimentHub.html#default-caching-location- update
+# Should solve the issue
+
+moveFiles<-function(package){
+olddir <- path.expand(rappdirs::user_cache_dir(appname=package))
+newdir <- tools::R_user_dir(package, which="cache")
+dir.create(path=newdir, recursive=TRUE)
+files <- list.files(olddir, full.names =TRUE)
+moveres <- vapply(files,
+    FUN=function(fl){
+    filename = basename(fl)
+    newname = file.path(newdir, filename)
+    file.rename(fl, newname)
+    },
+    FUN.VALUE = logical(1))
+if(all(moveres)) unlink(olddir, recursive=TRUE)
+
+package="ExperimentHub"
+moveFiles(package)
+       
 library(MethylMasteR)
 
 input.dir <- system.file("extdata",
