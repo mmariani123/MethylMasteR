@@ -6,12 +6,12 @@ Michael Mariani PhD, Salas Lab, Dartmouth College 2022
 
 Follow the commands below
 
-1.) install Docker on your OS of choice
-2.) Then run "docker pull mmariani123/methylmaster:lastest"
-3.) Then start the container with local_path set to the desired output directory
+1.) install Docker on your OS of choice <br>
+2.) Then run "docker pull mmariani123/methylmaster:lastest" <br>
+3.) Then start the container with local_path set to the desired output directory <br>
     e.g.: 
     user_name=<your_user_name>
-    local_path="C:\Users\$user_name\Desktop\rocker_test
+    local_path="C:\Users\$user_name\Desktop\rocker_test"
     docker run --rm -v $local_path:/home/rstudio -p 127.0.0.1:8787:8787 -e DISABLE_AUTH=true methylmaster
 4.) Open your web browser of choice and navigate to http://127.0.0.1:8787/
 5.) Follow the commands below in the Rocker RStudio session ...
