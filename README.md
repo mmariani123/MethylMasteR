@@ -6,17 +6,14 @@ Michael Mariani PhD, Salas Lab, Dartmouth College 2022
 
 Follow the commands below
 
-```r
-
-1,) install Docker on your OS of choice
-2.) Then run docker pull mmariani123/methylmaster:lastest
+1.) install Docker on your OS of choice
+2.) Then run "docker pull mmariani123/methylmaster:lastest"
 3.) Then start the container with local_path set to the desired output directory
-    e.g., local_path=C:\Users\<user_name>\Desktop\rocker_test
-    docker run --rm -v <local_path>:/home/rstudio -p 127.0.0.1:8787:8787 -e DISABLE_AUTH=true methylmaster
+    e.g., local_path="C:\Users\<user_name>\Desktop\rocker_test"
+    "docker run --rm -v $local_path:/home/rstudio -p 127.0.0.1:8787:8787 -e DISABLE_AUTH=true methylmaster"
 4.) Open your web browser of choice and navigate to http://127.0.0.1:8787/
 5.) Follow the commands below in the Rocker RStudio session ...
 
-```
 ## Run MethylMasteR
 
 ## Load the test data:
@@ -72,6 +69,9 @@ routine.run <- "sesame"
 
 ```
 ## Select the other parameters and run!
+
+Note that it is recommended to set <form.thresholds> to c(-0.2,0.2)
+when running the test data specified above.
 
 ```r
 
