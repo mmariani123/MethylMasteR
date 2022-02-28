@@ -27,7 +27,7 @@ Imports:
   plyr (>= 1.8.6),
   dplyr (>= 1.0.7),
   TCGAbiolinks (>= 1.14.0),
-  ExperimentHub (>= 1.16.1),
+  ExperimentHub (>= 1.16.0),
   sesame (>= 1.8.10),
   sesameData (>= 1.8.10),
   minfi (>= 1.18.0),
