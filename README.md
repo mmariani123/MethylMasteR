@@ -117,7 +117,7 @@ methyl_master(
   sesame.data.cache         = "EPIC", #The default sesame reference platform
   sesame.data.normal        = 'EPIC.5.normal', #The default sesame and hm450 
                                                #internal reference samples
-  sesame.ref.version        = "hg19", #Or can set to "hg38"
+  genome.version            = "hg19", #Or can set to "hg38"
   hm450.workflow            = "B", #The HM450 subworkflow to use - only B 
                                    #is running currently.
                               #"A" no correction,
