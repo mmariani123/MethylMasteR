@@ -13,7 +13,7 @@
 #'  )
 #' )
 #' @param files.dir The parameter containing the R files
-#' @param file.sepThe the desired file separator
+#' @param file.sep The the desired file separator
 #' @return loaded data object(s)
 #' @export
 methyl_master_load_data_objects <- function(files.dir,

@@ -5,7 +5,7 @@
 #' Originally from sparseAssay() from the
 #' RaggedExperiment Package by Martin Morgan and Marcel Ramos 2021
 #' I have modified my own version
-#' here for use in methyl master
+#' here for use in MethylMasteR
 #' @param sesame.idat.files.dir The input dir with the .idat files
 #' @param x A ragged experiment object
 #' @param i Integer or character name of assay to be transformed
