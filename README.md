@@ -13,7 +13,7 @@ Follow the commands below
     e.g.: <br>
     user_name=<your_user_name> <br>
     local_path="C:\Users\$user_name\Desktop\rocker_test" <br>
-    docker run --rm -v $local_path:/home/rstudio -p 127.0.0.1:8787:8787 -e DISABLE_AUTH=true methylmaster <br>
+    docker run --rm -v $local_path:/home/rstudio -p 127.0.0.1:8787:8787 -e DISABLE_AUTH=true mmariani123/methylmaster <br>
 4.) Open your web browser of choice and navigate to http://127.0.0.1:8787/ <br>
 5.) Follow the commands below in the Rocker RStudio session ... <br>
 
