@@ -40,6 +40,7 @@ moveres <- vapply(files,
     },
     FUN.VALUE = logical(1))
 if(all(moveres)) unlink(olddir, recursive=TRUE)
+}
 
 package="ExperimentHub"
 moveFiles(package)
