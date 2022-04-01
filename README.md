@@ -29,13 +29,13 @@ Michael Mariani PhD, Salas Lab, Dartmouth College 2022
 2.) Then run: <br>
     "singularity pull methylmaster_base_slim_script.sif docker://mmariani123/methylmaster_base_slim_script:latest"" <br>
     This will pull the Docker container and create a singularity container file (".sif") <br>
-    Note that you can change the name of "methylmaster_base_slim_script.sif" to anything that you want <br>
+    (Note: you can change the name of "methylmaster_base_slim_script.sif" to anything that you want) <br>
 
 ## Run command line version for use on Slurm HPC
 
 1.) create a working directory on your HPC where you would like to run MethylMasteR <br>
     e.g. "mkdir /dartfs/rc/lab/S/SalasLab/programs/methylmaster_testing" <br>
-    (note: you can name the folder whatever you like) <br>
+    (Note: you can name the folder whatever you like) <br>
 <br>
 2.) Create an R script using the example R code below in the "Run MethylMasteR" section <br>
     You can adjust your own parameters as desired but MAKE SURE to name the R file: "run_methylmaster.R". <br>
@@ -46,11 +46,12 @@ Michael Mariani PhD, Salas Lab, Dartmouth College 2022
     /usr/bin/singularity run \ <br>
     -B /dartfs/rc/lab/S/SalasLab/programs/methylmaster_testing:/home/docker/work \ <br>
     /dartfs/rc/lab/S/SalasLab/programs/methylmaster_base_slim_script.sif <br>
-    Make sure that "/dartfs/rc/lab/S/SalasLab/programs/methylmaster_testing" is set <br>
+<br>
+    (Note: make sure that "/dartfs/rc/lab/S/SalasLab/programs/methylmaster_testing" is set <br>
     to your working directory (remember it does not have to be called methylmaster_testing <br>
     but DO NOT change "/home/docker/work" because this path is set inside the container. <br>
     Also, make sure that "/dartfs/rc/lab/S/SalasLab/programs/methylmaster_base_slim_script.sif" <br>
-    is the path to the .sif file that was created <br>
+    is the path to the .sif file that was created) <br>
 <br>
 4.) Files will be output to the working directory that you created above <br>
 
