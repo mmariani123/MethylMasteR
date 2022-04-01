@@ -41,8 +41,8 @@ Michael Mariani PhD, Salas Lab, Dartmouth College 2022
     You can adjust your own parameters as desired but MAKE SURE to name the R file: "run_methylmaster.R". <br>
     Place the "run_methylmaster.R" file in the working directory you created above. <br>
 <br>
-3.) Then run the singularity container (.sif file) with your working directory bound to <br>
-    the MethylMasteR directory as follows: <br>
+3.) Then, include the following command in a .bash file (name it whatever you like) <br>
+    and submit this bash file on your Slurm HPC <br>
     /usr/bin/singularity run \ <br>
     -B /dartfs/rc/lab/S/SalasLab/programs/methylmaster_testing<b>:</b>/home/docker/work \ <br>
     /dartfs/rc/lab/S/SalasLab/programs/methylmaster_base_slim_script.sif <br>
