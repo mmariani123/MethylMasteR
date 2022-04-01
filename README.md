@@ -18,7 +18,7 @@ Michael Mariani PhD, Salas Lab, Dartmouth College 2022
 4.) Open your web browser of choice and navigate to http://127.0.0.1:8787/ <br>
 <br>
 5.) Follow the commands below in the Rocker RStudio session ... <br>
-    (skip down to "Run MethylMasteR" section) <br>
+    <b>(skip down to the "Run MethylMasteR" section)</b> <br>
 
 ## Install command line version for use on Slurm HPC
 
