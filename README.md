@@ -22,7 +22,7 @@ Michael Mariani PhD, Salas Lab, Dartmouth College 2022
 
 ## Install command line version for use on Slurm HPC
 
-(***If MethylMasteR singularity image (.sif) has already been created, skip to the next section) <br>
+<b>***If MethylMasteR singularity image (".sif" file") has already been created, skip to the next section </b> <br>
 
 1.) Make sure that Singularity is installed on your cluster <br>
 <br>
