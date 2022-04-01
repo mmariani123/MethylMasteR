@@ -48,7 +48,7 @@ Michael Mariani PhD, Salas Lab, Dartmouth College 2022
     /dartfs/rc/lab/S/SalasLab/programs/methylmaster_base_slim_script.sif <br>
 <br>
     (Note: make sure that "/dartfs/rc/lab/S/SalasLab/programs/methylmaster_testing" is set <br>
-    to your working directory (remember it does not have to be called methylmaster_testing <br>
+    to your working directory (remember it does not have to be called "methylmaster_testing" <br>
     but DO NOT change "/home/docker/work" because this path is set inside the container. <br>
     Also, make sure that "/dartfs/rc/lab/S/SalasLab/programs/methylmaster_base_slim_script.sif" <br>
     is the path to the .sif file that was created) <br>
