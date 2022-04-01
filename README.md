@@ -4,8 +4,6 @@ Michael Mariani PhD, Salas Lab, Dartmouth College 2022
 
 ## Install Rstudio version:
 
-Follow the commands below
-
 1.) install Docker on your OS of choice <br>
 2.) Then run: <br>
     docker pull mmariani123/methylmaster:latest <br>
@@ -16,15 +14,19 @@ Follow the commands below
     docker run --rm -v $local_path:/home/rstudio -p 127.0.0.1:8787:8787 -e DISABLE_AUTH=true mmariani123/methylmaster <br>
 4.) Open your web browser of choice and navigate to http://127.0.0.1:8787/ <br>
 5.) Follow the commands below in the Rocker RStudio session ... <br>
+    (skip down to "Run MethylMasteR" section) <br>
 
 ## Install command line version for use on Slurm HPC
 
-Follow the commands below
+(If MethylMasteR singularity image has already been created, skip to the next section)
 
 1.) Make sure that Singularity is installed on your cluster <br>
 2.) Then run: <br>
     singularity pull methylmaster_base_slim_script.sif docker://mmariani123/methylmaster_base_slim_script:latest <br>
     This will pull the Docker container and create a singularity container file (".sif") <br>
+
+## Run command line version for use on Slurm HPC
+
 3.) create a working directory on your HPC where you would like to run MethylMasteR <br>
     e.g. "mkdir /dartfs/rc/lab/S/SalasLab/programs/methylmaster_testing"
 4.) Create an R script using the example R code below ( you can adjust your own parameters <br>
@@ -44,7 +46,7 @@ Follow the commands below
 4.) Open your web browser of choice and navigate to http://127.0.0.1:8787/ <br>
 5.) Follow the commands below in the Rocker RStudio session ... <br>
 
-## Run MethylMasteR
+# Run MethylMasteR
 
 ## Load the test data:
 
