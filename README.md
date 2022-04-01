@@ -44,7 +44,7 @@ Michael Mariani PhD, Salas Lab, Dartmouth College 2022
 3.) Then run the singularity container (.sif file) with your working directory bound to <br>
     the MethylMasteR directory as follows: <br>
     /usr/bin/singularity run \ <br>
-    -B /dartfs/rc/lab/S/SalasLab/programs/methylmaster_testing:/home/docker/work \ <br>
+    -B /dartfs/rc/lab/S/SalasLab/programs/methylmaster_testing<b>:</b>/home/docker/work \ <br>
     /dartfs/rc/lab/S/SalasLab/programs/methylmaster_base_slim_script.sif <br>
 <br>
     (Note: make sure that "/dartfs/rc/lab/S/SalasLab/programs/methylmaster_testing" is set <br>
