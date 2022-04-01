@@ -30,11 +30,11 @@ Michael Mariani PhD, Salas Lab, Dartmouth College 2022
 
 3.) create a working directory on your HPC where you would like to run MethylMasteR <br>
     e.g. "mkdir /dartfs/rc/lab/S/SalasLab/programs/methylmaster_testing" <br>
-4.) Create an R script using the example R code below (you can adjust your own parameters <br>
-    as desired and just make sure to name the R file "run_methylmaster.R". <br>
+4.) Create an R script using the example R code below in the "Run MethylMasteR" section <br>
+    You can adjust your own parameters as desired and just MAKE SURE to name the R file "run_methylmaster.R". <br>
     Place the "run_methylmaster.R" file in the working directory you created above. <br>
-    (note: you can name the folder whatever you like)
-3.) Then run the singularity container (.sif file) with your working directory bound to <br>
+    (note: you can name the folder whatever you like) <br>
+5.) Then run the singularity container (.sif file) with your working directory bound to <br>
     the MethylMasteR directory as follow: <br>
     /usr/bin/singularity run \ <br>
     -B /dartfs/rc/lab/S/SalasLab/programs/methylmaster_testing:/home/docker/work \ <br>
@@ -44,8 +44,7 @@ Michael Mariani PhD, Salas Lab, Dartmouth College 2022
     YOU CANNOT change "/home/docker/work" because this is inside the container.
     Also, make sure that "/dartfs/rc/lab/S/SalasLab/programs/methylmaster_base_slim_script.sif"" <br>
     is the path to the .sif file that you created above <br>
-4.) Open your web browser of choice and navigate to http://127.0.0.1:8787/ <br>
-5.) Follow the commands below in the Rocker RStudio session ... <br>
+6.) files will be output in the working directory that you created above <br>
 
 # Run MethylMasteR
 
