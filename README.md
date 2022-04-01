@@ -20,7 +20,7 @@ Michael Mariani PhD, Salas Lab, Dartmouth College 2022
 5.) Follow the commands below in the Rocker RStudio session ... <br>
     <b>(skip down to the "Run MethylMasteR" section)</b> <br>
 
-## Install command line version for use on Slurm HPC
+## Install command line version for use on Slurm HPC:
 
 <b>***If MethylMasteR singularity image (".sif" file") has already been created, skip to the next section </b> <br>
 
@@ -31,7 +31,7 @@ Michael Mariani PhD, Salas Lab, Dartmouth College 2022
     This will pull the Docker container and create a singularity container file (".sif") <br>
     (Note: you can change the name of "methylmaster_base_slim_script.sif" to anything that you want) <br>
 
-## Run command line version for use on Slurm HPC
+## Run command line version for use on Slurm HPC:
 
 1.) create a working directory on your HPC where you would like to run MethylMasteR <br>
     e.g. "mkdir /dartfs/rc/lab/S/SalasLab/programs/methylmaster_testing" <br>
