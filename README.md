@@ -22,8 +22,9 @@ Michael Mariani PhD, Salas Lab, Dartmouth College 2022
 
 1.) Make sure that Singularity is installed on your cluster <br>
 2.) Then run: <br>
-    singularity pull methylmaster_base_slim_script.sif docker://mmariani123/methylmaster_base_slim_script:latest <br>
+    "singularity pull methylmaster_base_slim_script.sif docker://mmariani123/methylmaster_base_slim_script:latest"" <br>
     This will pull the Docker container and create a singularity container file (".sif") <br>
+    Note that you can change the name of "methylmaster_base_slim_script.sif" to anything that you want <br>
 
 ## Run command line version for use on Slurm HPC
 
