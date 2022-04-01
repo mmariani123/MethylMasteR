@@ -2,7 +2,7 @@
 
 Michael Mariani PhD, Salas Lab, Dartmouth College 2022
 
-## Install 
+## Install Rstudio version:
 
 Follow the commands below
 
@@ -14,6 +14,33 @@ Follow the commands below
     user_name=<your_user_name> <br>
     local_path="C:\Users\$user_name\Desktop\rocker_test" <br>
     docker run --rm -v $local_path:/home/rstudio -p 127.0.0.1:8787:8787 -e DISABLE_AUTH=true mmariani123/methylmaster <br>
+4.) Open your web browser of choice and navigate to http://127.0.0.1:8787/ <br>
+5.) Follow the commands below in the Rocker RStudio session ... <br>
+
+## Install command line version for use on Slurm HPC
+
+Follow the commands below
+
+1.) Make sure that Singularity is installed on your cluster <br>
+2.) Then run: <br>
+    singularity pull methylmaster_base_slim_script.sif docker://mmariani123/methylmaster_base_slim_script:latest <br>
+    This will pull the Docker container and create a singularity container file (".sif") <br>
+3.) create a working directory on your HPC where you would like to run MethylMasteR <br>
+    e.g. "mkdir /dartfs/rc/lab/S/SalasLab/programs/methylmaster_testing"
+4.) Create an R script using the example R code below ( you can adjust your own parameters <br>
+    as desired and make sure to name it "run_methylmaster.R". place the "run_methylmaster.R" in the <br>
+    working directory you created above. (note you can name the folder whatever you like)
+3.) Then run the singularity container (.sif file) with your working directory bound to <br>
+    the MethylMasteR directory <br>
+    e.g.: <br>
+    /usr/bin/singularity run \ <br>
+    -B /dartfs/rc/lab/S/SalasLab/programs/methylmaster_testing:/home/docker/work \ <br>
+    /dartfs/rc/lab/S/SalasLab/programs/methylmaster_base_slim_script.sif <br>
+    Make sure that "/dartfs/rc/lab/S/SalasLab/programs/methylmaster_testing" is set <br>
+    to your working directory (remember it does not have to be called methylmaster_testing BUT <br>
+    YOU CANNOT change "/home/docker/work" because this is inside the container.
+    Also, make sure that "/dartfs/rc/lab/S/SalasLab/programs/methylmaster_base_slim_script.sif"" <br>
+    is the path to the .sif file that you created above
 4.) Open your web browser of choice and navigate to http://127.0.0.1:8787/ <br>
 5.) Follow the commands below in the Rocker RStudio session ... <br>
 
@@ -41,10 +68,11 @@ moveres <- vapply(files,
     FUN.VALUE = logical(1))
 if(all(moveres)) unlink(olddir, recursive=TRUE)
 }
-
 package="ExperimentHub"
 moveFiles(package)
-       
+library(sesameData)
+sesameDataCacheAll()
+
 library(MethylMasteR)
 
 input.dir <- system.file("extdata",
