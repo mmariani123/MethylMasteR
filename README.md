@@ -110,7 +110,7 @@ sample.sheet.path <- system.file("extdata",
 
 ```
 
-## Select your routine :
+## Select your routine:
 
 Set <routine.run>="sesame" to try the sesame routine <br>
 with the test data specified above.
