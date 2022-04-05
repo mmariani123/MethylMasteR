@@ -57,13 +57,13 @@ Michael Mariani PhD, Salas Lab, Dartmouth College 2022
 
 # Run MethylMasteR
 
-## Load the test data:
+## Troubleshooting SeSAMe data caching
+
+If you are having SeSAMe caching issues the below update code from: <br>
+https://bioconductor.org/packages/devel/bioc/vignettes/ExperimentHub/inst/doc/ExperimentHub.html#default-caching-location- update <br>
+Should solve the issue
 
 ```r
-
-# If you are having SeSAMe caching issues the below update code from:
-# https://bioconductor.org/packages/devel/bioc/vignettes/ExperimentHub/inst/doc/ExperimentHub.html#default-caching-location- update
-# Should solve the issue
 
 moveFiles<-function(package){
 olddir <- path.expand(rappdirs::user_cache_dir(appname=package))
@@ -81,8 +81,20 @@ if(all(moveres)) unlink(olddir, recursive=TRUE)
 }
 package="ExperimentHub"
 moveFiles(package)
+
+```
+
+## If the above function doesn't work try caching the sesameData directly
+
+```r
+
 library(sesameData)
 sesameDataCacheAll()
+
+```
+## Load the test data:
+
+```r
 
 library(MethylMasteR)
 
