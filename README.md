@@ -59,8 +59,8 @@ Michael Mariani PhD, Salas Lab, Dartmouth College 2022
 
 ## Troubleshooting SeSAMe data caching
 
-If you are having SeSAMe caching issues, running the function below in R <br>
-should solve the issue <br>
+<b>If you are having SeSAMe caching issues, running the function below in R <br>
+should solve the issue</b> <br>
 https://bioconductor.org/packages/devel/bioc/vignettes/ExperimentHub/inst/doc/ExperimentHub.html#default-caching-location-update <br>
 
 ```r
@@ -84,7 +84,7 @@ moveFiles(package)
 
 ```
 
-## If the above function doesn't work try caching the sesameData directly
+## If the above function doesn't work, try caching the sesameData directly
 
 ```r
 
