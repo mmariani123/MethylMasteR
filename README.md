@@ -2,9 +2,7 @@
 
 Michael Mariani PhD, Salas Lab, Dartmouth College 2022
 
-[![10.5281/zenodo.6360630](https://zenodo.org/badge/{mmariani123}.svg)](https://zenodo.org/badge/latestdoi/{mmariani123})
-
-## Install Rstudio version:
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6360630.svg)](https://doi.org/10.5281/zenodo.6360630)
 
 1.) install Docker on your OS of choice <br>
 <br>
