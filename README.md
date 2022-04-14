@@ -2,7 +2,7 @@
 
 Michael Mariani PhD, Salas Lab, Dartmouth College 2022
 
-[![DOI](https://zenodo.org/badge/{mmariani123}.svg)](https://zenodo.org/badge/latestdoi/{mmariani123})
+[![10.5281/zenodo.6360630](https://zenodo.org/badge/{mmariani123}.svg)](https://zenodo.org/badge/latestdoi/{mmariani123})
 
 ## Install Rstudio version:
 
