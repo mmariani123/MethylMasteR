@@ -33,6 +33,10 @@ Michael Mariani PhD, Salas Lab, Dartmouth College 2022
 
 ## Run command line version for use on Slurm HPC:
 
+<b>***For an example working directory with test idat files, <br>
+sample sheet, run_methylmaster.R, and Slurm bash script <br>
+all in the same folder, see the "example" folder above. </b><br>
+
 1.) create a working directory on your HPC where you would like to run MethylMasteR <br>
     e.g. "mkdir /dartfs/rc/lab/S/SalasLab/programs/methylmaster_testing" <br>
     (Note: you can name the folder whatever you like) <br>
@@ -54,10 +58,6 @@ Michael Mariani PhD, Salas Lab, Dartmouth College 2022
     is the path to the .sif file that was created) <br>
 <br>
 4.) Files will be output to the working directory that you created above <br>
-
-<b>***For an example working directory with test idat files, <br>
-samople sheet, run_methylmaster.R, and Slurm bash script <br>
-all in the same folder, see the "example" folder above. </b><br>
 
 # Run MethylMasteR
 
