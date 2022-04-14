@@ -55,6 +55,10 @@ Michael Mariani PhD, Salas Lab, Dartmouth College 2022
 <br>
 4.) Files will be output to the working directory that you created above <br>
 
+<b>***For an example working directory with test idat files, <br>
+samople sheet, run_methylmaster.R, and Slurm bash script <br>
+all in the same folder, see the "example" folder above. </b><br>
+
 # Run MethylMasteR
 
 ## Troubleshooting SeSAMe data caching
