@@ -4,6 +4,9 @@ Michael Mariani PhD, Salas Lab, Dartmouth College 2022
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6360630.svg)](https://doi.org/10.5281/zenodo.6360630)
 
+For citation see: <br>
+https://www.frontiersin.org/articles/10.3389/fbinf.2022.859828/full <br>
+
 1.) install Docker on your OS of choice <br>
 <br>
 2.) Then run: <br>
